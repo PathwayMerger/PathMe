@@ -1,5 +1,5 @@
-ComPath Reloaded
-================
+ComPath Reloaded |build|
+========================
 
 The primary goal of this package is to convert KEGG, Reactome, and WikiPathways to Biological Expression Language (BEL). ComPath Reloaded is the continuation of the ComPath web application aimed at exploring, analyzing, and curating pathway knowledge in a more simplistic gene-centric view. This different approach involves converting all the pathways to BEL as a pivotal integration schema and evaluating consensus and gaps in pathway knowledge. Additionally, ComPath Reloaded is complemented with PathMe, a web application that enables the exploration of all the pathways from these resources using the mappings curated from ComPath.
 
@@ -54,6 +54,11 @@ Example:
 
     python3 -m compath_reloaded kegg download
 
+
+
+.. |build| image:: https://travis-ci.org/ComPath/ComPath.svg?branch=master
+    :target: https://travis-ci.org/ComPath/ComPath
+    :alt: Build Status
 
 
 
