@@ -1,0 +1,14 @@
+networkx==1.11
+pandas
+pybel
+click
+scipy
+tqdm
+numpy
+rdflib
+rdflib-jsonld
+requests
+bio2bel
+bio2bel_hgnc
+bio2bel_chebi
+pybel_tools

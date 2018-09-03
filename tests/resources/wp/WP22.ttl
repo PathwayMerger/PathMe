@@ -1,0 +1,383 @@
+@prefix void:  <http://rdfs.org/ns/void#> .
+@prefix pav:   <http://purl.org/pav/> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix freq:  <http://purl.org/cld/freq/> .
+@prefix biopax: <http://www.biopax.org/release/biopax-level3.owl#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix gpml:  <http://vocabularies.wikipathways.org/gpml#> .
+@prefix wp:    <http://vocabularies.wikipathways.org/wp#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix wprdf: <http://rdf.wikipathways.org/> .
+@prefix prov:  <http://www.w3.org/ns/prov#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix dc:    <http://purl.org/dc/elements/1.1/> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/fc7c2>
+        a                 wp:DirectedInteraction , wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/fc7c2> ;
+        wp:participants   <http://identifiers.org/ncbigene/6772> ;
+        wp:source         <http://identifiers.org/ncbigene/6772> ;
+        wp:target         <http://identifiers.org/ncbigene/6772> .
+
+<http://identifiers.org/ncbigene/5296>
+        a                   wp:DataNode , wp:Protein ;
+        rdfs:label          "PIK3R2"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/5296> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "5296"^^xsd:string ;
+        dcterms:isPartOf    <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000105647> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/5296> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/PIK3R2> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/V9GYJ4> , <http://identifiers.org/uniprot/E9PFP1> , <http://identifiers.org/uniprot/O00459> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/f149a> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/b3e08>
+        a                 wp:DirectedInteraction , wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/b3e08> ;
+        wp:participants   <http://identifiers.org/ncbigene/5594> , <http://identifiers.org/ncbigene/5605> ;
+        wp:source         <http://identifiers.org/ncbigene/5605> ;
+        wp:target         <http://identifiers.org/ncbigene/5594> .
+
+<http://identifiers.org/ncbigene/6777>
+        a                   wp:DataNode , wp:Protein ;
+        rdfs:label          "STAT5B"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/6777> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "6777"^^xsd:string ;
+        dcterms:isPartOf    <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/e0524> , <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000173757> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/6777> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/STAT5B> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/P51692> , <http://identifiers.org/uniprot/C9J4I3> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/dc750> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/a1a46> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/f6eb6> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/fbd08> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/ddb23>
+        a                 wp:DirectedInteraction , wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/ddb23> ;
+        wp:participants   <http://identifiers.org/ncbigene/6772> ;
+        wp:source         <http://identifiers.org/ncbigene/6772> ;
+        wp:target         <http://identifiers.org/ncbigene/6772> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/dd4b6>
+        a                 wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/dd4b6> .
+
+<http://identifiers.org/ncbigene/3578>
+        a                   wp:DataNode , wp:Protein ;
+        rdfs:label          "IL9"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/3578> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "3578"^^xsd:string ;
+        dcterms:isPartOf    <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/ad093> , <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000145839> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/3578> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/IL9> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/P15248> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/af61f> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/e0524>
+        a                 wp:DirectedInteraction , wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/e0524> ;
+        wp:participants   <http://identifiers.org/ncbigene/6777> ;
+        wp:source         <http://identifiers.org/ncbigene/6777> ;
+        wp:target         <http://identifiers.org/ncbigene/6777> .
+
+<http://identifiers.org/ncbigene/3581>
+        a                   wp:DataNode , wp:Protein ;
+        rdfs:label          "IL9R"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/3581> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "3581"^^xsd:string ;
+        dcterms:isPartOf    <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/eceac> , <http://identifiers.org/wikipathways/WP22_r97775> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/a267a> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000124334> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/3581> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/IL9R> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/Q01113> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/bde62> .
+
+<http://identifiers.org/ncbigene/5295>
+        a                   wp:Protein , wp:DataNode ;
+        rdfs:label          "PIK3R1"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/5295> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "5295"^^xsd:string ;
+        dcterms:isPartOf    <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000145675> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/5295> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/PIK3R1> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/E5RK66> , <http://identifiers.org/uniprot/E5RJY0> , <http://identifiers.org/uniprot/H0YBC2> , <http://identifiers.org/uniprot/P27986> , <http://identifiers.org/uniprot/H0YB27> , <http://identifiers.org/uniprot/E5RHI0> , <http://identifiers.org/uniprot/E5RGI8> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/b5564> .
+
+<http://identifiers.org/ncbigene/6776>
+        a                   wp:Protein , wp:DataNode ;
+        rdfs:label          "STAT5A"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/6776> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "6776"^^xsd:string ;
+        dcterms:isPartOf    <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000126561> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/6776> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/STAT5A> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/C9JVV6> , <http://identifiers.org/uniprot/K7EM17> , <http://identifiers.org/uniprot/P42229> , <http://identifiers.org/uniprot/K7EK35> , <http://identifiers.org/uniprot/K7EIF9> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/d9dbe> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/c562c>
+        a                 wp:DirectedInteraction , wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/c562c> ;
+        wp:participants   <http://identifiers.org/ncbigene/3718> , <http://identifiers.org/ncbigene/3561> ;
+        wp:source         <http://identifiers.org/ncbigene/3561> ;
+        wp:target         <http://identifiers.org/ncbigene/3718> .
+
+<http://identifiers.org/wikipathways/WP22>
+        pav:hasVersion  <http://identifiers.org/wikipathways/WP22_r97775> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/ad093>
+        a                 wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/ad093> ;
+        wp:participants   <http://identifiers.org/ncbigene/3578> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/id19ee3408>
+        a                 wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/id19ee3408> .
+
+<http://identifiers.org/ncbigene/3561>
+        a                   wp:DataNode , wp:Protein ;
+        rdfs:label          "IL2RG"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/3561> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "3561"^^xsd:string ;
+        dcterms:isPartOf    <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/a9793> , <http://identifiers.org/wikipathways/WP22_r97775> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/ec036> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/c562c> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000147168> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/3561> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/IL2RG> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/H0Y8J6> , <http://identifiers.org/uniprot/D6R964> , <http://identifiers.org/uniprot/D6RDW9> , <http://identifiers.org/uniprot/Q5FC10> , <http://identifiers.org/uniprot/P31785> , <http://identifiers.org/uniprot/D6RBW5> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/c6ecc> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/e9889>
+        a                 wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/e9889> .
+
+<http://identifiers.org/ncbigene/2885>
+        a                   wp:Protein , wp:DataNode ;
+        rdfs:label          "GRB2"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/2885> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "2885"^^xsd:string ;
+        dcterms:isPartOf    <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/a537f> , <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000177885> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/2885> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/GRB2> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/J3KT38> , <http://identifiers.org/uniprot/J3QRL5> , <http://identifiers.org/uniprot/J3QLF6> , <http://identifiers.org/uniprot/B0LPF3> , <http://identifiers.org/uniprot/P62993> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/d2168> .
+
+<http://identifiers.org/ncbigene/1025>
+        a                   wp:DataNode , wp:Protein ;
+        rdfs:label          "IRS1"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/1025> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "1025"^^xsd:string ;
+        dcterms:isPartOf    <http://identifiers.org/wikipathways/WP22_r97775> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/e3673> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/a537f> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000136807> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/1025> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/CDK9> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/X6RE90> , <http://identifiers.org/uniprot/A0A024R880> , <http://identifiers.org/uniprot/P50750> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/dd41a> .
+
+<http://identifiers.org/wikipathways/WP22_r97775>
+        a                      skos:Collection , wp:Pathway ;
+        dc:identifier          <http://identifiers.org/wikipathways/WP22> ;
+        dc:source              "WikiPathways"^^xsd:string ;
+        dc:title               "IL-9 Signaling Pathway"@en ;
+        dcterms:description    "IL-9 is a multifunctional cytokine, belonging to a family of cytokines. IL-9 was initially reported as a T cell growth factor in mice. It is now known to target multiple cell types. It plays an important role in the expansion and recruitment of mast cells in response to intestinal nematode infection or during autoimmune encephalomyelitis. It is also known to act on various cell types known to be involved in asthma including T cells, B cells, mast cells, eosinophils, neutrophils, and epithelial cells. IL-9 can promote the expression of TGF-beta in lipopolysaccharide-induced monocytes and macrophages. IL-9 is also known to play important roles in conditions including airway inflammation, EAE and parasitic infections. Mitogen-activated protein kinase pathway is activated transiently by IL-9, which in turn leads to the growth stimulation of hematopoietic cell lines. IL-9 signals through the heterodimeric receptor composed of a specific chain (IL-9R) and a gamma chain (IL2RG), which is shared between IL-2, IL-4, IL-7, IL15 and IL-21. The IL-9R and IL-2RG associates with JAK1 and JAK3 respectively. Receptor engagement results in JAK1- JAK3 cross phosphorylation and activation of the JAK proteins which leads to the activation of Signal transducer and activator of transcription (STAT-1, STAT-3 and STAT-5) and Insulin receptor substrate 1 and 2 (IRS1 and IRS2)/PI3K cascades. IL-9 stimulation also results in the activation of MEK/ERK signaling cascade.\n\nPlease access this pathway at [http://www.netpath.org/netslim/IL_9_pathway.html NetSlim] database.\n\nIf you use this pathway, you must cite following paper:\nKandasamy, K., Mohan, S. S., Raju, R., Keerthikumar, S., Kumar, G. S. S., Venugopal, A. K., Telikicherla, D., Navarro, J. D., Mathivanan, S., Pecquet, C., Gollapudi, S. K., Tattikota, S. G., Mohan, S., Padhukasahasram, H., Subbannayya, Y., Goel, R., Jacob, H. K. C., Zhong, J., Sekhar, R., Nanjappa, V., Balakrishnan, L., Subbaiah, R., Ramachandra, Y. L., Rahiman, B. A., Prasad, T. S. K., Lin, J., Houtman, J. C. D., Desiderio, S., Renauld, J., Constantinescu, S. N., Ohara, O., Hirano, T., Kubo, M., Singh, S., Khatri, P., Draghici, S., Bader, G. D., Sander, C., Leonard, W. J. and Pandey, A. (2010). NetPath: A public resource of curated signal transduction pathways. <i>Genome Biology</i>. 11:R3." ;
+        dcterms:identifier     "WP22"^^xsd:string ;
+        wp:isAbout             <http://rdf.wikipathways.org/Pathway/WP22_r97775> ;
+        wp:ontologyTag         <http://vocabularies.wikipathways.org/wp#Curation:AnalysisCollection> , <http://purl.obolibrary.org/obo/PW_0000512> , <http://purl.obolibrary.org/obo/PW_0000909> ;
+        wp:organism            <http://purl.obolibrary.org/obo/NCBITaxon_9606> ;
+        wp:organismName        "Homo sapiens"^^xsd:string ;
+        wp:pathwayOntologyTag  <http://purl.obolibrary.org/obo/PW_0000512> , <http://purl.obolibrary.org/obo/PW_0000909> ;
+        foaf:page              <http://www.wikipathways.org/instance/WP22_r97775> .
+
+<http://identifiers.org/ncbigene/3718>
+        a                   wp:Protein , wp:DataNode ;
+        rdfs:label          "JAK3"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/3718> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "3718"^^xsd:string ;
+        dcterms:isPartOf    <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/c562c> , <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000105639> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/3718> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/JAK3> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/P52333> , <http://identifiers.org/uniprot/A0A024R7M7> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/c4d72> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/id7a131319>
+        a                 wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/id7a131319> ;
+        wp:participants   <http://identifiers.org/ncbigene/6772> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/a537f>
+        a                 wp:DirectedInteraction , wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/a537f> ;
+        wp:participants   <http://identifiers.org/ncbigene/2885> , <http://identifiers.org/ncbigene/1025> ;
+        wp:source         <http://identifiers.org/ncbigene/1025> ;
+        wp:target         <http://identifiers.org/ncbigene/2885> .
+
+<http://identifiers.org/ncbigene/5605>
+        a                   wp:Protein , wp:DataNode ;
+        rdfs:label          "MAP2K2"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/5605> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "5605"^^xsd:string ;
+        dcterms:isPartOf    <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/b3e08> , <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000126934> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/5605> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/MAP2K2> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/M0R1B6> , <http://identifiers.org/uniprot/P36507> , <http://identifiers.org/uniprot/G5E9C7> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/d2866> .
+
+<http://identifiers.org/ncbigene/6774>
+        a                   wp:DataNode , wp:Protein ;
+        rdfs:label          "STAT3"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/6774> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "6774"^^xsd:string ;
+        dcterms:isPartOf    <http://identifiers.org/wikipathways/WP22_r97775> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/ceb68> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000168610> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/6774> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/STAT3> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/P40763> , <http://identifiers.org/uniprot/K7EP08> , <http://identifiers.org/uniprot/G8JLH9> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/a2e7f> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/aa425> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/a54b8>
+        a                 wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/a54b8> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/ec036>
+        a                 wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/ec036> ;
+        wp:participants   <http://identifiers.org/ncbigene/3561> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/a7807>
+        a                 wp:DirectedInteraction , wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/a7807> ;
+        wp:participants   <http://identifiers.org/ncbigene/6772> ;
+        wp:source         <http://identifiers.org/ncbigene/6772> ;
+        wp:target         <http://identifiers.org/ncbigene/6772> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/e3673>
+        a                 wp:DirectedInteraction , wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/e3673> ;
+        wp:participants   <http://identifiers.org/ncbigene/1025> , <http://identifiers.org/ncbigene/3716> ;
+        wp:source         <http://identifiers.org/ncbigene/3716> ;
+        wp:target         <http://identifiers.org/ncbigene/1025> .
+
+<http://identifiers.org/ncbigene/5604>
+        a                   wp:DataNode , wp:Protein ;
+        rdfs:label          "MAP2K1"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/5604> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "5604"^^xsd:string ;
+        dcterms:isPartOf    <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000169032> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/5604> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/MAP2K1> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/Q02750> , <http://identifiers.org/uniprot/A4QPA9> , <http://identifiers.org/uniprot/H3BRW9> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/fbbe4> .
+
+<http://identifiers.org/ncbigene/3716>
+        a                   wp:Protein , wp:DataNode ;
+        rdfs:label          "JAK1"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/3716> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "3716"^^xsd:string ;
+        dcterms:isPartOf    <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/a267a> , <http://identifiers.org/wikipathways/WP22_r97775> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/e3673> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000162434> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/3716> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/JAK1> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/P23458> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/af745> .
+
+<http://identifiers.org/ncbigene/5595>
+        a                   wp:Protein , wp:DataNode ;
+        rdfs:label          "MAPK3"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/5595> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "5595"^^xsd:string ;
+        dcterms:isPartOf    <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000102882> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/5595> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/MAPK3> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/H0YDH9> , <http://identifiers.org/uniprot/E9PQW4> , <http://identifiers.org/uniprot/B3KR49> , <http://identifiers.org/uniprot/E9PRH7> , <http://identifiers.org/uniprot/E9PJF0> , <http://identifiers.org/uniprot/P27361> , <http://identifiers.org/uniprot/E9PBK7> , <http://identifiers.org/uniprot/L7RXH5> , <http://identifiers.org/uniprot/H0YEX6> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/a4606> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/eceac>
+        a                 wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/eceac> ;
+        wp:participants   <http://identifiers.org/ncbigene/3581> .
+
+<http://identifiers.org/ncbigene/6772>
+        a                   wp:DataNode , wp:Protein ;
+        rdfs:label          "STAT1"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/6772> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "6772"^^xsd:string ;
+        dcterms:isPartOf    <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/ddb23> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/fc7c2> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/id7a131319> , <http://identifiers.org/wikipathways/WP22_r97775> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/a7807> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000115415> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/6772> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/STAT1> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/H7BZB5> , <http://identifiers.org/uniprot/E9PH66> , <http://identifiers.org/uniprot/H7BZ88> , <http://identifiers.org/uniprot/P42224> , <http://identifiers.org/uniprot/J3KPM9> , <http://identifiers.org/uniprot/D2KFR9> , <http://identifiers.org/uniprot/E7EPD2> , <http://identifiers.org/uniprot/E7ENM1> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/cda5c> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/be3dd> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/f133e> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/d403c> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/a08fa> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/ba4d3> , <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/fc03c> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/a267a>
+        a                 wp:DirectedInteraction , wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/a267a> ;
+        wp:participants   <http://identifiers.org/ncbigene/3716> , <http://identifiers.org/ncbigene/3581> ;
+        wp:source         <http://identifiers.org/ncbigene/3581> ;
+        wp:target         <http://identifiers.org/ncbigene/3716> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/a9793>
+        a                 wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/a9793> ;
+        wp:participants   <http://identifiers.org/ncbigene/3561> .
+
+<http://identifiers.org/ncbigene/5594>
+        a                   wp:DataNode , wp:Protein ;
+        rdfs:label          "MAPK1"^^xsd:string ;
+        dc:identifier       <http://identifiers.org/ncbigene/5594> ;
+        dc:source           "Entrez Gene"^^xsd:string ;
+        dcterms:identifier  "5594"^^xsd:string ;
+        dcterms:isPartOf    <http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/b3e08> , <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:bdbEnsembl       <http://identifiers.org/ensembl/ENSG00000100030> ;
+        wp:bdbEntrezGene    <http://identifiers.org/ncbigene/5594> ;
+        wp:bdbHgncSymbol    <http://identifiers.org/hgnc.symbol/MAPK1> ;
+        wp:bdbUniprot       <http://identifiers.org/uniprot/P28482> , <http://identifiers.org/uniprot/Q1HBJ4> ;
+        wp:isAbout          <http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/c747f> .
+
+<http://rdf.wikipathways.org/Pathway/WP22_r97775/WP/Interaction/ceb68>
+        a                 wp:DirectedInteraction , wp:Interaction ;
+        dcterms:isPartOf  <http://identifiers.org/wikipathways/WP22_r97775> ;
+        wp:isAbout        <http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/ceb68> ;
+        wp:participants   <http://identifiers.org/ncbigene/6774> ;
+        wp:source         <http://identifiers.org/ncbigene/6774> ;
+        wp:target         <http://identifiers.org/ncbigene/6774> .
