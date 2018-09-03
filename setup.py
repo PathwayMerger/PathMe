@@ -35,6 +35,9 @@ INSTALL_REQUIRES = [
     'bio2bel',
     'bio2bel_hgnc',
     'bio2bel_chebi',
+    'bio2bel_kegg',
+    'bio2bel_wikipathways',
+    'bio2bel_reactome',
     'pybel',
     'pybel-tools',
 ]
