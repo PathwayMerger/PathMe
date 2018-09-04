@@ -779,71 +779,6 @@
         "_version_": 1610109420757319685
       },
       {
-        "hgnc_id": "HGNC:13761",
-        "symbol": "RBPJL",
-        "name": "recombination signal binding protein for immunoglobulin kappa J region like",
-        "status": "Approved",
-        "locus_type": "gene with protein product",
-        "prev_symbol": [
-          "RBPSUHL"
-        ],
-        "prev_name": [
-          "recombining binding protein suppressor of hairless (Drosophila)-like",
-          "recombination signal binding protein for immunoglobulin kappa J region-like"
-        ],
-        "alias_symbol": [
-          "RBP-L",
-          "SUH",
-          "SUHL"
-        ],
-        "location": "20q13.12",
-        "date_approved_reserved": "2000-12-14",
-        "date_modified": "2016-04-06",
-        "date_name_changed": "2016-04-06",
-        "ena": [
-          "AB024964"
-        ],
-        "entrez_id": "11317",
-        "mgd_id": [
-          "MGI:1196616"
-        ],
-        "cosmic": "RBPJL",
-        "pubmed_id": [
-          9929984
-        ],
-        "refseq_accession": [
-          "NM_014276"
-        ],
-        "gene_family": [
-          "PTF1 complex"
-        ],
-        "date_symbol_changed": "2007-02-26",
-        "vega_id": "OTTHUMG00000033055",
-        "ensembl_gene_id": "ENSG00000124232",
-        "ccds_id": [
-          "CCDS13349",
-          "CCDS63283",
-          "CCDS63284"
-        ],
-        "locus_group": "protein-coding gene",
-        "omim_id": [
-          "616104"
-        ],
-        "uniprot_ids": [
-          "Q9UBG7"
-        ],
-        "ucsc_id": "uc002xns.5",
-        "rgd_id": [
-          "RGD:1304786"
-        ],
-        "gene_family_id": [
-          1608
-        ],
-        "location_sortable": "20q13.12",
-        "uuid": "2324d6c2-8920-4e3b-9193-6cfb1a9cfe32",
-        "_version_": 1610109420757319685
-      },
-      {
         "hgnc_id": "HGNC:16696",
         "symbol": "SNW1",
         "name": "SNW domain containing 1",
@@ -6388,63 +6323,6 @@
         "location_sortable": "14q11.2-q12",
         "uuid": "68a1d526-531b-47cb-87ac-ea83ed8a4323",
         "_version_": 1610466426788773896
-      },
-      {
-        "hgnc_id": "HGNC:1093",
-        "symbol": "BPGM",
-        "name": "bisphosphoglycerate mutase",
-        "status": "Approved",
-        "locus_type": "gene with protein product",
-        "prev_name": [
-          "2,3-bisphosphoglycerate mutase"
-        ],
-        "location": "7q33",
-        "date_approved_reserved": "2001-06-22",
-        "date_modified": "2015-11-27",
-        "date_name_changed": "2015-11-27",
-        "ena": [
-          "BC017050"
-        ],
-        "enzyme_id": [
-          "5.4.2.4",
-          "3.1.3.13"
-        ],
-        "entrez_id": "669",
-        "mgd_id": [
-          "MGI:1098242"
-        ],
-        "cosmic": "BPGM",
-        "orphanet": 119064,
-        "refseq_accession": [
-          "NM_001724"
-        ],
-        "gene_family": [
-          "Phosphoglycerate mutases",
-          "Bisphosphoglycerate phosphatases"
-        ],
-        "vega_id": "OTTHUMG00000155380",
-        "ensembl_gene_id": "ENSG00000172331",
-        "ccds_id": [
-          "CCDS5833"
-        ],
-        "locus_group": "protein-coding gene",
-        "omim_id": [
-          "613896"
-        ],
-        "uniprot_ids": [
-          "P07738"
-        ],
-        "ucsc_id": "uc003vrw.4",
-        "rgd_id": [
-          "RGD:735018"
-        ],
-        "gene_family_id": [
-          1078,
-          1082
-        ],
-        "location_sortable": "07q33",
-        "uuid": "d38cc1cb-eeba-47ff-9b35-bed4c5ccfbd4",
-        "_version_": 1610466424128536581
       },
       {
         "hgnc_id": "HGNC:15814",
