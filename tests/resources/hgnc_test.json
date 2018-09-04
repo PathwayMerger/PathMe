@@ -6560,6 +6560,273 @@
         "location_sortable": "10q23.2",
         "uuid": "cc0a98ad-2460-4acc-b42e-c4e7d82c89f2",
         "_version_": 1610466426058965000
+      },
+      {
+        "hgnc_id": "HGNC:2494",
+        "symbol": "CTBP1",
+        "name": "C-terminal binding protein 1",
+        "status": "Approved",
+        "locus_type": "gene with protein product",
+        "alias_symbol": [
+          "BARS"
+        ],
+        "alias_name": [
+          "brefeldin A-ribosylated substrate"
+        ],
+        "location": "4p16.3",
+        "date_approved_reserved": "1997-08-22",
+        "date_modified": "2016-10-05",
+        "ena": [
+          "U37408"
+        ],
+        "entrez_id": "1487",
+        "mgd_id": [
+          "MGI:1201685"
+        ],
+        "cosmic": "CTBP1",
+        "pubmed_id": [
+          9479502
+        ],
+        "refseq_accession": [
+          "NM_001328"
+        ],
+        "vega_id": "OTTHUMG00000089259",
+        "ensembl_gene_id": "ENSG00000159692",
+        "ccds_id": [
+          "CCDS3348",
+          "CCDS43203"
+        ],
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "602618"
+        ],
+        "uniprot_ids": [
+          "Q13363"
+        ],
+        "ucsc_id": "uc003gcv.2",
+        "rgd_id": [
+          "RGD:2441"
+        ],
+        "location_sortable": "04p16.3",
+        "uuid": "2d209039-ea28-4f45-b97c-b8819799c2c1",
+        "_version_": 1610654246341967872
+      },
+      {
+        "hgnc_id": "HGNC:2495",
+        "symbol": "CTBP2",
+        "name": "C-terminal binding protein 2",
+        "status": "Approved",
+        "locus_type": "gene with protein product",
+        "alias_symbol": [
+          "ribeye"
+        ],
+        "location": "10q26.13",
+        "date_approved_reserved": "1997-08-22",
+        "date_modified": "2015-09-11",
+        "ena": [
+          "AF016507"
+        ],
+        "entrez_id": "1488",
+        "mgd_id": [
+          "MGI:1201686"
+        ],
+        "cosmic": "CTBP2",
+        "pubmed_id": [
+          9479502,
+          11864595
+        ],
+        "refseq_accession": [
+          "NM_001083914"
+        ],
+        "vega_id": "OTTHUMG00000019224",
+        "ensembl_gene_id": "ENSG00000175029",
+        "ccds_id": [
+          "CCDS7643",
+          "CCDS7644",
+          "CCDS86154"
+        ],
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "602619"
+        ],
+        "uniprot_ids": [
+          "P56545"
+        ],
+        "ucsc_id": "uc009yal.4",
+        "rgd_id": [
+          "RGD:68372"
+        ],
+        "location_sortable": "10q26.13",
+        "uuid": "f8bf3073-908f-4400-ad82-0c5921bcfc55",
+        "_version_": 1610654246341967875
+      },
+      {
+        "hgnc_id": "HGNC:5724",
+        "symbol": "RBPJ",
+        "name": "recombination signal binding protein for immunoglobulin kappa J region",
+        "status": "Approved",
+        "locus_type": "gene with protein product",
+        "prev_symbol": [
+          "IGKJRB1",
+          "RBPSUH"
+        ],
+        "prev_name": [
+          "recombining binding protein suppressor of hairless (Drosophila)"
+        ],
+        "alias_symbol": [
+          "SUH",
+          "IGKJRB",
+          "RBPJK",
+          "KBF2",
+          "RBP-J",
+          "CBF1"
+        ],
+        "alias_name": [
+          "suppressor of hairless homolog (Drosophila)"
+        ],
+        "location": "4p15.2",
+        "date_approved_reserved": "1993-04-23",
+        "date_modified": "2016-04-06",
+        "date_name_changed": "2007-02-26",
+        "ena": [
+          "L07872"
+        ],
+        "entrez_id": "3516",
+        "mgd_id": [
+          "MGI:96522"
+        ],
+        "cosmic": "RBPJ",
+        "orphanet": 310406,
+        "pubmed_id": [
+          8406481,
+          9290259,
+          16354684
+        ],
+        "refseq_accession": [
+          "NM_015874"
+        ],
+        "gene_family": [
+          "PTF1 complex"
+        ],
+        "date_symbol_changed": "2007-02-26",
+        "vega_id": "OTTHUMG00000097793",
+        "ensembl_gene_id": "ENSG00000168214",
+        "ccds_id": [
+          "CCDS3436",
+          "CCDS3437",
+          "CCDS33969",
+          "CCDS43219",
+          "CCDS87214"
+        ],
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "147183"
+        ],
+        "uniprot_ids": [
+          "Q06330"
+        ],
+        "ucsc_id": "uc003grx.3",
+        "rgd_id": [
+          "RGD:1593096"
+        ],
+        "gene_family_id": [
+          1608
+        ],
+        "location_sortable": "04p15.2",
+        "uuid": "4d06bc61-a5aa-4ec3-ba76-51df829ac389",
+        "_version_": 1610654249004302342
+      },
+      {
+        "hgnc_id": "HGNC:24864",
+        "symbol": "GAPDHS",
+        "name": "glyceraldehyde-3-phosphate dehydrogenase, spermatogenic",
+        "status": "Approved",
+        "locus_type": "gene with protein product",
+        "prev_symbol": [
+          "GAPDS"
+        ],
+        "alias_symbol": [
+          "GAPDH-2",
+          "GAPD2"
+        ],
+        "location": "19q13.12",
+        "date_approved_reserved": "2004-02-10",
+        "date_modified": "2016-10-05",
+        "ena": [
+          "AJ005371"
+        ],
+        "entrez_id": "26330",
+        "mgd_id": [
+          "MGI:95653"
+        ],
+        "cosmic": "GAPDHS",
+        "pubmed_id": [
+          10714828
+        ],
+        "refseq_accession": [
+          "NM_014364"
+        ],
+        "date_symbol_changed": "2005-05-06",
+        "vega_id": "OTTHUMG00000182298",
+        "ensembl_gene_id": "ENSG00000105679",
+        "ccds_id": [
+          "CCDS12465"
+        ],
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "609169"
+        ],
+        "uniprot_ids": [
+          "O14556"
+        ],
+        "ucsc_id": "uc002oaf.2",
+        "rgd_id": [
+          "RGD:620150"
+        ],
+        "location_sortable": "19q13.12",
+        "uuid": "36485b88-4b05-47d8-a20d-058454ac6fa9",
+        "_version_": 1610654246853672964
+      },
+      {
+        "hgnc_id": "HGNC:8876",
+        "symbol": "PFKL",
+        "name": "phosphofructokinase, liver type",
+        "status": "Approved",
+        "locus_type": "gene with protein product",
+        "location": "21q22.3",
+        "date_approved_reserved": "1986-01-01",
+        "date_modified": "2016-02-10",
+        "date_name_changed": "2016-02-10",
+        "enzyme_id": [
+          "2.7.1.11"
+        ],
+        "entrez_id": "5211",
+        "mgd_id": [
+          "MGI:97547"
+        ],
+        "cosmic": "PFKL",
+        "refseq_accession": [
+          "NM_001002021"
+        ],
+        "vega_id": "OTTHUMG00000086910",
+        "ensembl_gene_id": "ENSG00000141959",
+        "ccds_id": [
+          "CCDS33582"
+        ],
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "171860"
+        ],
+        "uniprot_ids": [
+          "P17858"
+        ],
+        "ucsc_id": "uc002zel.4",
+        "rgd_id": [
+          "RGD:3311"
+        ],
+        "location_sortable": "21q22.3",
+        "uuid": "5bc1049e-02f8-4180-8fa4-4d1657824987",
+        "_version_": 1610654248674000897
       }
     ]
   }
