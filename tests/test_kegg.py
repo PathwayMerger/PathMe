@@ -17,8 +17,13 @@ class TestKegg(DatabaseMixin):
 
     def test_get_entities_from_xml(self):
         """Test entity creation."""
-        notch_genes, notch_compounds, notch_maps, notch_orthologs = get_entity_nodes(self.notch_tree, self.hgnc_manager, self.chebi_manager)
-        glycolysis_genes, glycolysis_compounds, glycolysis_maps, glycolysis_orthologs = get_entity_nodes(self.glycolysis_tree, self.hgnc_manager, self.chebi_manager)
+        notch_genes, notch_compounds, notch_maps, notch_orthologs = get_entity_nodes(
+            self.notch_tree,
+            self.hgnc_manager,
+            self.chebi_manager
+        )
+        glycolysis_genes, glycolysis_compounds, glycolysis_maps, glycolysis_orthologs = get_entity_nodes(
+            self.glycolysis_tree, self.hgnc_manager, self.chebi_manager)
 
         self.assertEqual(len(notch_genes), 22)
         self.assertEqual(len(notch_compounds), 0)
@@ -44,21 +49,21 @@ class TestKegg(DatabaseMixin):
         ])
         self.assertEqual(glycolysis_genes['45'], [
             {'kegg_id': 'hsa:10327',
-              'kegg_type': 'gene',
-              'HGNC symbol': 'AKR1A1',
-              'HGNC': '380',
-              'UniProt': 'P14550 V9HWI0'}
+             'kegg_type': 'gene',
+             'HGNC symbol': 'AKR1A1',
+             'HGNC': '380',
+             'UniProt': 'P14550 V9HWI0'}
         ])
         self.assertEqual(glycolysis_compounds['83'], [
             {'compound_name': 'cpd:C00031', 'kegg_type': 'compound', 'ChEBI': '4167', 'ChEBI name': 'D-glucopyranose'}
         ])
-        self.assertEqual(notch_maps['4'],[
+        self.assertEqual(notch_maps['4'], [
             {'kegg_id': 'path:hsa04010', 'map_name': 'MAPK signaling pathway'}
         ])
         self.assertEqual(glycolysis_maps['52'], [
             {'kegg_id': 'path:hsa00620', 'map_name': 'Pyruvate metabolism'}
         ])
-        self.assertEqual(notch_orthologs['7'],[
+        self.assertEqual(notch_orthologs['7'], [
             {'kegg_id': 'ko:K04497', 'kegg_type': 'ortholog'}
         ])
         self.assertEqual(glycolysis_orthologs['73'], [
@@ -68,7 +73,11 @@ class TestKegg(DatabaseMixin):
 
     def test_get_complex_components(self):
         """Test creation of complexes."""
-        notch_genes, notch_compounds, notch_maps, notch_orthologs = get_entity_nodes(self.notch_tree, self.hgnc_manager, self.chebi_manager)
+        notch_genes, notch_compounds, notch_maps, notch_orthologs = get_entity_nodes(
+            self.notch_tree,
+            self.hgnc_manager,
+            self.chebi_manager
+        )
         complex_ids, flattened_complexes = get_complex_components(self.notch_tree, notch_genes, flattened=True)
 
         self.assertEqual(len(complex_ids), 4)
@@ -151,10 +160,14 @@ class TestKegg(DatabaseMixin):
 
     def test_get_pathway_edges(self):
         """Test edges."""
-        genes_dict, compound_dict = get_entity_nodes(self.notch_tree, self.hgnc_manager, self.chebi_manager)
+        notch_genes, notch_compounds, notch_maps, notch_orthologs = get_entity_nodes(
+            self.notch_tree,
+            self.hgnc_manager,
+            self.chebi_manager
+        )
         relations = get_all_relationships(self.notch_tree)
-        complexes = get_entities_in_complex(self.notch_tree, genes_dict)
-        edges = get_pathway_edges(genes_dict, relations, set_of_complexes=complexes)
+        complexes = get_entities_in_complex(self.notch_tree, notch_genes)
+        edges = get_pathway_edges(notch_genes, relations, set_of_complexes=complexes)
 
         for source, target, relation in edges:
             if source == 'hsa:11317' and target == 'hsa:171558':
@@ -168,23 +181,25 @@ class TestKegg(DatabaseMixin):
 
     def test_get_nodes(self):
         """Test nodes."""
-        glycolysis_genes, glycolysis_compounds, glycolysis_maps, glycolysis_orthologs = get_entity_nodes(self.glycolysis_tree, self.hgnc_manager, self.chebi_manager)
-        notch_genes, notch_compounds, notch_maps, notch_orthologs = get_entity_nodes(self.notch_tree, self.hgnc_manager, self.chebi_manager)
+        glycolysis_genes, glycolysis_compounds, glycolysis_maps, glycolysis_orthologs = get_entity_nodes(
+            self.glycolysis_tree, self.hgnc_manager, self.chebi_manager)
+        notch_genes, notch_compounds, notch_maps, notch_orthologs = get_entity_nodes(self.notch_tree, self.hgnc_manager,
+                                                                                     self.chebi_manager)
 
         glycolysis_nodes = xml_entities_to_bel(glycolysis_genes, glycolysis_compounds, glycolysis_maps, flattened=False)
-        flat_glycolysis_nodes = xml_entities_to_bel(glycolysis_genes, glycolysis_compounds, glycolysis_maps, flattened=True)
+        flat_glycolysis_nodes = xml_entities_to_bel(glycolysis_genes, glycolysis_compounds, glycolysis_maps,
+                                                    flattened=True)
         notch_nodes = xml_entities_to_bel(notch_genes, notch_compounds, notch_maps, flattened=False)
-
 
         self.assertEqual(len(glycolysis_nodes), 73)
         self.assertEqual(len(flat_glycolysis_nodes), 73)
         self.assertEqual(len(notch_nodes), 24)
 
         # Test flattened list of protein nodes
-        self.assertEqual(flat_glycolysis_nodes['53'],[
-            {'function': 'Protein','namespace': 'HGNC','name': 'PKLR','identifier': '9020'},
-            {'function': 'Protein','namespace': 'HGNC','name': 'PKM','identifier': '9021'}
-            ])
+        self.assertEqual(flat_glycolysis_nodes['53'], [
+            {'function': 'Protein', 'namespace': 'HGNC', 'name': 'PKLR', 'identifier': '9020'},
+            {'function': 'Protein', 'namespace': 'HGNC', 'name': 'PKM', 'identifier': '9021'}
+        ])
 
         # Test pathway map nodes
         pathway_info = glycolysis_nodes['54']
@@ -193,8 +208,8 @@ class TestKegg(DatabaseMixin):
 
         self.assertEqual(path_name, 'Citrate cycle (TCA cycle)')
         self.assertEqual(glycolysis_nodes['85'],
-            {'function': 'Abundance', 'namespace': 'ChEBI', 'identifier': '17835'
-            })
+                         {'function': 'Abundance', 'namespace': 'ChEBI', 'identifier': '17835'
+                          })
 
         # Test compound nodes
         self.assertEqual(glycolysis_nodes['85'], {
@@ -203,8 +218,11 @@ class TestKegg(DatabaseMixin):
 
     def test_complex_node(self):
         """Test complex nodes"""
-        notch_genes, notch_compounds, notch_maps, notch_orthologs = get_entity_nodes(self.notch_tree, self.hgnc_manager,
-                                                                                     self.chebi_manager)
+        notch_genes, notch_compounds, notch_maps, notch_orthologs = get_entity_nodes(
+            self.notch_tree,
+            self.hgnc_manager,
+            self.chebi_manager
+        )
         complex_ids, flattened_complexes = get_complex_components(self.notch_tree, notch_genes, flattened=False)
         flat_complex_ids, flattened_complexes = get_complex_components(self.notch_tree, notch_genes, flattened=True)
 
@@ -215,4 +233,3 @@ class TestKegg(DatabaseMixin):
 
         self.assertEqual(len(node_dict), 28)
         self.assertEqual(len(flat_node_dict), 28)
-
