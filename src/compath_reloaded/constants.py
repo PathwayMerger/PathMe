@@ -32,6 +32,7 @@ WIKIPATHWAYS = 'wikipathways'
 HGNC = 'HGNC'
 ENSEMBL = 'ENSEMBL'
 UNIPROT = 'UNIPROT'
+CHEBI = 'ChEBI'
 
 KEGG_MODIFICATIONS = {
         'phosphorylation':'Ph',
