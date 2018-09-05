@@ -16,7 +16,7 @@ from compath_reloaded.kegg.kegg_xml_parser import (get_all_reactions,
                                                    get_complex_components,
                                                    get_reaction_pathway_edges,
                                                    import_xml_etree,)
-from ..constants import HGNC, KEGG_CITATION, KEGG_MODIFICATIONS, KEGG
+from ..constants import HGNC, KEGG_CITATION, KEGG_MODIFICATIONS, KEGG, CHEBI
 
 log = logging.getLogger(__name__)
 
@@ -74,9 +74,10 @@ def kegg_to_bel(path):
 """Get all entities from XML tree and convert to BEL nodes"""
 
 
-def xml_entities_to_bel(genes_dict, compounds_dict, maps_dict, flattened=False):
+def xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=False):
     """Convert gene and compound entities in XML to BEL nodes.
 
+    :param graph: BELGraph
     :param dict genes_dict: dictionary of genes in XML
     :param dict compounds_dict: dictionary of compounds in XML
     :param bool flattened: True to flatten to list of similar genes grouped together
@@ -95,7 +96,7 @@ def xml_entities_to_bel(genes_dict, compounds_dict, maps_dict, flattened=False):
         }
 
     for node_id, node_att in compounds_dict.items():
-        node_dict[node_id] = compound_to_bel(node_att)
+        node_dict[node_id] = compound_to_bel(graph, node_att)
 
     for node_id, node_att in maps_dict.items():
         node_dict[node_id] = map_to_bel_node(node_att)
@@ -180,22 +181,25 @@ def flatten_gene_to_bel_node(node):
     return proteins_list
 
 
-def compound_to_bel(node):
+def compound_to_bel(graph, node):
     """Create an abundance BEL node.
 
+    :param graph: BELGraph
     :param dict node: dictionary of node attributes
     :return: BEL node dictionary
     :rtype: dict
     """
     for attribute in node:
 
-        if 'ChEBI' in attribute:
+        if CHEBI in attribute:
 
-            identifier = attribute['ChEBI']
+            identifier = attribute[CHEBI]
             name = attribute['ChEBI name']
-            namespace = 'ChEBI'
-            
-            return abundance(namespace=namespace, name=name, identifier=identifier)
+            namespace = CHEBI
+
+            compound = abundance(namespace=namespace, name=name, identifier=identifier)
+            graph.add_node_from_data(compound)
+            return compound
 
         else:
 
@@ -203,7 +207,9 @@ def compound_to_bel(node):
             name = attribute['PubChem']
             namespace = 'PubChem'
 
-            return abundance(namespace=namespace, name=name, identifier=identifier)
+            compound = abundance(namespace=namespace, name=name, identifier=identifier)
+            graph.add_node_from_data(compound)
+            return compound
 
 
 def map_to_bel_node(node):
