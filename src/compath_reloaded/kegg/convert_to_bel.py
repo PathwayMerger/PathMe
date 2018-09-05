@@ -188,9 +188,22 @@ def compound_to_bel(node):
     :rtype: dict
     """
     for attribute in node:
-        identifier = attribute['ChEBI']
-        name = attribute['ChEBI name']
-        return abundance(namespace='ChEBI', name=name, identifier=identifier)
+
+        if 'ChEBI' in attribute:
+
+            identifier = attribute['ChEBI']
+            name = attribute['ChEBI name']
+            namespace = 'ChEBI'
+            
+            return abundance(namespace=namespace, name=name, identifier=identifier)
+
+        else:
+
+            identifier = attribute['PubChem']
+            name = attribute['PubChem']
+            namespace = 'PubChem'
+
+            return abundance(namespace=namespace, name=name, identifier=identifier)
 
 
 def map_to_bel_node(node):
