@@ -77,12 +77,15 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
                         if resource in {HGNC, 'UniProt'}:
 
                             if resource == HGNC:
+                                hgnc_entry = hgnc_manager.get_gene_by_hgnc_id(identifier)
 
-                                node_info['HGNC symbol'] = hgnc_manager.get_gene_by_hgnc_id(identifier).symbol
+                                if not hgnc_entry:
+                                    continue
 
                             node_info[resource] = identifier
+                            node_info['HGNC symbol'] = hgnc_entry.symbol
 
-                entry_dict[entry_id].append(node_info)
+                    entry_dict[entry_id].append(node_info)
 
         elif kegg_type.startswith('compound'):
 
