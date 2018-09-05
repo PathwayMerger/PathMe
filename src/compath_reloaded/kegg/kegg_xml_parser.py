@@ -87,7 +87,8 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
         elif kegg_type.startswith('compound'):
 
             compound_info = get_compound_info(kegg_ids, chebi_manager)
-            compound_dict[entry_id].append(compound_info)
+            if compound_info:
+                compound_dict[entry_id].append(compound_info)
 
         elif kegg_type.startswith('map'):
 
@@ -312,23 +313,25 @@ def get_compound_info(compound_name, chebi_manager):
 
     node_meta_data = parse_description(requests.get(kegg_url))
 
-    # Adds CHEBI identifier to node dictionary
+    # Adds CHEBI and PubChem identifier to node dictionary
     if 'DBLINKS' in node_meta_data:
+        
         for resource, identifier in node_meta_data['DBLINKS']:
-            if resource in {'ChEBI'}:
+
+            if resource in {'ChEBI', 'PubChem'}:
                 node_info[resource] = identifier
+                if resource == 'ChEBI':
 
-                # Split multiple identifiers and get their names
-                for chebi_id in identifier.split(' '):
-                    chebi_entry = chebi_manager.get_chemical_by_chebi_id(chebi_id)
+                    # Split multiple identifiers and get their names
+                    for chebi_id in identifier.split(' '):
+                        chebi_entry = chebi_manager.get_chemical_by_chebi_id(chebi_id)
 
-                    if not chebi_entry:
-                        continue
+                        if not chebi_entry:
+                            continue
 
-                    node_info['ChEBI name'] = chebi_entry.name
+                        node_info['ChEBI name'] = chebi_entry.name
 
     return node_info
-
 
 def get_all_reactions(tree):
     """Find all substrates and products participating in reaction.
