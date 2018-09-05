@@ -91,7 +91,7 @@ def xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=
         }
     else:
         node_dict = {
-            node_id: gene_to_bel_node(node_att)
+            node_id: gene_to_bel_node(graph, node_att)
             for node_id, node_att in genes_dict.items()
         }
 
@@ -135,7 +135,7 @@ def xml_complexes_to_bel(node_dict, complex_ids, **kwargs):
     return node_dict
 
 
-def gene_to_bel_node(node):
+def gene_to_bel_node(graph, node):
     """Create a protein or protein composite BEL node.
 
     :param dict node: dictionary of node attributes
@@ -146,16 +146,44 @@ def gene_to_bel_node(node):
 
     if len(node) == 1:
         for attribute in node:
-            name = attribute['HGNC symbol']
-            identifier = attribute[HGNC]
-            return protein(namespace=HGNC, name=name, identifier=identifier)
+
+            if HGNC in attribute:
+
+                name = attribute['HGNC symbol']
+                identifier = attribute[HGNC]
+                namespace = HGNC
+
+                protein_node = protein(namespace=namespace, name=name, identifier=identifier)
+                graph.add_node_from_data(protein_node)
+                return (protein_node)
+
+            elif 'UniProt' in attribute:
+
+                identifier = attribute['UniProt']
+                name = attribute['UniProt']
+                namespace = 'UniProt'
+
+                protein_node = protein(namespace=namespace, name=name, identifier=identifier)
+                graph.add_node_from_data(protein_node)
+                return (protein_node)
+
+            else:
+                identifier = attribute['kegg_id']
+                name = attribute['kegg_id']
+                namespace = KEGG
+
+                protein_node = protein(namespace=namespace, name=name, identifier=identifier)
+                graph.add_node_from_data(protein_node)
+                return (protein_node)
 
     else:
         for member in node:
             bel_node = gene_to_bel_node([member])
             members.add(bel_node)
 
-        return composite_abundance(members=members)
+        protein_composite = composite_abundance(members=members)
+        graph.add_node_from_data(protein_composite)
+        return protein_composite
 
 
 def flatten_gene_to_bel_node(node):
@@ -262,19 +290,25 @@ def add_edges(graph, edges, nodes):
         # If entity is a list of proteins, add an edge to/from each protein node in list
 
         if not isinstance(type(u), complex_abundance) and not isinstance(type(v), complex_abundance):
+
             for member, component in product(u, v):
-                add_simple_edge(graph, member, component, relation)
+                if type(member) != str:
+                    if type(component) != str:
+                        add_simple_edge(graph, member, component, relation)
 
         elif not isinstance(type(u), complex_abundance) and isinstance(type(v), complex_abundance):
             for member in u:
-                add_simple_edge(graph, member, v, relation)
+                if type(member) != str:
+                    add_simple_edge(graph, member, v, relation)
 
         elif isinstance(type(u), complex_abundance) and not isinstance(type(v), complex_abundance):
             for component in v:
-                add_simple_edge(graph, u, component, relation)
+                if type(component) != str:
+                    add_simple_edge(graph, u, component, relation)
 
         else:
             add_simple_edge(graph, u, v, relation)
+
 
 
 def add_reaction_edges(graph, reaction_dict, nodes):
