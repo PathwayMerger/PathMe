@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 """Populate empty BEL graph with KEGG pathway entities and interactions"""
 
 
-def populate_bel_graph(path):
+def kegg_to_bel(path):
     """Convert KGML file to a BELGraph.
 
     :param str path: path to KGML file

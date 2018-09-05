@@ -248,7 +248,7 @@ def get_wikipathways_statistics(resource_files, resource_folder) -> Tuple[
     return global_statistics, all_pathways_statistics
 
 
-def pathway_to_bel(file_path):
+def wikipathways_to_bel(file_path):
     """Convert WikiPathways RDF file to BEL.
 
     :param str file_path: path to the file
@@ -267,7 +267,7 @@ def wikipathways_to_pybel(resource_files, resource_folder):
     for rdf_file in tqdm.tqdm(resource_files, desc='Loading WikiPathways graphs into PyBEL database'):
         # Parse pathway rdf_file and log stats
         pathway_path = os.path.join(resource_folder, rdf_file)
-        bel_graph = pathway_to_bel(pathway_path)
+        bel_graph = wikipathways_to_bel(pathway_path)
 
         debug_pathway_info(bel_graph, pathway_path)
 

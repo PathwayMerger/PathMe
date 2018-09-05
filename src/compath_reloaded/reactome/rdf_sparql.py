@@ -304,11 +304,11 @@ def rdf_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager):
     return convert_to_bel(nodes, interactions, pathway_metadata, hgnc_manager)
 
 
-def reactome_to_pybel(resource_file, hgnc_manager):
+def reactome_to_bel(resource_file, hgnc_manager):
     """Load Reactome graphs.
 
     :param str resource_file: rdf reactome file (there is only one)
-    :param dict bio2bel_hgnc.Manager: uniprot id to hgnc symbol dictionary
+    :param bio2bel_hgnc.Manager hgnc_manager: uniprot id to hgnc symbol dictionary
     :return:
     """
     log.info('Parsing Reactome RDF file')

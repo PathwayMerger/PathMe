@@ -19,7 +19,7 @@ from compath_reloaded.constants import (
 )
 from compath_reloaded.constants import DEFAULT_CACHE_CONNECTION
 from compath_reloaded.kegg.utils import download_kgml_files, get_kegg_pathway_ids
-from compath_reloaded.reactome.rdf_sparql import reactome_to_pybel, get_reactome_statistics
+from compath_reloaded.reactome.rdf_sparql import reactome_to_bel, get_reactome_statistics
 from compath_reloaded.reactome.utils import untar_file
 from compath_reloaded.utils import make_downloader, statistics_to_df
 from compath_reloaded.wikipathways.rdf_sparql import get_wikipathways_statistics, wikipathways_to_pybel
@@ -138,6 +138,7 @@ def load(connection, verbose, only_canonical):
 def reactome():
     """Manage Reactome."""
 
+
 @reactome.command(help='Downloads Reactome RDF files')
 def download():
     """Download Reactome RDF."""
@@ -164,7 +165,9 @@ def load(verbose):
 
     resource_file = os.path.join(REACTOME_DIR, 'Homo_sapiens.owl')
 
-    reactome_to_pybel(resource_file, hgnc_manager)
+    reactome_to_bel(resource_file, hgnc_manager)
+
+    log.info('Reactome database laoded in %.2f seconds', time.time() - t)
 
 
 @reactome.command()
