@@ -268,8 +268,6 @@ def get_reactome_statistics(resource_file, hgnc_manager):
     global_statistics = defaultdict(lambda: defaultdict(int))
 
     for pathway_uri, pathway_title in tqdm.tqdm(spaqrl_all_pathways, desc='Generating Reactome Statistics'):
-        print(pathway_title)
-
         nodes, edges = _get_pathway_components(pathway_uri, rdf_graph)
         pathway_metadata = _get_pathway_metadata(pathway_uri, rdf_graph)
 
@@ -282,10 +280,9 @@ def get_reactome_statistics(resource_file, hgnc_manager):
 
         bel_graph = convert_to_bel(nodes, edges, pathway_metadata, hgnc_manager)
 
-        global_statistics, pathway_statistics = get_pathway_statitics(nodes_types, edges_types, bel_graph,
-                                                                      global_statistics=global_statistics)
-
-        print(pathway_statistics)
+        global_statistics, pathway_statistics = get_pathway_statitics(
+            nodes_types, edges_types, bel_graph, global_statistics=global_statistics
+        )
 
     return global_statistics
 
@@ -314,13 +311,13 @@ def reactome_to_bel(resource_file, hgnc_manager):
     log.info('Parsing Reactome RDF file')
     rdf_graph = parse_rdf(resource_file, fmt='xml')
 
-    reactome_pathways = []
+    reactome_pathways = dict()
 
     spaqrl_all_pathways = rdf_graph.query(GET_ALL_PATHWAYS, initNs=PREFIXES)
 
     for pathway_uri, pathway_title in tqdm.tqdm(spaqrl_all_pathways, desc='Creating Reactome BELGraphs'):
         # debug_pathway_info(bel_graph, pathway_path)
 
-        reactome_pathways.append(rdf_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager))
+        reactome_pathways[pathway_title] = rdf_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager)
 
     return reactome_pathways
