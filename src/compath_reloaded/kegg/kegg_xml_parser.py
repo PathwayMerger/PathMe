@@ -271,16 +271,16 @@ def get_all_relationships(tree):
             relation_subtype = subtype.get("name")
             relation_value = subtype.get("value")
 
-            if relation_type in {'ECrel', 'PCrel'}:
+            if relation_type in {'PPrel', 'GErel'}:
+                relations_list.append((relation_entry1, relation_entry2, relation_subtype))
+
+            elif relation_type in {'ECrel', 'PCrel'}:
                 relations_list.append((relation_entry1, relation_entry2, 'binding/association'))
                 relations_list.append((relation_entry1, relation_value, 'binding/association'))
                 relations_list.append((relation_value, relation_entry2, 'binding/association'))
 
             elif relation_type.startswith('maplink'):
                 relations_list.append((relation_entry1, relation_entry2, 'binding/association'))
-
-            else:
-                relations_list.append((relation_entry1, relation_entry2, relation_subtype))
 
     return relations_list
 
