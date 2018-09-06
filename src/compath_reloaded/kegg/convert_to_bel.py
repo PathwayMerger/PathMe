@@ -82,13 +82,14 @@ def xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=
     :param graph: BELGraph
     :param dict genes_dict: dictionary of genes in XML
     :param dict compounds_dict: dictionary of compounds in XML
+    :param dict maps_dict: dictionary of pathway maps in XML
     :param bool flattened: True to flatten to list of similar genes grouped together
     :return: dictionary of BEL nodes
     :rtype: dict
     """
     if flattened:
         node_dict = {
-            node_id: flatten_gene_to_bel_node(node_att)
+            node_id: flatten_gene_to_bel_node(graph, node_att)
             for node_id, node_att in genes_dict.items()
         }
     else:
@@ -101,7 +102,7 @@ def xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=
         node_dict[node_id] = compound_to_bel(graph, node_att)
 
     for node_id, node_att in maps_dict.items():
-        node_dict[node_id] = map_to_bel_node(node_att)
+        node_dict[node_id] = map_to_bel_node(graph, node_att)
 
     return node_dict
 
@@ -140,6 +141,7 @@ def xml_complexes_to_bel(node_dict, complex_ids, **kwargs):
 def gene_to_bel_node(graph, node):
     """Create a protein or protein composite BEL node.
 
+    :param graph: BELGraph
     :param dict node: dictionary of node attributes
     :return: BEL node dictionary
     :rtype: dict
@@ -188,9 +190,10 @@ def gene_to_bel_node(graph, node):
         return protein_composite
 
 
-def flatten_gene_to_bel_node(node):
+def flatten_gene_to_bel_node(graph, node):
     """Create a protein or list of proteins BEL node.
 
+    :param graph: BELGraph
     :param dict node: dictionary of node attributes
     :return: BEL node dictionary
     :rtype: dict
@@ -242,18 +245,22 @@ def compound_to_bel(graph, node):
             return compound
 
 
-def map_to_bel_node(node):
+def map_to_bel_node(graph, node):
     """Create a biological process BEL node.
 
+    :param graph: BELGraph
     :param dict node: dictionary of node attributes
     :return: BEL node dictionary
     :rtype: dict
     """
     for attribute in node:
+
         name = attribute['map_name']
         identifier = attribute['kegg_id']
 
-        return bioprocess(namespace=KEGG, name=name, identifier=identifier)
+        bio_process = bioprocess(namespace=KEGG, name=name, identifier=identifier)
+        graph.add_node_from_data(bio_process)
+        return bio_process
 
 
 def flatten_complex_to_bel_node(node):
