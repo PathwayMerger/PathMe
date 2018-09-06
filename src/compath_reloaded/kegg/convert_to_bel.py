@@ -295,9 +295,7 @@ def add_edges(graph, edges, nodes):
         u = nodes[source]
         v = nodes[target]
 
-        # if entity is a complex, create an edge to/from the complex node
-        # If entity is a list of proteins, add an edge to/from each protein node in list
-
+        # If entity is a list of proteins, add an edge to each protein node in list
         if not isinstance(type(u), complex_abundance) and not isinstance(type(v), complex_abundance):
 
             for member, component in product(u, v):
@@ -305,16 +303,19 @@ def add_edges(graph, edges, nodes):
                     if type(component) != str:
                         add_simple_edge(graph, member, component, relation)
 
+        # If source is a list of proteins and target is a complex, add an edge between them
         elif not isinstance(type(u), complex_abundance) and isinstance(type(v), complex_abundance):
             for member in u:
                 if type(member) != str:
                     add_simple_edge(graph, member, v, relation)
 
+        # If source is a complex and target is a list of proteins, add an edge between them
         elif isinstance(type(u), complex_abundance) and not isinstance(type(v), complex_abundance):
             for component in v:
                 if type(component) != str:
                     add_simple_edge(graph, u, component, relation)
-
+                    
+        # If entities are both complexes, add an edge between them
         else:
             add_simple_edge(graph, u, v, relation)
 
