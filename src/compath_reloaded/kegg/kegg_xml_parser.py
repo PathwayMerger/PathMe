@@ -303,9 +303,9 @@ def get_edge_types(tree):
 
 
 def get_compound_info(compound_name, chebi_manager):
-    """Return information from kegg compound.
+    """Return KEGG compound information.
 
-    :param str compound_name: compound identifier in kegg
+    :param str compound_name: compound identifier in KEGG
     :param bio2bel_chebi.Manager chebi_manager: ChEBI Manager
     :return: dictionary with compound info
     :rtype: dict
@@ -316,7 +316,7 @@ def get_compound_info(compound_name, chebi_manager):
 
     node_meta_data = parse_description(requests.get(kegg_url))
 
-    # Adds CHEBI and PubChem identifier to node dictionary
+    # Add ChEBI and PubChem identifiers to KEGG compound node info dictionary
     if 'DBLINKS' in node_meta_data:
 
         for resource, identifier in node_meta_data['DBLINKS']:
@@ -337,10 +337,11 @@ def get_compound_info(compound_name, chebi_manager):
     return node_info
 
 
-def get_all_reactions(tree):
+def get_all_reactions(tree, compounds_dict):
     """Find all substrates and products participating in reaction.
 
     :param xml.etree.ElementTree.ElementTree tree: XML tree
+    :param dict compounds_dict: dictionary of KEGG compound information
     :return: dictionary with substrate info
     :return: dictionary with product info
     :rtype: dict
@@ -352,11 +353,19 @@ def get_all_reactions(tree):
 
         reaction_id = reaction.get("id")
 
-        for substrate in reaction.iter('substrate'):
-            substrates_dict[reaction_id].append(substrate.get("id"))
+        for k, v in compounds_dict.items():
 
-        for product in reaction.iter('product'):
-            products_dict[reaction_id].append(product.get("id"))
+            for substrate in reaction.iter('substrate'):
+                substrate_id = substrate.get("id")
+
+                if substrate_id == k:
+                    substrates_dict[reaction_id].append(substrate_id)
+
+            for product in reaction.iter('product'):
+                product_id = product.get("id")
+                
+                if product_id == k:
+                    products_dict[reaction_id].append(product_id)
 
     return substrates_dict, products_dict
 
