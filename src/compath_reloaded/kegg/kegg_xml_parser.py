@@ -338,7 +338,7 @@ def get_compound_info(compound_name, chebi_manager):
 
 
 def get_all_reactions(tree, compounds_dict):
-    """Find all substrates and products participating in reaction.
+    """Get substrates and products with ChEBI or PubChem IDs participating in reactions.
 
     :param xml.etree.ElementTree.ElementTree tree: XML tree
     :param dict compounds_dict: dictionary of KEGG compound information
@@ -363,7 +363,7 @@ def get_all_reactions(tree, compounds_dict):
 
             for product in reaction.iter('product'):
                 product_id = product.get("id")
-                
+
                 if product_id == k:
                     products_dict[reaction_id].append(product_id)
 
@@ -387,7 +387,7 @@ def get_reaction_edge_types(tree):
 
 
 def get_reaction_pathway_edges(xml_tree, substrates_dict, products_dict):
-    """Find all reaction edges.
+    """Get reaction edges.
 
     :param xml.etree.ElementTree.ElementTree xml_tree: xml tree
     :param dict substrates_dict: dictionary with substrate info
@@ -402,15 +402,18 @@ def get_reaction_pathway_edges(xml_tree, substrates_dict, products_dict):
         reaction_type = reaction.get("type")
         reaction_id = reaction.get("id")
 
-        reaction_substrates = substrates_dict[reaction_id]
-        reaction_products = products_dict[reaction_id]
+        if substrates_dict[reaction_id]:
+            reaction_substrates = substrates_dict[reaction_id]
 
-        # Add edge from substrates to products with compound info
-        reactions_dict[reaction_id].append((reaction_substrates, reaction_products, reaction_type))
+            if products_dict[reaction_id]:
+                reaction_products = products_dict[reaction_id]
 
-        # If reaction is reversible, flip the reaction order and add a new edge
-        if reaction_type == "reversible":
-            reactions_dict[reaction_id].append((reaction_products, reaction_substrates, reaction_type))
+                # Add edge from substrates to products with compound info
+                reactions_dict[reaction_id].append((reaction_substrates, reaction_products, reaction_type))
+
+                # If reaction is reversible, flip the reaction order and add a new edge
+                if reaction_type == "reversible":
+                    reactions_dict[reaction_id].append((reaction_products, reaction_substrates, reaction_type))
 
     return reactions_dict
 
