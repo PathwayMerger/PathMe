@@ -368,7 +368,7 @@ def add_simple_edge(graph, u, v, relation_type):
         graph.add_decreases(u, v, citation=KEGG_CITATION, evidence='', subject_modifier=activity())
 
     # Subject increases activity of object
-    if relation_type == 'activation':
+    elif relation_type == 'activation':
         graph.add_increases(u, v, citation=KEGG_CITATION, evidence='', object_modifier=activity())
 
     # Catalytic activity of subject increases transformation of reactant(s) to product(s)
@@ -396,6 +396,9 @@ def add_simple_edge(graph, u, v, relation_type):
         # Repression object is converted to RNA abundance
         v = v.get_rna()
         graph.add_decreases(u, v, citation=KEGG_CITATION, evidence='')
+
+    elif relation_type in {'dissociation', 'hidden compound', 'missing interaction', 'state change'}:
+        pass
 
     else:
         raise ValueError('Unexpected relation type {}'.format(relation_type))
