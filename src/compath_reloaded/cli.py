@@ -188,8 +188,6 @@ def statistics(connection, verbose, only_canonical, export):
 
     global_statistics, all_pathways_statistics = get_reactome_statistics(resource_file, hgnc_manager)
 
-    print(global_statistics)
-
     if export:
         df = statistics_to_df(all_pathways_statistics)
 

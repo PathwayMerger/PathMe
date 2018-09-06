@@ -42,7 +42,7 @@ WHERE
 }
 """
 
-#: SPARQL query string to get all pathways in a RDF network.
+#: SPARQL query string to get pathway URIs and names in the RDF file.
 GET_ALL_PATHWAYS = """
 SELECT DISTINCT ?uri_id ?name
 WHERE
@@ -157,7 +157,6 @@ def _get_entity_metadata(entity: rdflib.URIRef, rdf_graph: rdflib.Graph) -> Dict
     )
 
     # Complexes might contain multiple components entities so we iterate over the complex components to fetch that information
-
     if entity_metadata['entity_type'] == 'Complex':
 
         complex_components = entity_metadata.get('complex_components')
@@ -270,7 +269,7 @@ def get_reactome_statistics(resource_file, hgnc_manager):
     """Get types statistics for Reactome.
 
     :param str resource_file: RDF file
-    :param bio2bel_hgnc.Manager hgnc_manager: Hgnc MAnager
+    :param bio2bel_hgnc.Manager hgnc_manager: Hgnc Manager
     """
     log.info('Parsing Reactome RDF file')
     rdf_graph = parse_rdf(resource_file, fmt='xml')
@@ -325,11 +324,9 @@ def reactome_to_bel(resource_file, hgnc_manager):
 
     reactome_pathways = dict()
 
-    spaqrl_all_pathways = rdf_graph.query(GET_ALL_PATHWAYS, initNs=PREFIXES)
+    pathways_uris_to_names = rdf_graph.query(GET_ALL_PATHWAYS, initNs=PREFIXES)
 
-    for pathway_uri, pathway_title in tqdm.tqdm(spaqrl_all_pathways, desc='Creating Reactome BELGraphs'):
-        # debug_pathway_info(bel_graph, pathway_path)
-
-        reactome_pathways[pathway_title] = rdf_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager)
+    for pathway_uri, pathway_name in tqdm.tqdm(pathways_uris_to_names, desc='Creating Reactome BELGraphs'):
+        reactome_pathways[pathway_name] = rdf_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager)
 
     return reactome_pathways
