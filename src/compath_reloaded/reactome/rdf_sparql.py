@@ -78,20 +78,30 @@ WHERE
 
 #: SPARQL query to get all the possible metadate (optional statements) of an entity (Protein, Dna, Pathway...).
 GET_ENTITY_METADATA = """
-SELECT DISTINCT (STRAFTER(STR(?entity), '#') AS ?identifier) (STR(?entity) AS ?uri_reactome_id) ?uri_id ?name ?identifier ?cell_locat ?display_name ?complex_components ?comment (STRAFTER(STR(?uri_type), str(biopax3:)) AS ?entity_type) 
+SELECT DISTINCT 
+    (STRAFTER(STR(?entity), '#') AS ?identifier) 
+    (STR(?entity) AS ?uri_reactome_id) 
+    ?uri_id 
+    ?name 
+    ?identifier 
+    ?cell_locat 
+    ?display_name 
+    ?complex_components 
+    ?comment 
+    (STRAFTER(STR(?uri_type), str(biopax3:)) AS ?entity_type) 
 WHERE
-    {        
-        ?entity rdf:type ?uri_type .
-        ?entity biopax3:comment ?comment .
-        
-        optional {?entity biopax3:entityReference ?uri_id .}
-        optional {?entity biopax3:name ?name .}
-        optional {?entity biopax3:displayName ?display_name .}
+{        
+    ?entity rdf:type ?uri_type .
+    ?entity biopax3:comment ?comment .
+    
+    optional {?entity biopax3:entityReference ?uri_id .}
+    optional {?entity biopax3:name ?name .}
+    optional {?entity biopax3:displayName ?display_name .}
 
-        optional {?entity biopax3:cellularLocation ?cell_locat .}
-        optional {?entity biopax3:organism ?organism .}
-        optional {?entity biopax3:component ?complex_components .}
-    }
+    optional {?entity biopax3:cellularLocation ?cell_locat .}
+    optional {?entity biopax3:organism ?organism .}
+    optional {?entity biopax3:component ?complex_components .}
+}
 """
 
 """Queries managers"""
@@ -114,7 +124,7 @@ def _get_all_entry_types(rdf_graph: rdflib.Graph) -> Set[str]:
     }
 
 
-def _get_pathway_metadata(pathway_uri: rdflib.URIRef, rdf_graph: rdflib.Graph) -> Dict[str, Union[str, Set[str]]]:
+def _get_pathway_metadata(pathway_uri: str, rdf_graph: rdflib.Graph) -> Dict[str, Union[str, Set[str]]]:
     """Get metadata for a pathway entry.
 
     :param pathway_uri: URI reference of the queried graph
@@ -165,7 +175,7 @@ def _get_entity_metadata(entity: rdflib.URIRef, rdf_graph: rdflib.Graph) -> Dict
     return entity_metadata
 
 
-def _get_reaction_participants(component_uri: rdflib.URIRef, component, rdf_graph: rdflib.Graph) -> Tuple[
+def _get_reaction_participants(component_uri: str, component, rdf_graph: rdflib.Graph) -> Tuple[
     Dict[Union[str, Set[str]], Dict[str, Union[str, Set[str]]]], Dict[Any, Dict[str, Any]]]:
     """Get reaction participants (nodes and interactions) for a given reaction.
 
@@ -241,6 +251,7 @@ def _get_pathway_components(pathway_uri: rdflib.URIRef, rdf_graph: rdflib.Graph)
     pathway_components = query_result_to_dict(spaqrl_pathway_components, id_dict=True)
 
     for component_uri, component in pathway_components.items():
+
         if component['component_type'] == 'BiochemicalReaction':
             component_nodes, component_interactions = _get_reaction_participants(component_uri, component, rdf_graph)
 
@@ -249,6 +260,7 @@ def _get_pathway_components(pathway_uri: rdflib.URIRef, rdf_graph: rdflib.Graph)
 
         elif component['component_type'] == 'Pathway':
             pathway_metadata = _get_pathway_metadata(component_uri, rdf_graph)
+
             nodes[pathway_metadata['uri_reactome_id']] = pathway_metadata
 
     return nodes, list(interactions.values())
@@ -257,8 +269,8 @@ def _get_pathway_components(pathway_uri: rdflib.URIRef, rdf_graph: rdflib.Graph)
 def get_reactome_statistics(resource_file, hgnc_manager):
     """Get types statistics for Reactome.
 
-    :param str rdf_graph: primary entries type identifier (ex: DataNode or Interaction)
-    :param str primary_type: primary entries type identifier (ex: DataNode or Interaction)
+    :param str resource_file: RDF file
+    :param bio2bel_hgnc.Manager hgnc_manager: Hgnc MAnager
     """
     log.info('Parsing Reactome RDF file')
     rdf_graph = parse_rdf(resource_file, fmt='xml')

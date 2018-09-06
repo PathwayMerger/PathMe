@@ -18,6 +18,8 @@ from .constants import DATA_DIR
 
 log = logging.getLogger(__name__)
 
+UNKNOWN = 'unknown'
+
 
 def get_files_in_folder(path):
     """Return the files in a given folder.
@@ -104,14 +106,19 @@ def entry_result_to_dict(entry, **kwargs):
     :returns: entries_dict: Dictionary with all the entries id as keys and the entries arguments as values.
     :rtype: dict
     """
-    attributes_dict = dict(
-        (str(label), str(entry[label])) for label in entry.labels if
-        str(label) and entry[label] != None)
+    attributes_dict = {
+        str(label): str(entry[label])
+        for label in entry.labels
+        if str(label) and entry[label] != None
+    }
 
     if 'attr_empty' in kwargs:
         attr_empty = kwargs.get('attr_empty')
-        empty_dict = dict(
-            (str(attr), 'unknown') for attr in attr_empty if attr not in attributes_dict.keys())
+        empty_dict = {
+            str(attr): UNKNOWN
+            for attr in attr_empty
+            if attr not in attributes_dict
+        }
         attributes_dict.update(empty_dict)
 
     return attributes_dict
@@ -136,7 +143,7 @@ def query_result_to_dict(entries, **kwargs) -> Union[Dict[str, Dict], Dict[str, 
         else:
             id_key = entry
 
-        if id_key not in entries_dict.keys():
+        if id_key not in entries_dict:
             entries_dict[id_key] = entry_result_to_dict(entry, **kwargs)
 
         else:
@@ -154,8 +161,10 @@ def query_result_to_dict(entries, **kwargs) -> Union[Dict[str, Dict], Dict[str, 
 
     elif not entries and 'attr_empty' in kwargs:
         attr_empty = kwargs.get('attr_empty')
-        return dict(
-            (str(attr), 'unknown') for attr in attr_empty)
+        return {
+            str(attr): UNKNOWN
+            for attr in attr_empty
+        }
 
     return entries_dict
 
@@ -179,7 +188,6 @@ def get_entry_statitics(types_list, primary_type=None, **kwargs):
         else:
             type_statistics[entry_types] += 1
 
-
         if 'primary_type' in kwargs:
             if entry_types == {primary_type}:
                 type_statistics['Untyped' + primary_type] += 1
@@ -189,8 +197,8 @@ def get_entry_statitics(types_list, primary_type=None, **kwargs):
 
     return type_statistics, len(types_list)
 
-def get_pathway_statitics(nodes_types, edges_types, bel_graph, **kwargs):
 
+def get_pathway_statitics(nodes_types, edges_types, bel_graph, **kwargs):
     rdf_nodes_statistics, rdf_total_nodes = get_entry_statitics(nodes_types)
     rdf_edges_statistics, rdf_total_edges = get_entry_statitics(edges_types)
 
@@ -224,6 +232,7 @@ def get_pathway_statitics(nodes_types, edges_types, bel_graph, **kwargs):
         return global_statistics, pathway_statistics
 
     return pathway_statistics
+
 
 def make_downloader(url, path, database, decompress_file):
     """Make a function that downloads the data for you, or uses a cached version at the given path.
