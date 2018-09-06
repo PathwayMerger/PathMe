@@ -3,15 +3,16 @@
 """This module contains functions to parse KGML files."""
 
 import itertools as itt
-from collections import defaultdict
 import xml.etree.ElementTree as ET
+from collections import defaultdict
 
 import networkx as nx
 import requests
+from bio2bel_chebi import Manager as ChebiManager
+from bio2bel_hgnc import Manager as HgncManager
 from bio2bel_kegg.constants import API_KEGG_GET
 from bio2bel_kegg.parsers.description import parse_description
-from bio2bel_hgnc import Manager as HgncManager
-from bio2bel_chebi import Manager as ChebiManager
+
 from ..constants import HGNC
 
 """Import XML"""
@@ -106,7 +107,6 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
         elif kegg_type.startswith('ortholog'):
 
             for ortholog_id in kegg_ids.split(' '):
-
                 ortholog_info = {
                     'kegg_id': ortholog_id,
                     'kegg_type': kegg_type
@@ -227,7 +227,7 @@ def get_complex_components(tree, genes_dict, flattened=False):
 
     # Get node info for each component
     for k, v in genes_dict.items():
-        for (component_id, node_info) in itt.product(all_components,v):
+        for (component_id, node_info) in itt.product(all_components, v):
             if component_id == k:
                 component_info[component_id].append(node_info)
 
@@ -245,8 +245,8 @@ def get_complex_components(tree, genes_dict, flattened=False):
                 for info in component:
                     flattened_complexes[k].append(info)
 
-
     return complex_ids, flattened_complexes
+
 
 """Get all interactions in KEGG pathways"""
 
@@ -318,7 +318,7 @@ def get_compound_info(compound_name, chebi_manager):
 
     # Adds CHEBI and PubChem identifier to node dictionary
     if 'DBLINKS' in node_meta_data:
-        
+
         for resource, identifier in node_meta_data['DBLINKS']:
 
             if resource in {'ChEBI', 'PubChem'}:
@@ -335,6 +335,7 @@ def get_compound_info(compound_name, chebi_manager):
                         node_info['ChEBI name'] = chebi_entry.name
 
     return node_info
+
 
 def get_all_reactions(tree):
     """Find all substrates and products participating in reaction.

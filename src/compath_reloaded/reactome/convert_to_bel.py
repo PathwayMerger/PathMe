@@ -6,9 +6,9 @@ from typing import Dict, Iterable, List, Tuple
 
 from bio2bel_hgnc import Manager as HgncManager
 from pybel import BELGraph
-from pybel.dsl.edges import activity
-from pybel.dsl.nodes import BaseEntity, abundance, composite_abundance, complex_abundance, gene, rna, protein, reaction, \
-    bioprocess
+from pybel.dsl import (
+    abundance, activity, BaseEntity, composite_abundance, complex_abundance, gene, rna, protein, reaction, bioprocess
+)
 
 from compath_reloaded.constants import UNIPROT, ENSEMBL
 from compath_reloaded.reactome.utils import get_hgnc_node_info
@@ -194,11 +194,11 @@ def add_edges(graph: BELGraph, participants, nodes, att: Dict):
 
 def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
     if 'ACTIVATION' in edge_types:
-        #TODO anadir pubmed y descripcion
+        # TODO anadir pubmed y descripcion
         graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity())
 
     elif 'INHIBITION' in edge_types:
-        #TODO anadir pubmed y descripcion
+        # TODO anadir pubmed y descripcion
         graph.add_decreases(u, v, citation=uri_id, evidence='', object_modifier=activity())
 
     else:

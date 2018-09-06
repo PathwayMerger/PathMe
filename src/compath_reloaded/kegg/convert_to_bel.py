@@ -2,24 +2,26 @@
 
 """This module contains the methods to convert a KEGG RDF network into a BELGraph."""
 import logging
-from itertools import product
 from collections import defaultdict
+from itertools import product
 
+from bio2bel_chebi import Manager as ChebiManager
+from bio2bel_hgnc import Manager as HgncManager
 from pybel import BELGraph
 from pybel.dsl.edges import activity
 from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
-from bio2bel_hgnc import Manager as HgncManager
-from bio2bel_chebi import Manager as ChebiManager
-from compath_reloaded.kegg.kegg_xml_parser import (get_all_reactions,
-                                                   get_all_relationships,
-                                                   get_entity_nodes,
-                                                   get_complex_components,
-                                                   get_reaction_pathway_edges,
-                                                   import_xml_etree,)
+
+from compath_reloaded.kegg.kegg_xml_parser import (
+    get_all_reactions,
+    get_all_relationships,
+    get_entity_nodes,
+    get_complex_components,
+    get_reaction_pathway_edges,
+    import_xml_etree
+)
 from ..constants import HGNC, KEGG_CITATION, KEGG_MODIFICATIONS, KEGG, CHEBI
 
 log = logging.getLogger(__name__)
-
 
 """Populate empty BEL graph with KEGG pathway entities and interactions"""
 
@@ -310,7 +312,6 @@ def add_edges(graph, edges, nodes):
             add_simple_edge(graph, u, v, relation)
 
 
-
 def add_reaction_edges(graph, reaction_dict, nodes):
     """Add edges from reactants to products and enzymes to reactions to BEL Graph.
 
@@ -371,8 +372,8 @@ def add_simple_edge(graph, u, v, relation_type):
         graph.add_increases(u, v, citation=KEGG_CITATION, evidence='', object_modifier=activity())
 
     # Catalytic activity of subject increases transformation of reactant(s) to product(s)
-    elif relation_type in {'reversible','irreversible'}:
-        graph.add_increases(u, v, citation='KEGG_CITATION', evidence='', subject_modifier = activity('cat'))
+    elif relation_type in {'reversible', 'irreversible'}:
+        graph.add_increases(u, v, citation='KEGG_CITATION', evidence='', subject_modifier=activity('cat'))
 
     # Subject decreases activity of object
     elif relation_type == 'inhibition':
