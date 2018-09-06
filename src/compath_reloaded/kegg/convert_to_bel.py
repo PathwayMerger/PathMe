@@ -19,7 +19,7 @@ from compath_reloaded.kegg.kegg_xml_parser import (
     get_reaction_pathway_edges,
     import_xml_etree
 )
-from ..constants import HGNC, KEGG_CITATION, KEGG_MODIFICATIONS, KEGG, CHEBI
+from compath_reloaded.constants import HGNC, KEGG_CITATION, KEGG_MODIFICATIONS, KEGG, CHEBI
 
 log = logging.getLogger(__name__)
 

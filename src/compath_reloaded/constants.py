@@ -35,11 +35,11 @@ UNIPROT = 'UNIPROT'
 CHEBI = 'ChEBI'
 
 KEGG_MODIFICATIONS = {
-        'phosphorylation':'Ph',
-        'glycosylation':'Glyco',
-        'ubiquitination':'Ub',
-        'meythylation':'Me'
-        }
+    'phosphorylation': 'Ph',
+    'glycosylation': 'Glyco',
+    'ubiquitination': 'Ub',
+    'meythylation': 'Me'
+}
 KEGG_CITATION = '10592173'
 
 KEGG_WIKIPATHWAYS_MAPPINGS = 'https://github.com/ComPath/curation/raw/master/mappings/kegg_wikipathways.xlsx'
