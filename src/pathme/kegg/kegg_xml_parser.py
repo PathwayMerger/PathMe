@@ -13,7 +13,7 @@ from bio2bel_hgnc import Manager as HgncManager
 from bio2bel_kegg.constants import API_KEGG_GET
 from bio2bel_kegg.parsers.description import parse_description
 
-from compath_reloaded.constants import HGNC
+from pathme.constants import HGNC
 
 """Import XML"""
 

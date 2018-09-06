@@ -4,7 +4,7 @@
 
 import unittest
 
-from compath_reloaded.wikipathways.json_rdf_parser import *
+from pathme.wikipathways.json_rdf_parser import *
 
 
 class TestWikiPathways(unittest.TestCase):

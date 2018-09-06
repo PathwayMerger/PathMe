@@ -1,6 +1,6 @@
-ComPath-Reloaded
-================
-.. automodule:: compath_reloaded
+PathMe
+======
+.. automodule:: pathme
 
 .. toctree::
    :maxdepth: 2

@@ -1,16 +1,16 @@
 [run]
 branch = True
-source = compath
+source = pathme
 omit =
-    src/compath_reloaded/__main__.py
-    src/compath_reloaded/cli.py
+    src/pathme/__main__.py
+    src/pathme/cli.py
     tests/*
     docs/*
 
 [paths]
 source =
-    src/compath
-    .tox/*/lib/python*/site-packages/compath
+    src/pathme
+    .tox/*/lib/python*/site-packages/pathme
 
 [report]
 show_missing = True

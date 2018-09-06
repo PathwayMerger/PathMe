@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""ComPath-reloaded main."""
+"""PathMe main."""
 
 from .cli import main
 

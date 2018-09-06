@@ -12,9 +12,9 @@ from pybel import BELGraph
 from pybel_tools import summary
 from rdflib.namespace import Namespace, RDFS, RDF, DCTERMS, DC
 
-from compath_reloaded.utils import parse_rdf, parse_namespace_uri
-from compath_reloaded.wikipathways.convert_to_bel import convert_to_bel
-from compath_reloaded.wikipathways.utils import debug_pathway_info, debug_global_statistics, query_result_to_dict
+from pathme.utils import parse_rdf, parse_namespace_uri
+from pathme.wikipathways.convert_to_bel import convert_to_bel
+from pathme.wikipathways.utils import debug_pathway_info, debug_global_statistics, query_result_to_dict
 
 """SPARQL string queries"""
 

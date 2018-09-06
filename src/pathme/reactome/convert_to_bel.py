@@ -10,9 +10,9 @@ from pybel.dsl import (
     abundance, activity, BaseEntity, composite_abundance, complex_abundance, gene, rna, protein, reaction, bioprocess
 )
 
-from compath_reloaded.constants import UNIPROT, ENSEMBL
-from compath_reloaded.reactome.utils import get_hgnc_node_info
-from compath_reloaded.utils import parse_id_uri
+from pathme.constants import UNIPROT, ENSEMBL
+from pathme.reactome.utils import get_hgnc_node_info
+from pathme.utils import parse_id_uri
 
 log = logging.getLogger(__name__)
 

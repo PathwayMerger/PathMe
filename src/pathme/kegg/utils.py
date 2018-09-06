@@ -9,8 +9,8 @@ import requests
 import tqdm
 import networkx as nx
 from bio2bel_kegg import Manager as KeggManager
-from compath_reloaded.wikipathways.utils import get_files_in_folder
-from compath_reloaded.kegg.kegg_xml_parser import import_xml_etree, populate_graph, get_node_types, get_edge_types, get_reaction_edge_types
+from pathme.wikipathways.utils import get_files_in_folder
+from pathme.kegg.kegg_xml_parser import import_xml_etree, populate_graph, get_node_types, get_edge_types, get_reaction_edge_types
 from ..constants import DATA_DIR, KEGG, KEGG_KGML_URL
 
 

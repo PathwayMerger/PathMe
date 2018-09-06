@@ -1,5 +1,5 @@
 Utils
 =====
 
-.. automodule:: compath_reloaded.utils
+.. automodule:: pathme.utils
    :members:

@@ -2,8 +2,8 @@
 
 """Tests for converting KEGG."""
 
-from compath_reloaded.kegg.kegg_xml_parser import *
-from compath_reloaded.kegg.convert_to_bel import *
+from pathme.kegg.kegg_xml_parser import *
+from pathme.kegg.convert_to_bel import *
 from .constants import NOTCH_XML, GLYCOLYSIS_XML, DatabaseMixin
 
 

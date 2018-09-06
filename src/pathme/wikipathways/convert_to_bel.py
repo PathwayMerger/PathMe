@@ -7,7 +7,7 @@ from typing import Dict, List, Tuple
 from pybel import BELGraph
 from pybel.dsl import abundance, activity, BaseEntity, bioprocess, complex_abundance, gene, protein, reaction, rna
 
-from compath_reloaded.utils import parse_id_uri
+from pathme.utils import parse_id_uri
 
 log = logging.getLogger(__name__)
 

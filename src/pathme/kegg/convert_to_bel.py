@@ -11,8 +11,8 @@ from pybel import BELGraph
 from pybel.dsl.edges import activity
 from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
 
-from compath_reloaded.constants import CHEBI, HGNC, KEGG_CITATION, KEGG_MODIFICATIONS, KEGG
-from compath_reloaded.kegg.kegg_xml_parser import (
+from pathme.constants import CHEBI, HGNC, KEGG_CITATION, KEGG_MODIFICATIONS, KEGG
+from pathme.kegg.kegg_xml_parser import (
     get_all_reactions,
     get_all_relationships,
     get_entity_nodes,

@@ -2,8 +2,8 @@
 
 """This module contains the custom parser for RDF."""
 
-from compath_reloaded.utils import parse_rdf
-from compath_reloaded.wikipathways.utils import convert_json, convert_to_nx
+from pathme.utils import parse_rdf
+from pathme.wikipathways.utils import convert_json, convert_to_nx
 
 """RDF CUSTOM PARSER FUNCTIONS"""
 

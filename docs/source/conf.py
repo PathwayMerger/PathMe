@@ -16,7 +16,7 @@ extensions = [
 templates_path = ['_templates']
 source_suffix = '.rst'
 master_doc = 'index'
-project = 'ComPath-Reloaded'
+project = 'PathMe'
 copyright = '2018, Sarah Mubeen, Josep Marin Llao, and Daniel Domingo-Fernández'
 author = 'Sarah Mubeen, Josep Marin Llao, and Daniel Domingo-Fernández'
 
@@ -42,14 +42,14 @@ html_static_path = []
 htmlhelp_basename = 'compathdoc'
 latex_elements = {}
 latex_documents = [
-    (master_doc, 'compath-reloaded.tex', 'ComPath-Reloaded Documentation',
+    (master_doc, 'pathme.tex', 'PathMe Documentation',
      'Daniel Domingo-Fernández and Charles Tapley Hoyt', 'manual'),
 ]
 man_pages = [
-    (master_doc, 'compath_reloaded', 'ComPath-Reloaded Documentation', [author], 1)
+    (master_doc, 'pathme', 'PathMe Documentation', [author], 1)
 ]
 texinfo_documents = [
-    (master_doc, 'ComPath-Reloaded', 'ComPathDocumentation', author, 'ComPath-Reloaded'),
+    (master_doc, 'PathMe', 'ComPathDocumentation', author, 'PathMe'),
 ]
 
 # Example configuration for intersphinx: refer to the Python standard library.

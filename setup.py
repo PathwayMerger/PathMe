@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""ComPath-reloaded setup.py."""
+"""PathMe setup.py."""
 
 import codecs
 import os
@@ -8,7 +8,7 @@ import re
 
 import setuptools
 
-MODULE = 'compath_reloaded'
+MODULE = 'pathme'
 PACKAGES = setuptools.find_packages(where='src')
 META_PATH = os.path.join('src', MODULE, '__init__.py')
 KEYWORDS = ['Pathways', 'Systems Biology', 'Networks Biology']
@@ -43,7 +43,7 @@ INSTALL_REQUIRES = [
 ]
 ENTRY_POINTS = {
     'console_scripts': [
-        'compath-reloaded = compath_reloaded.cli:main',
+        'pathme = pathme.cli:main',
     ]
 }
 

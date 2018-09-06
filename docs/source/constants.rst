@@ -1,4 +1,4 @@
 Constants
 =========
-.. automodule:: compath_reloaded.constants
+.. automodule:: pathme.constants
    :members:

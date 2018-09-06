@@ -5,7 +5,7 @@
 import os
 import unittest
 
-from compath_reloaded.wikipathways.utils import get_files_in_folder, merge_two_dicts, get_file_name_from_url
+from pathme.wikipathways.utils import get_files_in_folder, merge_two_dicts, get_file_name_from_url
 from .constants import WP_TEST_RESOURCES, WP22
 
 

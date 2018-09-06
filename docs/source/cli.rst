@@ -1,14 +1,14 @@
 Command Line Interface
 ======================
-ComPath Reloaded commands.
+PathMe commands.
 
 
 KEGG Commands
 ~~~~~~~~~~~~~
 KEGG-related commands.
 
-.. autofunction:: compath_reloaded.cli.kegg.download
-.. autofunction:: compath_reloaded.cli.kegg.populate
-.. autofunction:: compath_reloaded.cli.kegg.statistics
+.. autofunction:: pathme.cli.kegg.download
+.. autofunction:: pathme.cli.kegg.populate
+.. autofunction:: pathme.cli.kegg.statistics
 
 

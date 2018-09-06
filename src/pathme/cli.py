@@ -9,7 +9,7 @@ import time
 import click
 from bio2bel_hgnc import Manager as HgncManager
 
-from compath_reloaded.constants import (
+from pathme.constants import (
     DATA_DIR,
     RDF_WIKIPATHWAYS,
     KEGG,
@@ -17,13 +17,13 @@ from compath_reloaded.constants import (
     REACTOME,
     RDF_REACTOME
 )
-from compath_reloaded.constants import DEFAULT_CACHE_CONNECTION
-from compath_reloaded.kegg.utils import download_kgml_files, get_kegg_pathway_ids
-from compath_reloaded.reactome.rdf_sparql import reactome_to_bel, get_reactome_statistics
-from compath_reloaded.reactome.utils import untar_file
-from compath_reloaded.utils import make_downloader, statistics_to_df
-from compath_reloaded.wikipathways.rdf_sparql import get_wikipathways_statistics, wikipathways_to_pybel
-from compath_reloaded.wikipathways.utils import (
+from pathme.constants import DEFAULT_CACHE_CONNECTION
+from pathme.kegg.utils import download_kgml_files, get_kegg_pathway_ids
+from pathme.reactome.rdf_sparql import reactome_to_bel, get_reactome_statistics
+from pathme.reactome.utils import untar_file
+from pathme.utils import make_downloader, statistics_to_df
+from pathme.wikipathways.rdf_sparql import get_wikipathways_statistics, wikipathways_to_pybel
+from pathme.wikipathways.utils import (
     get_file_name_from_url,
     get_wikipathways_files,
     unzip_file
@@ -41,9 +41,9 @@ os.makedirs(REACTOME_DIR, exist_ok=True)
 os.makedirs(WIKIPATHWAYS_DIR, exist_ok=True)
 
 
-@click.group(help='ComPath Reloaded')
+@click.group(help='PathMe')
 def main():
-    """Run ComPath-Reloaded."""
+    """Run PathMe."""
     logging.basicConfig(format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
 
 
