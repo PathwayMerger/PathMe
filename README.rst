@@ -56,8 +56,8 @@ Example:
 
 
 
-.. |build| image:: https://travis-ci.org/ComPath/PathMe.svg?branch=master
-    :target: https://travis-ci.org/ComPath/PathMe
+.. |build| image:: https://travis-ci.org/ComPath/ComPath-Reloaded.svg?branch=master
+    :target: https://travis-ci.org/ComPath/ComPath-Reloaded
     :alt: Build Status
 
 
