@@ -66,7 +66,7 @@ def kegg_to_bel(path):
 
     # Add nodes and edges to graph
     nodes = xml_entities_to_bel(genes_dict, compounds_dict, maps_dict, flattened=True)
-    nodes = xml_complexes_to_bel(nodes, complex_ids, flatten_complexes=flattened_complexes)
+    nodes = xml_complexes_to_bel(graph, nodes, complex_ids, flatten_complexes=flattened_complexes)
     add_edges(graph, relations_list, nodes)
     add_reaction_edges(graph, reactions_dict, nodes)
 
@@ -107,7 +107,7 @@ def xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=
     return node_dict
 
 
-def xml_complexes_to_bel(node_dict, complex_ids, **kwargs):
+def xml_complexes_to_bel(graph, node_dict, complex_ids, **kwargs):
     """ Convert complexes in XML to BEL nodes where each complex is made up of proteins
     and/or composites (i.e. groups of related proteins).
 
@@ -123,7 +123,7 @@ def xml_complexes_to_bel(node_dict, complex_ids, **kwargs):
         flatten_complexes = kwargs.get('flatten_complexes')
 
         for node_id, node_att in flatten_complexes.items():
-            node_dict[node_id] = flatten_complex_to_bel_node(node_att)
+            node_dict[node_id] = flatten_complex_to_bel_node(graph, node_att)
 
     else:
         for node_k, node_v in node_dict.items():
@@ -278,7 +278,7 @@ def map_to_bel_node(graph, node):
         return bio_process
 
 
-def flatten_complex_to_bel_node(node):
+def flatten_complex_to_bel_node(graph, node):
     """Create complex abundance BEL node.
 
     :param dict node: dictionary of node attributes
@@ -286,13 +286,25 @@ def flatten_complex_to_bel_node(node):
     :rtype: dict
     """
     members = set()
-    for attributes in node:
-        identifier = attributes[HGNC]
-        name = attributes['HGNC symbol']
-        member = protein(namespace=HGNC, name=name, identifier=identifier)
-        members.add(member)
 
-    return complex_abundance(members=members)
+    for attribute in node:
+
+        if HGNC in attribute:
+            protein_node = protein(namespace=HGNC, name=attribute['HGNC symbol'], identifier=attribute['HGNC'])
+            members.add(protein_node)
+
+        elif 'UniProt' in attribute:
+            protein_node = protein(namespace='UniProt', name=attribute['UniProt'], identifier=attribute['UniProt'])
+            members.add(protein_node)
+
+        else:
+            protein_node = protein(namespace=KEGG, name=attribute['kegg_id'], identifier=attribute['kegg_id'])
+            members.add(protein_node)
+
+    complex_members = complex_abundance(members=members)
+    graph.add_node_from_data(complex_members)
+
+    return complex_members
 
 
 """Get edges between BEL nodes"""
