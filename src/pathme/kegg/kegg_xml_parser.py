@@ -271,14 +271,21 @@ def get_all_relationships(tree):
             relation_subtype = subtype.get("name")
             relation_value = subtype.get("value")
 
+            # Add protein-protein and transcription factor and target gene product interations
             if relation_type in {'PPrel', 'GErel'}:
                 relations_list.append((relation_entry1, relation_entry2, relation_subtype))
 
-            elif relation_type in {'ECrel', 'PCrel'}:
+            # Add Protein-compound interations
+            elif relation_type.startswith('PCrel'):
+                relations_list.append((relation_entry1, relation_entry2, relation_subtype))
+
+            # Add enzyme-enzyme relations denoted as binding/association
+            elif relation_type.startswith('ECrel'):
                 relations_list.append((relation_entry1, relation_entry2, 'binding/association'))
                 relations_list.append((relation_entry1, relation_value, 'binding/association'))
                 relations_list.append((relation_value, relation_entry2, 'binding/association'))
 
+            # Add interactions between a protein and a protein in another biological process
             elif relation_type.startswith('maplink'):
                 relations_list.append((relation_entry1, relation_entry2, 'binding/association'))
 
