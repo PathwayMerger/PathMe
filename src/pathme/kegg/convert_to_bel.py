@@ -139,7 +139,7 @@ def xml_complexes_to_bel(node_dict, complex_ids, **kwargs):
 
 
 def gene_to_bel_node(graph, node):
-    """Create a protein or protein composite BEL node.
+    """Create a protein or protein composite BEL node and add to BEL Graph.
 
     :param graph: BELGraph
     :param dict node: dictionary of node attributes
@@ -148,38 +148,26 @@ def gene_to_bel_node(graph, node):
     """
     members = set()
 
+    # Create a protein BEL node
     if len(node) == 1:
         for attribute in node:
 
             if HGNC in attribute:
-
-                name = attribute['HGNC symbol']
-                identifier = attribute[HGNC]
-                namespace = HGNC
-
-                protein_node = protein(namespace=namespace, name=name, identifier=identifier)
+                protein_node = protein(namespace=HGNC, name=attribute[HGNC], identifier=attribute['HGNC symbol'])
                 graph.add_node_from_data(protein_node)
                 return (protein_node)
 
             elif 'UniProt' in attribute:
-
-                identifier = attribute['UniProt']
-                name = attribute['UniProt']
-                namespace = 'UniProt'
-
-                protein_node = protein(namespace=namespace, name=name, identifier=identifier)
+                protein_node = protein(namespace='UniProt', name=attribute['UniProt'], identifier=attribute['UniProt'])
                 graph.add_node_from_data(protein_node)
                 return (protein_node)
 
             else:
-                identifier = attribute['kegg_id']
-                name = attribute['kegg_id']
-                namespace = KEGG
-
-                protein_node = protein(namespace=namespace, name=name, identifier=identifier)
+                protein_node = protein(namespace=KEGG, name=attribute['kegg_id'], identifier=attribute['kegg_id'])
                 graph.add_node_from_data(protein_node)
                 return (protein_node)
 
+    # Create a composite abundance BEL node
     else:
         for member in node:
             bel_node = gene_to_bel_node([member])
@@ -191,7 +179,7 @@ def gene_to_bel_node(graph, node):
 
 
 def flatten_gene_to_bel_node(graph, node):
-    """Create a protein or list of proteins BEL node.
+    """Create a protein or list of protein BEL nodes and add to BEL Graph.
 
     :param graph: BELGraph
     :param dict node: dictionary of node attributes
@@ -202,14 +190,41 @@ def flatten_gene_to_bel_node(graph, node):
 
     for attribute in node:
 
-        name = attribute['HGNC symbol']
-        identifier = attribute[HGNC]
-
+        # Create a protein BEL node
         if len(node) == 1:
-            return protein(namespace=HGNC, name=name, identifier=identifier)
 
+            if HGNC in attribute:
+                protein_node = protein(namespace=HGNC, name=attribute['HGNC symbol'], identifier=attribute['HGNC'])
+                graph.add_node_from_data(protein_node)
+                return (protein_node)
+
+            elif 'UniProt' in attribute:
+                protein_node = protein(namespace='UniProt', name=attribute['UniProt'], identifier=attribute['UniProt'])
+                graph.add_node_from_data(protein_node)
+                return (protein_node)
+
+            else:
+                protein_node = protein(namespace=KEGG, name=attribute['kegg_id'], identifier=attribute['kegg_id'])
+                graph.add_node_from_data(protein_node)
+                return (protein_node)
+
+        # Create a list of protein BEL nodes
         else:
-            proteins_list.append(protein(namespace=HGNC, name=name, identifier=identifier))
+
+            if HGNC in attribute:
+                protein_node = protein(namespace=HGNC, name=attribute['HGNC symbol'], identifier=attribute['HGNC'])
+                graph.add_node_from_data(protein_node)
+                proteins_list.append(protein_node)
+
+            elif 'UniProt' in attribute:
+                protein_node = protein(namespace='UniProt', name=attribute['UniProt'], identifier=attribute['UniProt'])
+                graph.add_node_from_data(protein_node)
+                proteins_list.append(protein_node)
+
+            else:
+                protein_node = protein(namespace=KEGG, name=attribute['kegg_id'], identifier=attribute['kegg_id'])
+                graph.add_node_from_data(protein_node)
+                proteins_list.append(protein_node)
 
     return proteins_list
 
