@@ -70,6 +70,9 @@ def populate(flatten):
     """Populate KEGG into PyBEL database."""
     KEGG_DOWNLOAD_FOLDER = os.path.join(DATA_DIR, KEGG)
 
+    if flatten:
+        log.info('Flattening mode activated')
+
     for file in get_files_in_folder(KEGG_DOWNLOAD_FOLDER):
         kegg_to_bel(
             path=os.path.join(KEGG_DOWNLOAD_FOLDER, file),
