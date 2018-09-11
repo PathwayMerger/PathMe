@@ -20,6 +20,7 @@ from pathme.kegg.kegg_xml_parser import (
 )
 from pybel import BELGraph
 from pybel.dsl.edges import activity
+from pybel.dsl.node_classes import CentralDogma
 from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
 from pybel.struct import summary as structSummary
 
@@ -397,12 +398,18 @@ def add_simple_edge(graph, u, v, relation_type):
     """
     # Subject activity increases protein modification of object
     if relation_type in {'phosphorylation', 'glycosylation', 'ubiquitination', 'meythylation'}:
-        v = v.with_variants(pmod(KEGG_MODIFICATIONS[relation_type]))
+
+        # If the object is a gene, miRNA, RNA, or protein, add protein modification
+        if isinstance(v, CentralDogma):
+            v = v.with_variants(pmod(KEGG_MODIFICATIONS[relation_type]))
         graph.add_increases(u, v, citation='', evidence='', subject_modifier=activity())
 
     # Subject activity decreases protein modification (i.e. dephosphorylation) of object
     elif relation_type == 'dephosphorylation':
-        v = v.with_variants(pmod('Ph'))
+
+        # If the object is a gene, miRNA, RNA, or protein, add protein modification
+        if isinstance(v, CentralDogma):
+            v = v.with_variants(pmod('Ph'))
         graph.add_decreases(u, v, citation=KEGG_CITATION, evidence='', subject_modifier=activity())
 
     # Subject increases activity of object
@@ -425,14 +432,16 @@ def add_simple_edge(graph, u, v, relation_type):
     elif relation_type == 'expression':
 
         # Expression object is converted to RNA abundance
-        v = v.get_rna()
+        if isinstance(v, CentralDogma):
+            v = v.get_rna()
         graph.add_increases(u, v, citation=KEGG_CITATION, evidence='')
 
     # Subject decreases expression of object
     elif relation_type == 'repression':
 
         # Repression object is converted to RNA abundance
-        v = v.get_rna()
+        if isinstance(v, CentralDogma):
+            v = v.get_rna()
         graph.add_decreases(u, v, citation=KEGG_CITATION, evidence='')
 
     elif relation_type in {'dissociation', 'hidden compound', 'missing interaction', 'state change'}:
