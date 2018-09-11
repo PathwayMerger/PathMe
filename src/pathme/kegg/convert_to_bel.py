@@ -387,9 +387,11 @@ def add_reaction_edges(graph, reaction_dict, nodes):
                 reaction_node = reaction(reactants=reactants_list, products=products_list)
                 graph.add_node_from_data(reaction_node)
 
-                # Get enzyme-reaction edges
-                for gene_type in enzyme:
-                    add_simple_edge(graph, gene_type, reaction_node, reaction_type)
+                if isinstance(enzyme, list):
+                    for gene_type in enzyme:
+                        add_simple_edge(graph, gene_type, reaction_node, reaction_type)
+                else:
+                    add_simple_edge(graph, enzyme, reaction_node, reaction_type)
 
 
 def add_simple_edge(graph, u, v, relation_type):
