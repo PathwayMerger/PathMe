@@ -7,9 +7,6 @@ from itertools import product
 
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
-from pybel import BELGraph
-from pybel.dsl.edges import activity
-from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
 
 from pathme.constants import CHEBI, HGNC, KEGG_CITATION, KEGG_MODIFICATIONS, KEGG
 from pathme.kegg.kegg_xml_parser import (
@@ -20,6 +17,9 @@ from pathme.kegg.kegg_xml_parser import (
     get_reaction_pathway_edges,
     import_xml_etree
 )
+from pybel import BELGraph
+from pybel.dsl.edges import activity
+from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
 
 log = logging.getLogger(__name__)
 
@@ -269,7 +269,6 @@ def map_to_bel_node(graph, node):
     :rtype: dict
     """
     for attribute in node:
-
         name = attribute['map_name']
         identifier = attribute['kegg_id']
 
@@ -341,7 +340,7 @@ def add_edges(graph, edges, nodes):
             for component in v:
                 if type(component) != str:
                     add_simple_edge(graph, u, component, relation)
-                    
+
         # If entities are both complexes, add an edge between them
         else:
             add_simple_edge(graph, u, v, relation)
