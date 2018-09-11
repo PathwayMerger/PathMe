@@ -27,7 +27,7 @@ log = logging.getLogger(__name__)
 
 
 def kegg_to_bel(path):
-    """Convert KGML file to a BELGraph.
+        """Convert KGML file to a BELGraph.
 
     :param str path: path to KGML file
     :rtype: BELGraph
@@ -36,13 +36,15 @@ def kegg_to_bel(path):
     xml_tree = import_xml_etree(path)
     root = xml_tree.getroot()
 
+    print(root.attrib['title'])
+
     graph = BELGraph(
         name=root.attrib['title'],
         version='1.0.0',
         description=root.attrib['link'],
         pathway_id=root.attrib['name'],
         authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
-        contact='daniel.domingo.fernandez@scai.fraunhofer.de',
+        contact='daniel.domingo.fernandez@scai.fraunhofer.de'
     )
 
     # Initialize HgncManager
@@ -51,24 +53,28 @@ def kegg_to_bel(path):
     # Initialize ChebiManager
     chebi_manager = ChebiManager()
 
-    # Parse file and get entities
+    #Parse file and get entities and interactions
     genes_dict, compounds_dict, maps_dict, orthologs_dict = get_entity_nodes(xml_tree, hgnc_manager, chebi_manager)
-
-    # Get complexes
-    complex_ids, flattened_complexes = get_complex_components(xml_tree, genes_dict, flattened=True)
-
-    # Get interactions
     relations_list = get_all_relationships(xml_tree)
 
     # Get compounds and reactions
-    substrates_dict, products_dict = get_all_reactions(xml_tree)
+    substrates_dict, products_dict = get_all_reactions(xml_tree, compounds_dict)
     reactions_dict = get_reaction_pathway_edges(xml_tree, substrates_dict, products_dict)
 
+    # Get complexes
+    complex_ids, flattened_complexes = get_complex_components(xml_tree, genes_dict, flattened=False)
+
     # Add nodes and edges to graph
-    nodes = xml_entities_to_bel(genes_dict, compounds_dict, maps_dict, flattened=True)
-    nodes = xml_complexes_to_bel(graph, nodes, complex_ids, flatten_complexes=flattened_complexes)
+    nodes = xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=False)
+    # if flattened, then kwargs flatten_complexes = flattened_complexes
+    nodes = xml_complexes_to_bel(graph, nodes, complex_ids)
+
     add_edges(graph, relations_list, nodes)
     add_reaction_edges(graph, reactions_dict, nodes)
+    print('number of nodes: {}'.format(graph.number_of_nodes()))
+    print('number of edges: {}'.format(graph.number_of_edges()))
+    print('fn count', structSummary.count_functions(graph))
+    print('edge count', summary.edge_summary.count_relations(graph))
 
     return graph
 
@@ -109,33 +115,39 @@ def xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=
 
 def xml_complexes_to_bel(graph, node_dict, complex_ids, **kwargs):
     """ Convert complexes in XML to BEL nodes where each complex is made up of proteins
-    and/or composites (i.e. groups of related proteins).
+    and/or composites (i.e. groups of related proteins)
 
     :param dict node_dict: dictionary of BEL nodes
     :param dict complex_ids: dictionary of complex IDs and component IDs
-    :param Optional[dict] kwargs: dictionary of complex IDs and flattened list of all components
+    :param Optional[dict]: dictionary of complex IDs and flattened list of all components
     :return: dictionary of BEL nodes
     :rtype: dict
     """
     member_dict = defaultdict(list)
 
     if 'flatten_complexes' in kwargs:
-        flatten_complexes = kwargs.get('flatten_complexes')
 
+        flatten_complexes = kwargs.get('flatten_complexes')
         for node_id, node_att in flatten_complexes.items():
             node_dict[node_id] = flatten_complex_to_bel_node(graph, node_att)
 
+    # For all complexes, add BEL node component info
     else:
-        for node_k, node_v in node_dict.items():
-            for complex_k, complex_v in complex_ids.items():
-                for component in complex_v:
-                    if component == node_k:
-                        member_dict[complex_k].append(node_v)
+        for complex_id, member_ids in complex_ids.items():
+            for member in member_ids:
+                member_dict[complex_id].append(node_dict[member])
 
-        for k, v in member_dict.items():
-            node_dict[k] = complex_abundance(v)
+        for complex_id, bel_members in member_dict.items():
+            node_dict[complex_id] = complexes_to_bel_node(graph, bel_members)
 
     return node_dict
+
+
+def complexes_to_bel_node(graph, members):
+    complex_node = complex_abundance(members=members)
+    graph.add_node_from_data(complex_node)
+
+    return complex_node
 
 
 def gene_to_bel_node(graph, node):
@@ -186,45 +198,42 @@ def flatten_gene_to_bel_node(graph, node):
     :return: BEL node dictionary
     :rtype: dict
     """
-    proteins_list = []
+    # if only 1 protein node, return corresponding BEL node
+    if len(node) == 1:
+        node_dict = node[0]
+        if HGNC in node_dict:
+            protein_node = protein(namespace=HGNC, name=node_dict['HGNC symbol'], identifier=node_dict['HGNC'])
+            graph.add_node_from_data(protein_node)
+            return protein_node
 
-    for attribute in node:
+        elif 'UniProt' in node_dict:
+            protein_node = protein(namespace='UniProt', name=node_dict['UniProt'], identifier=node_dict['UniProt'])
+            graph.add_node_from_data(protein_node)
+            return protein_node
 
-        # Create a protein BEL node
-        if len(node) == 1:
-
-            if HGNC in attribute:
-                protein_node = protein(namespace=HGNC, name=attribute['HGNC symbol'], identifier=attribute['HGNC'])
-                graph.add_node_from_data(protein_node)
-                return (protein_node)
-
-            elif 'UniProt' in attribute:
-                protein_node = protein(namespace='UniProt', name=attribute['UniProt'], identifier=attribute['UniProt'])
-                graph.add_node_from_data(protein_node)
-                return (protein_node)
-
-            else:
-                protein_node = protein(namespace=KEGG, name=attribute['kegg_id'], identifier=attribute['kegg_id'])
-                graph.add_node_from_data(protein_node)
-                return (protein_node)
-
-        # Create a list of protein BEL nodes
         else:
+            protein_node = protein(namespace=KEGG, name=node_dict['kegg_id'], identifier=node_dict['kegg_id'])
+            graph.add_node_from_data(protein_node)
+            return protein_node
 
-            if HGNC in attribute:
-                protein_node = protein(namespace=HGNC, name=attribute['HGNC symbol'], identifier=attribute['HGNC'])
-                graph.add_node_from_data(protein_node)
-                proteins_list.append(protein_node)
+    proteins_list = []
+    # if multiple protein nodes, return corresponding list of BEL nodes
+    for node_dict in node:
 
-            elif 'UniProt' in attribute:
-                protein_node = protein(namespace='UniProt', name=attribute['UniProt'], identifier=attribute['UniProt'])
-                graph.add_node_from_data(protein_node)
-                proteins_list.append(protein_node)
+        if 'HGNC' in node_dict:
+            protein_node = protein(namespace='HGNC', name=node_dict['HGNC symbol'], identifier=node_dict['HGNC'])
+            graph.add_node_from_data(protein_node)
+            proteins_list.append(protein_node)
 
-            else:
-                protein_node = protein(namespace=KEGG, name=attribute['kegg_id'], identifier=attribute['kegg_id'])
-                graph.add_node_from_data(protein_node)
-                proteins_list.append(protein_node)
+        elif 'UniProt' in node_dict:
+            protein_node = protein(namespace='UniProt', name=node_dict['UniProt'], identifier=node_dict['UniProt'])
+            graph.add_node_from_data(protein_node)
+            proteins_list.append(protein_node)
+
+        else:
+            protein_node = protein(namespace='KEGG', name=node_dict['kegg_id'], identifier=node_dict['kegg_id'])
+            graph.add_node_from_data(protein_node)
+            proteins_list.append(protein_node)
 
     return proteins_list
 
