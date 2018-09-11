@@ -7,6 +7,7 @@ from itertools import product
 
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
+from pybel_tools.summary import edge_summary
 
 from pathme.constants import CHEBI, HGNC, KEGG_CITATION, KEGG_MODIFICATIONS, KEGG
 from pathme.kegg.kegg_xml_parser import (
@@ -20,6 +21,7 @@ from pathme.kegg.kegg_xml_parser import (
 from pybel import BELGraph
 from pybel.dsl.edges import activity
 from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
+from pybel.struct import summary as structSummary
 
 log = logging.getLogger(__name__)
 
@@ -27,7 +29,7 @@ log = logging.getLogger(__name__)
 
 
 def kegg_to_bel(path):
-        """Convert KGML file to a BELGraph.
+    """Convert KGML file to a BELGraph.
 
     :param str path: path to KGML file
     :rtype: BELGraph
@@ -35,8 +37,6 @@ def kegg_to_bel(path):
     # Load xml
     xml_tree = import_xml_etree(path)
     root = xml_tree.getroot()
-
-    print(root.attrib['title'])
 
     graph = BELGraph(
         name=root.attrib['title'],
@@ -53,7 +53,7 @@ def kegg_to_bel(path):
     # Initialize ChebiManager
     chebi_manager = ChebiManager()
 
-    #Parse file and get entities and interactions
+    # Parse file and get entities and interactions
     genes_dict, compounds_dict, maps_dict, orthologs_dict = get_entity_nodes(xml_tree, hgnc_manager, chebi_manager)
     relations_list = get_all_relationships(xml_tree)
 
@@ -74,7 +74,7 @@ def kegg_to_bel(path):
     print('number of nodes: {}'.format(graph.number_of_nodes()))
     print('number of edges: {}'.format(graph.number_of_edges()))
     print('fn count', structSummary.count_functions(graph))
-    print('edge count', summary.edge_summary.count_relations(graph))
+    print('edge count', edge_summary.count_relations(graph))
 
     return graph
 
@@ -154,11 +154,11 @@ def gene_to_bel_node(graph, node):
     """Create a protein or protein composite BEL node and add to BEL Graph.
 
     :param graph: BELGraph
-    :param dict node: dictionary of node attributes
-    :return: BEL node dictionary
-    :rtype: dict
+    :param list[dict] node: dictionary of node attributes
+    :return: corresponding BEL node
+    :rtype: pybel.dsl.BaseEntity
     """
-    members = set()
+    members = list()
 
     # Create a protein BEL node
     if len(node) == 1:
@@ -167,23 +167,23 @@ def gene_to_bel_node(graph, node):
             if HGNC in attribute:
                 protein_node = protein(namespace=HGNC, name=attribute[HGNC], identifier=attribute['HGNC symbol'])
                 graph.add_node_from_data(protein_node)
-                return (protein_node)
+                return protein_node
 
             elif 'UniProt' in attribute:
                 protein_node = protein(namespace='UniProt', name=attribute['UniProt'], identifier=attribute['UniProt'])
                 graph.add_node_from_data(protein_node)
-                return (protein_node)
+                return protein_node
 
             else:
                 protein_node = protein(namespace=KEGG, name=attribute['kegg_id'], identifier=attribute['kegg_id'])
                 graph.add_node_from_data(protein_node)
-                return (protein_node)
+                return protein_node
 
     # Create a composite abundance BEL node
     else:
         for member in node:
-            bel_node = gene_to_bel_node([member])
-            members.add(bel_node)
+            bel_node = gene_to_bel_node(graph, [member])
+            members.append(bel_node)
 
         protein_composite = composite_abundance(members=members)
         graph.add_node_from_data(protein_composite)
@@ -293,21 +293,21 @@ def flatten_complex_to_bel_node(graph, node):
     :return: BEL node dictionary
     :rtype: dict
     """
-    members = set()
+    members = list()
 
     for attribute in node:
 
         if HGNC in attribute:
             protein_node = protein(namespace=HGNC, name=attribute['HGNC symbol'], identifier=attribute['HGNC'])
-            members.add(protein_node)
+            members.append(protein_node)
 
         elif 'UniProt' in attribute:
             protein_node = protein(namespace='UniProt', name=attribute['UniProt'], identifier=attribute['UniProt'])
-            members.add(protein_node)
+            members.append(protein_node)
 
         else:
             protein_node = protein(namespace=KEGG, name=attribute['kegg_id'], identifier=attribute['kegg_id'])
-            members.add(protein_node)
+            members.append(protein_node)
 
     complex_members = complex_abundance(members=members)
     graph.add_node_from_data(complex_members)
