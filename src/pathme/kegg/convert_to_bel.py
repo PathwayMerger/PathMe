@@ -330,27 +330,22 @@ def add_edges(graph, edges, nodes):
         u = nodes[source]
         v = nodes[target]
 
-        # If entity is a list of proteins, add an edge to each protein node in list
-        if not isinstance(type(u), complex_abundance) and not isinstance(type(v), complex_abundance):
+        # If subject and object are lists, create edges between all products
+        if isinstance(u, list) and isinstance(v, list):
+            for pair in product(u, v):
+                add_simple_edge(graph, pair[0], pair[1], relation)
 
-            for member, component in product(u, v):
-                if type(member) != str:
-                    if type(component) != str:
-                        add_simple_edge(graph, member, component, relation)
-
-        # If source is a list of proteins and target is a complex, add an edge between them
-        elif not isinstance(type(u), complex_abundance) and isinstance(type(v), complex_abundance):
+        # If source is protein list and target is not, add edges between members in list and target
+        elif isinstance(u, list) and not isinstance(v, list):
             for member in u:
-                if type(member) != str:
-                    add_simple_edge(graph, member, v, relation)
+                add_simple_edge(graph, member, v, relation)
 
-        # If source is a complex and target is a list of proteins, add an edge between them
-        elif isinstance(type(u), complex_abundance) and not isinstance(type(v), complex_abundance):
-            for component in v:
-                if type(component) != str:
-                    add_simple_edge(graph, u, component, relation)
+        # If source is not a list and target is proteins list, add edges between them
+        elif not isinstance(u, list) and isinstance(v, list):
+            for member in v:
+                add_simple_edge(graph, u, member, relation)
 
-        # If entities are both complexes, add an edge between them
+        # If entities are not lists, add edges between them
         else:
             add_simple_edge(graph, u, v, relation)
 
