@@ -2,8 +2,10 @@
 
 """Tests for converting KEGG."""
 
-from pathme.kegg.kegg_xml_parser import *
 from pathme.kegg.convert_to_bel import *
+from pathme.kegg.convert_to_bel import kegg_to_bel
+from pathme.kegg.kegg_xml_parser import *
+from pybel.struct import summary as pybel_summary
 from .constants import NOTCH_XML, GLYCOLYSIS_XML, DatabaseMixin
 
 
@@ -14,6 +16,9 @@ class TestKegg(DatabaseMixin):
         """Parse two examples files."""
         self.notch_tree = import_xml_etree(NOTCH_XML)
         self.glycolysis_tree = import_xml_etree(GLYCOLYSIS_XML)
+        self.notch_bel = kegg_to_bel(NOTCH_XML)
+        self.notch_bel_flatten = kegg_to_bel(NOTCH_XML, flatten=True)
+        self.glycolisis_bel = kegg_to_bel(GLYCOLYSIS_XML)
 
     def test_get_entities_from_xml(self):
         """Test entity creation."""
@@ -227,9 +232,22 @@ class TestKegg(DatabaseMixin):
         flat_complex_ids, flattened_complexes = get_complex_components(self.notch_tree, notch_genes, flattened=True)
 
         node_dict = xml_entities_to_bel(notch_genes, notch_compounds, notch_maps, flattened=False)
-        node_dict = xml_complexes_to_bel(node_dict, complex_ids)
+        node_dict = xml_complexes_to_bel(node_dict, complex_ids, flattened_complexes)
         flat_node_dict = xml_entities_to_bel(notch_genes, notch_compounds, notch_maps, flattened=True)
         flat_node_dict = xml_complexes_to_bel(flat_node_dict, flat_complex_ids, flatten_complexes=flattened_complexes)
 
         self.assertEqual(len(node_dict), 28)
         self.assertEqual(len(flat_node_dict), 28)
+
+    def test_bel_nodes(self):
+        """Test transforming kgml into bel nodes"""
+
+        notch_summary = pybel_summary(self.notch_bel)
+        notch_summary_flatten = pybel_summary(self.notch_bel_flatten)
+
+        print(notch_summary_flatten)
+
+        self.assertEqual(notch_summary['Protein'], 48)
+        self.assertEqual(notch_summary['Composite'], 15)
+        self.assertEqual(notch_summary['Complex'], 4)
+        self.assertEqual(notch_summary['BiologicalProcess'], 2)

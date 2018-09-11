@@ -29,10 +29,11 @@ log = logging.getLogger(__name__)
 """Populate empty BEL graph with KEGG pathway entities and interactions"""
 
 
-def kegg_to_bel(path):
+def kegg_to_bel(path, flatten=False):
     """Convert KGML file to a BELGraph.
 
     :param str path: path to KGML file
+    :param bool flatten: flat nodes
     :rtype: BELGraph
     """
     # Load xml
@@ -63,12 +64,17 @@ def kegg_to_bel(path):
     reactions_dict = get_reaction_pathway_edges(xml_tree, substrates_dict, products_dict)
 
     # Get complexes
-    complex_ids, flattened_complexes = get_complex_components(xml_tree, genes_dict, flattened=False)
+    complex_ids, flattened_complexes = get_complex_components(xml_tree, genes_dict, flattened=flatten)
 
     # Add nodes and edges to graph
-    nodes = xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=False)
-    # if flattened, then kwargs flatten_complexes = flattened_complexes
-    nodes = xml_complexes_to_bel(graph, nodes, complex_ids)
+    nodes = xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=flatten)
+
+    nodes = xml_complexes_to_bel(
+        graph=graph,
+        node_dict=nodes,
+        complex_ids=complex_ids,
+        flatten_complexes=flattened_complexes if flatten else None
+    )
 
     add_edges(graph, relations_list, nodes)
     add_reaction_edges(graph, reactions_dict, nodes)
@@ -114,7 +120,7 @@ def xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=
     return node_dict
 
 
-def xml_complexes_to_bel(graph, node_dict, complex_ids, **kwargs):
+def xml_complexes_to_bel(graph, node_dict, complex_ids, flatten_complexes=None):
     """ Convert complexes in XML to BEL nodes where each complex is made up of proteins
     and/or composites (i.e. groups of related proteins)
 
@@ -126,9 +132,7 @@ def xml_complexes_to_bel(graph, node_dict, complex_ids, **kwargs):
     """
     member_dict = defaultdict(list)
 
-    if 'flatten_complexes' in kwargs:
-
-        flatten_complexes = kwargs.get('flatten_complexes')
+    if flatten_complexes is not None:
         for node_id, node_att in flatten_complexes.items():
             node_dict[node_id] = flatten_complex_to_bel_node(graph, node_att)
 
