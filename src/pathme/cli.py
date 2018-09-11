@@ -18,11 +18,11 @@ from pathme.constants import (
     RDF_REACTOME
 )
 from pathme.constants import DEFAULT_CACHE_CONNECTION
-from pathme.kegg.utils import download_kgml_files, get_kegg_pathway_ids
 from pathme.kegg.convert_to_bel import kegg_to_bel
+from pathme.kegg.utils import download_kgml_files, get_kegg_pathway_ids
 from pathme.reactome.rdf_sparql import reactome_to_bel, get_reactome_statistics
 from pathme.reactome.utils import untar_file
-from pathme.utils import make_downloader, statistics_to_df
+from pathme.utils import make_downloader, statistics_to_df, get_files_in_folder
 from pathme.wikipathways.rdf_sparql import get_wikipathways_statistics, wikipathways_to_pybel
 from pathme.wikipathways.utils import (
     get_file_name_from_url,
@@ -65,10 +65,16 @@ def download(connection):
 
 
 @kegg.command()
-def populate():
+@click.option('-f', '--flatten', is_flag=False)
+def populate(flatten):
     """Populate KEGG into PyBEL database."""
-    kegg_to_bel('/home/ddomingofernandez/Projects/compath/PathMe/tests/resources/kegg/hsa04330.xml')
+    KEGG_DOWNLOAD_FOLDER = os.path.join(DATA_DIR, KEGG)
 
+    for file in get_files_in_folder(KEGG_DOWNLOAD_FOLDER):
+        kegg_to_bel(
+            path=os.path.join(KEGG_DOWNLOAD_FOLDER, file),
+            flatten=True if flatten else False
+        )
 
 
 """WikiPathways"""

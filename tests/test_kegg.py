@@ -16,9 +16,10 @@ class TestKegg(DatabaseMixin):
         """Parse two examples files."""
         self.notch_tree = import_xml_etree(NOTCH_XML)
         self.glycolysis_tree = import_xml_etree(GLYCOLYSIS_XML)
-        self.notch_bel = kegg_to_bel(NOTCH_XML)
+        self.notch_bel_unflatten = kegg_to_bel(NOTCH_XML)
         self.notch_bel_flatten = kegg_to_bel(NOTCH_XML, flatten=True)
-        self.glycolisis_bel = kegg_to_bel(GLYCOLYSIS_XML)
+        self.glycolisis_bel_unflatten = kegg_to_bel(GLYCOLYSIS_XML)
+        self.glycolisis_bel_flatten = kegg_to_bel(GLYCOLYSIS_XML, flatten=True)
 
     def test_get_entities_from_xml(self):
         """Test entity creation."""
@@ -242,12 +243,10 @@ class TestKegg(DatabaseMixin):
     def test_bel_nodes(self):
         """Test transforming kgml into bel nodes"""
 
-        notch_summary = pybel_summary(self.notch_bel)
-        notch_summary_flatten = pybel_summary(self.notch_bel_flatten)
+        notch_summary_unflatten = pybel_summary(self.notch_bel_flatten)
+        notch_summary_flatten = pybel_summary(self.notch_bel_unflatten)
 
-        print(notch_summary_flatten)
-
-        self.assertEqual(notch_summary['Protein'], 48)
-        self.assertEqual(notch_summary['Composite'], 15)
-        self.assertEqual(notch_summary['Complex'], 4)
-        self.assertEqual(notch_summary['BiologicalProcess'], 2)
+        self.assertEqual(notch_summary_unflatten['Protein'], 48)
+        self.assertEqual(notch_summary_unflatten['Composite'], 15)
+        self.assertEqual(notch_summary_unflatten['Complex'], 4)
+        self.assertEqual(notch_summary_unflatten['BiologicalProcess'], 2)
