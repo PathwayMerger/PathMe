@@ -19,6 +19,7 @@ from pathme.constants import (
 )
 from pathme.constants import DEFAULT_CACHE_CONNECTION
 from pathme.kegg.utils import download_kgml_files, get_kegg_pathway_ids
+from pathme.kegg.convert_to_bel import kegg_to_bel
 from pathme.reactome.rdf_sparql import reactome_to_bel, get_reactome_statistics
 from pathme.reactome.utils import untar_file
 from pathme.utils import make_downloader, statistics_to_df
@@ -66,8 +67,8 @@ def download(connection):
 @kegg.command()
 def populate():
     """Populate KEGG into PyBEL database."""
-    # TODO
-    pass
+    kegg_to_bel('/home/ddomingofernandez/Projects/compath/PathMe/tests/resources/kegg/hsa04330.xml')
+
 
 
 """WikiPathways"""
