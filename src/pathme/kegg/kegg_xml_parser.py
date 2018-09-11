@@ -344,6 +344,44 @@ def get_compound_info(compound_name, chebi_manager):
     return node_info
 
 
+def get_xml_types(tree):
+    """Find entity and interaction types in KEGG XML.
+
+    :param xml.etree.ElementTree.ElementTree tree: XML tree
+    :return: count of all entity, relation and reaction types present in XML
+    :rtype: dict
+    """
+    entity_types_dict = defaultdict(int)
+    interaction_types_dict = defaultdict(int)
+
+    for entry in tree.findall('entry'):
+        entry_type = entry.get('type')
+
+        if not entry_type in {'gene', 'ortholog'}:
+            entity_types_dict[entry_type] += 1
+
+        elif entry_type.startswith('gene'):
+            gene_ids = entry.get('name')
+            for gene_id in gene_ids.split(' '):
+                entity_types_dict['gene'] += 1
+
+        elif entry_type.startswith('ortholog'):
+            ortholog_ids = entry.get('name')
+            for ortholog_id in ortholog_ids.split(' '):
+                entity_types_dict['ortholog'] += 1
+
+    for relation in tree.findall('relation'):
+        for subtype in relation.iter('subtype'):
+            relation_subtype = subtype.get('name')
+            interaction_types_dict[relation_subtype] += 1
+
+    for reaction in tree.findall('reaction'):
+        reaction_type = reaction.get('type')
+        interaction_types_dict[reaction_type] += 1
+
+    return entity_types_dict, interaction_types_dict
+
+
 def get_all_reactions(tree, compounds_dict):
     """Get substrates and products with ChEBI or PubChem IDs participating in reactions.
 
