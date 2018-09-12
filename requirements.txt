@@ -1,8 +1,5 @@
-networkx==1.11
 pandas
-pybel
 click
-scipy
 tqdm
 numpy
 rdflib
@@ -14,4 +11,5 @@ bio2bel_chebi
 bio2bel_kegg
 bio2bel_wikipathways
 bio2bel_reactome
+pybel
 pybel_tools

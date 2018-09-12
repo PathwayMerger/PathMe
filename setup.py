@@ -26,9 +26,7 @@ CLASSIFIERS = [
     'Topic :: Scientific/Engineering :: Bio-Informatics'
 ]
 INSTALL_REQUIRES = [
-    'networkx==1.11',
     'pandas',
-    'scipy',
     'tqdm',
     'numpy',
     'rdflib',
