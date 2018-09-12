@@ -68,6 +68,9 @@ def download(connection):
 @click.option('-f', '--flatten', is_flag=False)
 def populate(flatten):
     """Populate KEGG into PyBEL database."""
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+    log.setLevel(logging.INFO)
+
     KEGG_DOWNLOAD_FOLDER = os.path.join(DATA_DIR, KEGG)
 
     if flatten:
