@@ -357,7 +357,7 @@ def get_xml_types(tree):
     for entry in tree.findall('entry'):
         entry_type = entry.get('type')
 
-        if not entry_type in {'gene', 'ortholog'}:
+        if not entry_type in {'gene', 'ortholog', 'compound'}:
             entity_types_dict[entry_type] += 1
 
         elif entry_type.startswith('gene'):
@@ -369,6 +369,9 @@ def get_xml_types(tree):
             ortholog_ids = entry.get('name')
             for ortholog_id in ortholog_ids.split(' '):
                 entity_types_dict['ortholog'] += 1
+
+        elif entry_type.startswith('compound'):
+            entity_types_dict['compound entity'] += 1
 
     for relation in tree.findall('relation'):
         for subtype in relation.iter('subtype'):
