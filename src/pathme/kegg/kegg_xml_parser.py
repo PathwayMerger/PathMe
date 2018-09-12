@@ -5,7 +5,7 @@
 import itertools as itt
 import xml.etree.ElementTree as ET
 from collections import defaultdict
-
+import logging
 import networkx as nx
 import requests
 from bio2bel_chebi import Manager as ChebiManager
@@ -14,6 +14,9 @@ from bio2bel_kegg.constants import API_KEGG_GET
 from bio2bel_kegg.parsers.description import parse_description
 
 from pathme.constants import HGNC
+
+log = logging.getLogger(__name__)
+
 
 """Import XML"""
 
@@ -271,9 +274,16 @@ def get_all_relationships(tree):
             relation_subtype = subtype.get("name")
             relation_value = subtype.get("value")
 
+            # TODO: assume association ??
+            if not relation_subtype:
+                log.warning("No relation type declared")
+
             # Add protein-protein and transcription factor and target gene product interations
             if relation_type in {'PPrel', 'GErel'}:
-                relations_list.append((relation_entry1, relation_entry2, relation_subtype))
+                if not relation_subtype == 'compound':
+                    relations_list.append((relation_entry1, relation_entry2, relation_subtype))
+                else:
+                    relations_list.append((relation_entry1, relation_entry2, 'binding/association'))
 
             # Add Protein-compound interations
             elif relation_type.startswith('PCrel'):
@@ -373,6 +383,8 @@ def get_xml_types(tree):
         elif entry_type.startswith('compound'):
             entity_types_dict['compound entity'] += 1
 
+    entity_types_dict['entities'] = sum(entity_types_dict.values())
+
     for relation in tree.findall('relation'):
         for subtype in relation.iter('subtype'):
             relation_subtype = subtype.get('name')
@@ -381,6 +393,8 @@ def get_xml_types(tree):
     for reaction in tree.findall('reaction'):
         reaction_type = reaction.get('type')
         interaction_types_dict[reaction_type] += 1
+
+    entity_types_dict['interactions'] = sum(interaction_types_dict.values())
 
     return entity_types_dict, interaction_types_dict
 
