@@ -245,8 +245,27 @@ class TestKegg(DatabaseMixin):
 
         notch_summary_unflatten = pybel_summary(self.notch_bel_flatten)
         notch_summary_flatten = pybel_summary(self.notch_bel_unflatten)
+        glycolysis_summary_unflatten = pybel_summary(self.notch_bel_flatten)
+        glycolysis_summary_flatten = pybel_summary(self.notch_bel_unflatten)
 
         self.assertEqual(notch_summary_unflatten['Protein'], 48)
         self.assertEqual(notch_summary_unflatten['Composite'], 15)
         self.assertEqual(notch_summary_unflatten['Complex'], 4)
         self.assertEqual(notch_summary_unflatten['BiologicalProcess'], 2)
+
+        self.assertEqual(notch_summary_flatten['Protein'], 48)
+        self.assertEqual(notch_summary_flatten['Composite'], 0)
+        self.assertEqual(notch_summary_flatten['Complex'], 4)
+        self.assertEqual(notch_summary_flatten['BiologicalProcess'], 2)
+
+        self.assertEqual(glycolysis_summary_flatten['Protein'], 68)
+        self.assertEqual(glycolysis_summary_flatten['Composite'], 0)
+        self.assertEqual(glycolysis_summary_flatten['Complex'], 0)
+        self.assertEqual(glycolysis_summary_flatten['Abundance'], 31)
+        self.assertEqual(glycolysis_summary_flatten['BiologicalProcess'], 7)
+
+        self.assertEqual(glycolysis_summary_unflatten['Protein'], 68)
+        self.assertEqual(glycolysis_summary_unflatten['Composite'], 18)
+        self.assertEqual(glycolysis_summary_unflatten['Complex'], 0)
+        self.assertEqual(glycolysis_summary_flatten['Abundance'], 31)
+        self.assertEqual(glycolysis_summary_unflatten['BiologicalProcess'], 7)
