@@ -78,10 +78,6 @@ def kegg_to_bel(path, flatten=False):
 
     add_edges(graph, relations_list, nodes)
     add_reaction_edges(graph, reactions_dict, nodes)
-    print('number of nodes: {}'.format(graph.number_of_nodes()))
-    print('number of edges: {}'.format(graph.number_of_edges()))
-    print('fn count', structSummary.count_functions(graph))
-    print('edge count', edge_summary.count_relations(graph))
 
     return graph
 

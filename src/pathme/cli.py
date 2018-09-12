@@ -74,6 +74,7 @@ def populate(flatten):
         log.info('Flattening mode activated')
 
     for file in get_files_in_folder(KEGG_DOWNLOAD_FOLDER):
+        log.info('Parsing %s', file)
         kegg_to_bel(
             path=os.path.join(KEGG_DOWNLOAD_FOLDER, file),
             flatten=True if flatten else False
