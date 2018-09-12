@@ -7,6 +7,7 @@ from pathme.kegg.convert_to_bel import kegg_to_bel
 from pathme.kegg.kegg_xml_parser import *
 from pybel.struct import summary as pybel_summary
 from .constants import NOTCH_XML, GLYCOLYSIS_XML, DatabaseMixin
+from pybel_tools.summary import edge_summary
 
 
 class TestKegg(DatabaseMixin):
@@ -244,7 +245,9 @@ class TestKegg(DatabaseMixin):
         """Test transforming kgml into bel nodes"""
 
         notch_summary_unflatten = pybel_summary(self.notch_bel_flatten)
+        notch_summary_unflatten_edges = edge_summary.count_relations(self.notch_bel_unflatten)
         notch_summary_flatten = pybel_summary(self.notch_bel_unflatten)
+
         glycolysis_summary_unflatten = pybel_summary(self.notch_bel_flatten)
         glycolysis_summary_flatten = pybel_summary(self.notch_bel_unflatten)
 
@@ -252,6 +255,9 @@ class TestKegg(DatabaseMixin):
         self.assertEqual(notch_summary_unflatten['Composite'], 15)
         self.assertEqual(notch_summary_unflatten['Complex'], 4)
         self.assertEqual(notch_summary_unflatten['BiologicalProcess'], 2)
+        self.assertEqual(notch_summary_unflatten_edges['decreases'], 6)
+        self.assertEqual(notch_summary_unflatten_edges['increases'], 9)
+        self.assertEqual(notch_summary_unflatten_edges['association'], 1)
 
         self.assertEqual(notch_summary_flatten['Protein'], 48)
         self.assertEqual(notch_summary_flatten['Composite'], 0)
