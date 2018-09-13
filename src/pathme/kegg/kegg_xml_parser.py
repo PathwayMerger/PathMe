@@ -13,6 +13,7 @@ from bio2bel_hgnc import Manager as HgncManager
 from bio2bel_kegg.constants import API_KEGG_GET
 from bio2bel_kegg.parsers.description import parse_description
 
+from pathme.wikipathways.utils import merge_two_dicts
 from pathme.constants import HGNC
 
 log = logging.getLogger(__name__)
@@ -251,6 +252,50 @@ def get_complex_components(tree, genes_dict, flattened=False):
     return complex_ids, flattened_complexes
 
 
+def get_xml_types(tree):
+    """Find entity and interaction types in KEGG XML.
+
+    :param xml.etree.ElementTree.ElementTree tree: XML tree
+    :return: count of all entity, relation and reaction types present in XML
+    :rtype: dict
+    """
+    entity_types_dict = defaultdict(int)
+    interaction_types_dict = defaultdict(int)
+
+    for entry in tree.findall('entry'):
+        entry_type = entry.get('type')
+
+        if not entry_type in {'gene', 'ortholog', 'compound'}:
+            entity_types_dict[entry_type] += 1
+
+        elif entry_type.startswith('gene'):
+            gene_ids = entry.get('name')
+            for gene_id in gene_ids.split(' '):
+                entity_types_dict['gene'] += 1
+
+        elif entry_type.startswith('ortholog'):
+            ortholog_ids = entry.get('name')
+            for ortholog_id in ortholog_ids.split(' '):
+                entity_types_dict['ortholog'] += 1
+
+        if entry_type.startswith('compound'):
+            entity_types_dict['compound entity'] += 1
+
+    for relation in tree.findall('relation'):
+        for subtype in relation.iter('subtype'):
+            relation_subtype = subtype.get('name')
+            interaction_types_dict[relation_subtype] += 1
+
+    for reaction in tree.findall('reaction'):
+        reaction_type = reaction.get('type')
+        interaction_types_dict[reaction_type] += 1
+
+    entity_types_dict['entities'] = sum(entity_types_dict.values())
+    interaction_types_dict['interactions'] = sum(interaction_types_dict.values())
+
+    return merge_two_dicts(entity_types_dict, interaction_types_dict)
+
+
 """Get all interactions in KEGG pathways"""
 
 
@@ -280,10 +325,10 @@ def get_all_relationships(tree):
 
             # Add protein-protein and transcription factor and target gene product interations
             if relation_type in {'PPrel', 'GErel'}:
-                if not relation_subtype == 'compound':
-                    relations_list.append((relation_entry1, relation_entry2, relation_subtype))
-                else:
+                if relation_subtype == 'compound':
                     relations_list.append((relation_entry1, relation_entry2, 'binding/association'))
+                else:
+                    relations_list.append((relation_entry1, relation_entry2, relation_subtype))
 
             # Add Protein-compound interations
             elif relation_type.startswith('PCrel'):
