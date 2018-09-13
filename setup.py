@@ -31,7 +31,7 @@ INSTALL_REQUIRES = [
     'numpy',
     'rdflib',
     'bio2bel',
-    'bio2bel_hgnc',
+    'bio2bel_hgnc>=0.1.1',
     'bio2bel_chebi',
     'bio2bel_kegg',
     'bio2bel_wikipathways',
