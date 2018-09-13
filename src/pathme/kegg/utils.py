@@ -3,15 +3,15 @@
 """This module has utilities method for parsing and handling KEGG KGML files."""
 
 import os
-from collections import defaultdict
 import pandas as pd
 import requests
 import tqdm
-import networkx as nx
+
 from bio2bel_kegg import Manager as KeggManager
 from pathme.wikipathways.utils import get_files_in_folder
-from pathme.kegg.kegg_xml_parser import import_xml_etree, populate_graph, get_node_types, get_edge_types, get_reaction_edge_types
-from ..constants import DATA_DIR, KEGG, KEGG_KGML_URL
+from pathme.kegg.kegg_xml_parser import import_xml_etree, populate_graph, get_node_types, get_edge_types, get_reaction_edge_types, get_xml_types
+from pathme.kegg.convert_to_bel import get_bel_types
+from ..constants import DATA_DIR, KEGG, KEGG_KGML_URL, KEGG_STATS_COLUMN_NAMES
 
 
 def get_kegg_pathway_ids(connection=None):
@@ -43,8 +43,7 @@ def download_kgml_files(kegg_pathway_ids):
         with open(os.path.join(DATA_DIR, KEGG, '{}.xml'.format(kegg_id)), 'w+') as file:
             file.write(request.text)
             file.close()
-
-
+            
 
 def parse_kegg(path):
     """Parse a folder and returns graph objects.
@@ -64,117 +63,48 @@ def parse_kegg(path):
     return pathways
 
 
-def get_undefined_node_statistics_in_xml(path):
-    """Parse a folder and get additional entity type stats for each pathway in XML.
+def get_kegg_statistics(path):
+    """Parse a folder and get KEGG statistics.
 
-    :param str path: path to folder containing XML files
-    :return additional entity node types in XML
-    :rtype: pandas.DataFrame
-    """
-    additional_node_types = []
-
-    files = get_files_in_folder(path)
-
-    for file_name in tqdm.tqdm(files, desc='Parsing KEGG files for undefined entity types'):
-        tree = import_xml_etree(os.path.join(path, file_name))
-
-        # Get additional node types dictionary with statistics
-        undefined_nodes_dict = get_node_types(tree)
-        undefined_nodes_dict['filename'] = file_name.strip('.xml')
-        additional_node_types.append(undefined_nodes_dict)
-
-    # Add pathway IDs with additional node types data to DataFrame
-    df = pd.DataFrame.from_dict(additional_node_types)
-    df = df.set_index('filename')
-
-    return df
-
-
-def get_pathway_entity_types(pathway):
-    """Get entity type stats for all nodes in networkx pathway
-
-    :param str pathway: graph object
-    :return: count of all entity types present in graph
-    :rtype: dict
-    """
-    entity_types_in_pathway = defaultdict(int)
-
-    # Get node type attribute from graph
-    kegg_path = nx.get_node_attributes(pathway, 'kegg_type')
-
-    for key, value in kegg_path.items():
-        entity_types_in_pathway[value] += 1
-
-    return entity_types_in_pathway
-
-
-def get_node_type_statistics_in_network(pathways):
-    """Get entity type stats for all nodes in graph objects.
-
-    :param list pathways: list of pathway IDs and networkx pathways
-    :return all entity node types in graphs
-    :rtype: pandas.DataFrame
-    """
-    path_types = []
-
-    # Get node types dictionary with statistics
-    for file_name, path in pathways:
-        entity_type_dict = get_pathway_entity_types(path)
-        entity_type_dict['filename'] = file_name.strip('.xml')
-        path_types.append(entity_type_dict)
-
-    # Add pathway ID with node type info to dataframe
-    kegg_nodes_df = pd.DataFrame.from_dict(path_types)
-    kegg_nodes_df = kegg_nodes_df.set_index('filename')
-
-    return kegg_nodes_df
-
-
-def get_xml_relation_type_statistics(path):
-    """Parse a folder and get interaction type statistics in XML.
-
+    :param graph: path
     :param str path: path to folder containing XML files
     :return: relation edge types in XML
     :rtype: pandas.DataFrame
     """
-    edge_types = []
+    df = pd.DataFrame()
+    export_file_name = 'KEGG_pathway_stats_unflattened.csv'
 
+    # Get list of all files in folder
     files = get_files_in_folder(path)
 
-    for file_name in tqdm.tqdm(files, desc='Parsing KEGG files for relation types'):
-        tree = import_xml_etree(os.path.join(path, file_name))
-        # Get dictionary of all edge types in XML
-        relation_type_dict = get_edge_types(tree)
-        relation_type_dict['filename'] = file_name.strip('.xml')
-        edge_types.append(relation_type_dict)
+    for file_name in tqdm.tqdm(files, desc='Parsing KGML files and BEL graphs for entities and relation stats'):
+        pathway_names = []
+        file_path = os.path.join(path, file_name)
+        tree = import_xml_etree(file_path)
+        root = tree.getroot()
+        pathway_names.append(root.attrib['title'])
 
-    # Add pathway id with additional node types data to dataframe
-    relations_df = pd.DataFrame.from_dict(edge_types)
-    relations_df = relations_df.set_index('filename')
+        # Get dictionary of all entity and interaction types in XML
+        xml_statistics_dict = get_xml_types(tree)
 
-    return relations_df
+        # Get dictionary of all node and edge types in BEL Graph
+        bel_statistics_dict = get_bel_types(file_path, flatten=False)
 
+        # Get dictionary with all XML and BEL graph stats
+        xml_statistics_dict.update(bel_statistics_dict)
 
-def get_xml_reaction_type_statistics(path):
-    """Parse a folder and get reaction interaction type statistics in XML.
+        # Update dictionary of all XML and BEL graph stats with corresponding column names
+        all_kegg_statistics = {
+            KEGG_STATS_COLUMN_NAMES[key]: value
+            for key, value in xml_statistics_dict.items()
+        }
 
-    :param str path: path to folder containing XML files
-    :return: reaction edge types in XML
-    :rtype: pandas.DataFrame
-    """
-    reaction_edge_types = []
+        # Add pathway stat rows to dataframe
+        pathway_data = pd.DataFrame(all_kegg_statistics,
+                                    index=pathway_names,
+                                    columns=KEGG_STATS_COLUMN_NAMES.values(),
+                                    dtype=int)
+        df = df.append(pathway_data)
 
-    files = get_files_in_folder(path)
-
-    for file_name in tqdm.tqdm(files, desc='Parsing KEGG files for relation types'):
-        tree = import_xml_etree(os.path.join(path, file_name))
-        # Get dictionary of all edge types in XML
-        reaction_type_dict = get_reaction_edge_types(tree)
-        reaction_type_dict['filename'] = file_name.strip('.xml')
-        reaction_edge_types.append(reaction_type_dict)
-
-    # Add pathway id with additional node types data to dataframe
-    reactions_df = pd.DataFrame.from_dict(reaction_edge_types)
-    reactions_df = reactions_df.set_index('filename')
-
-    return reactions_df
+    df.to_csv(export_file_name, sep='\t')
+    return df
