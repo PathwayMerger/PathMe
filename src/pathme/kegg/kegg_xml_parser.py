@@ -136,31 +136,6 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
     return entry_dict, compound_dict, map_dict, ortholog_dict
 
 
-def get_node_types(tree):
-    """Find entity types in XML.
-
-    :param xml.etree.ElementTree.ElementTree tree: XML tree
-    :return: count of other entity types present in XML
-    :rtype: dict
-    """
-    undefined_dict = defaultdict(int)
-
-    for entry in tree.findall("entry"):
-
-        entry_type = entry.get("type")
-
-        if entry_type.startswith('gene'):
-            continue
-        elif entry_type.startswith('compound'):
-            continue
-        elif entry_type.startswith('group'):
-            continue
-        else:
-            undefined_dict[entry_type] += 1
-
-    return undefined_dict
-
-
 def get_entities_in_complex(tree, entry_dict):
     """Find all entities participating in a complex in XML.
 
@@ -362,23 +337,6 @@ def get_all_relationships(tree):
     return relations_list
 
 
-def get_edge_types(tree):
-    """Get edge types of relations between 2 entities in XML.
-
-    :param xml.etree.ElementTree.ElementTree tree: XML tree
-    :return: count of types of relations present in XML
-    :rtype: dict
-    """
-    edge_types_dict = defaultdict(int)
-
-    for relation in tree.findall("relation"):
-        for subtype in relation.iter('subtype'):
-            relation_subtype = subtype.get("name")
-            edge_types_dict[relation_subtype] += 1
-
-    return edge_types_dict
-
-
 def get_compound_info(compound_name, chebi_manager):
     """Return KEGG compound information.
 
@@ -421,51 +379,6 @@ def get_compound_info(compound_name, chebi_manager):
                         node_info['ChEBI name'] = chebi_entry.name
 
     return node_info
-
-
-def get_xml_types(tree):
-    """Find entity and interaction types in KEGG XML.
-
-    :param xml.etree.ElementTree.ElementTree tree: XML tree
-    :return: count of all entity, relation and reaction types present in XML
-    :rtype: dict
-    """
-    entity_types_dict = defaultdict(int)
-    interaction_types_dict = defaultdict(int)
-
-    for entry in tree.findall('entry'):
-        entry_type = entry.get('type')
-
-        if not entry_type in {'gene', 'ortholog', 'compound'}:
-            entity_types_dict[entry_type] += 1
-
-        elif entry_type.startswith('gene'):
-            gene_ids = entry.get('name')
-            for gene_id in gene_ids.split(' '):
-                entity_types_dict['gene'] += 1
-
-        elif entry_type.startswith('ortholog'):
-            ortholog_ids = entry.get('name')
-            for ortholog_id in ortholog_ids.split(' '):
-                entity_types_dict['ortholog'] += 1
-
-        elif entry_type.startswith('compound'):
-            entity_types_dict['compound entity'] += 1
-
-    entity_types_dict['entities'] = sum(entity_types_dict.values())
-
-    for relation in tree.findall('relation'):
-        for subtype in relation.iter('subtype'):
-            relation_subtype = subtype.get('name')
-            interaction_types_dict[relation_subtype] += 1
-
-    for reaction in tree.findall('reaction'):
-        reaction_type = reaction.get('type')
-        interaction_types_dict[reaction_type] += 1
-
-    entity_types_dict['interactions'] = sum(interaction_types_dict.values())
-
-    return entity_types_dict, interaction_types_dict
 
 
 def get_all_reactions(tree, compounds_dict):
