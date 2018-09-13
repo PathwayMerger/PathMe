@@ -5,10 +5,6 @@ import logging
 from collections import defaultdict
 from itertools import product
 
-from bio2bel_chebi import Manager as ChebiManager
-from bio2bel_hgnc import Manager as HgncManager
-from pybel_tools.summary import edge_summary
-
 from pathme.constants import CHEBI, HGNC, KEGG_CITATION, KEGG_MODIFICATIONS, KEGG
 from pathme.kegg.kegg_xml_parser import (
     get_all_reactions,
@@ -22,17 +18,18 @@ from pybel import BELGraph
 from pybel.dsl.edges import activity
 from pybel.dsl.node_classes import CentralDogma
 from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
-from pybel.struct import summary as structSummary
 
 log = logging.getLogger(__name__)
 
 """Populate empty BEL graph with KEGG pathway entities and interactions"""
 
 
-def kegg_to_bel(path, flatten=False):
+def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False):
     """Convert KGML file to a BELGraph.
 
     :param str path: path to KGML file
+    :param bio2bel_hgnc.Manager hgnc_manager: HGNC manager
+    :param bio2bel_chebi.Manager chebi_manager: ChEBI manager
     :param bool flatten: flat nodes
     :rtype: BELGraph
     """
@@ -48,12 +45,6 @@ def kegg_to_bel(path, flatten=False):
         authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
         contact='daniel.domingo.fernandez@scai.fraunhofer.de'
     )
-
-    # Initialize HgncManager
-    hgnc_manager = HgncManager()
-
-    # Initialize ChebiManager
-    chebi_manager = ChebiManager()
 
     # Parse file and get entities and interactions
     genes_dict, compounds_dict, maps_dict, orthologs_dict = get_entity_nodes(xml_tree, hgnc_manager, chebi_manager)

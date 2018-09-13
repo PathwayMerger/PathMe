@@ -7,6 +7,7 @@ import os
 import time
 
 import click
+from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
 
 from pathme.constants import (
@@ -73,6 +74,12 @@ def populate(flatten):
 
     KEGG_DOWNLOAD_FOLDER = os.path.join(DATA_DIR, KEGG)
 
+    log.info('Initiating HGNC Manager')
+    hgnc_manager = HgncManager()
+
+    log.info('Initiating ChEBI Manager')
+    chebi_manager = ChebiManager()
+
     if flatten:
         log.info('Flattening mode activated')
 
@@ -80,6 +87,8 @@ def populate(flatten):
         log.info('Parsing %s', file)
         kegg_to_bel(
             path=os.path.join(KEGG_DOWNLOAD_FOLDER, file),
+            hgnc_manager=hgnc_manager,
+            chebi_manager=chebi_manager,
             flatten=True if flatten else False
         )
 
