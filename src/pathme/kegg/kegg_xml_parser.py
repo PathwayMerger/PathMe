@@ -103,7 +103,6 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
                                 else:
                                     node_info['UniProt'] = identifier
 
-
                     entry_dict[entry_id].append(node_info)
 
         elif kegg_type.startswith('compound'):
@@ -395,6 +394,9 @@ def get_compound_info(compound_name, chebi_manager):
 
     elif compound_name.startswith('dr:'):
         compound_name.strip('dr:')
+
+    elif compound_name.startswith('gl:'):
+        compound_name.strip('gl:')
 
     kegg_url = API_KEGG_GET.format(compound_name)
 

@@ -251,13 +251,18 @@ def compound_to_bel(graph, node):
             graph.add_node_from_data(compound)
             return compound
 
-        else:
+        elif 'PubChem' in attribute:
 
             identifier = attribute['PubChem']
             name = attribute['PubChem']
             namespace = 'PubChem'
 
             compound = abundance(namespace=namespace, name=name, identifier=identifier)
+            graph.add_node_from_data(compound)
+            return compound
+
+        else:
+            compound = abundance(namespace=KEGG, name=attribute['compound_name'], identifier=attribute['compound_name'])
             graph.add_node_from_data(compound)
             return compound
 
