@@ -46,7 +46,7 @@ def download_kgml_files(kegg_pathway_ids):
             file.close()
 
 
-def get_kegg_statistics(path, hgnc_manager, chebi_manager):
+def get_kegg_statistics(path, hgnc_manager, chebi_manager, flatten=None):
     """Parse a folder and get KEGG statistics.
 
     :param graph: path
@@ -57,7 +57,7 @@ def get_kegg_statistics(path, hgnc_manager, chebi_manager):
     :rtype: pandas.DataFrame
     """
     df = pd.DataFrame()
-    export_file_name = 'KEGG_pathway_stats_unflattened.csv'
+    export_file_name = 'KEGG_pathway_stats_{}.csv'.format('flatten' if flatten else 'non_flatten')
 
     # Get list of all files in folder
     files = get_files_in_folder(path)
@@ -73,7 +73,7 @@ def get_kegg_statistics(path, hgnc_manager, chebi_manager):
         xml_statistics_dict = get_xml_types(tree)
 
         # Get dictionary of all node and edge types in BEL Graph
-        bel_statistics_dict = get_bel_types(file_path, hgnc_manager, chebi_manager, flatten=False)
+        bel_statistics_dict = get_bel_types(file_path, hgnc_manager, chebi_manager, flatten=flatten)
 
         # Get dictionary with all XML and BEL graph stats
         xml_statistics_dict.update(bel_statistics_dict)

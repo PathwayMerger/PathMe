@@ -200,6 +200,11 @@ def flatten_gene_to_bel_node(graph, node):
             graph.add_node_from_data(protein_node)
             return protein_node
 
+        elif 'UniProt' in node_dict:
+            protein_node = protein(namespace='UniProt', name=node_dict['UniProt'], identifier=node_dict['UniProt'])
+            graph.add_node_from_data(protein_node)
+            return protein_node
+
         else:
             protein_node = protein(namespace=KEGG, name=node_dict['kegg_id'], identifier=node_dict['kegg_id'])
             graph.add_node_from_data(protein_node)
@@ -212,6 +217,10 @@ def flatten_gene_to_bel_node(graph, node):
         if HGNC in node_dict:
             protein_node = protein(namespace=HGNC, name=node_dict['HGNC symbol'], identifier=node_dict[HGNC])
             graph.add_node_from_data(protein_node)
+            proteins_list.append(protein_node)
+
+        elif 'UniProt' in node_dict:
+            protein_node = protein(namespace='UniProt', name=node_dict['UniProt'], identifier=node_dict['UniProt'])
             proteins_list.append(protein_node)
 
         else:
@@ -279,14 +288,18 @@ def flatten_complex_to_bel_node(graph, node):
     """
     members = list()
 
-    for attribute in node:
+    for node_dict in node:
 
-        if HGNC in attribute:
-            protein_node = protein(namespace=HGNC, name=attribute['HGNC symbol'], identifier=attribute[HGNC])
+        if HGNC in node_dict:
+            protein_node = protein(namespace=HGNC, name=node_dict['HGNC symbol'], identifier=node_dict[HGNC])
+            members.append(protein_node)
+
+        elif 'UniProt' in node_dict:
+            protein_node = protein(namespace='UniProt', name=node_dict['UniProt'], identifier=node_dict['UniProt'])
             members.append(protein_node)
 
         else:
-            protein_node = protein(namespace=KEGG, name=attribute['kegg_id'], identifier=attribute['kegg_id'])
+            protein_node = protein(namespace=KEGG, name=node_dict['kegg_id'], identifier=node_dict['kegg_id'])
             members.append(protein_node)
 
     complex_members = complex_abundance(members=members)
@@ -432,7 +445,7 @@ def add_simple_edge(graph, u, v, relation_type):
         raise ValueError('Unexpected relation type {}'.format(relation_type))
 
 
-def get_bel_types(path, hgnc_manager, chebi_manager, flatten=False):
+def get_bel_types(path, hgnc_manager, chebi_manager, flatten=None):
     """Get all BEL node and edge type statistics.
 
     :param str path: path to KGML file

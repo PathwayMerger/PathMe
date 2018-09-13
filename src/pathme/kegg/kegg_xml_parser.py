@@ -96,7 +96,13 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
                                 hgnc_entry = hgnc_entry[0]  # Use the first element queried
 
                                 node_info[HGNC] = identifier
-                                node_info['HGNC symbol'] = hgnc_entry.symbol
+
+                                if hgnc_entry.symbol:
+                                    node_info['HGNC symbol'] = hgnc_entry.symbol
+
+                                else:
+                                    node_info['UniProt'] = identifier
+
 
                     entry_dict[entry_id].append(node_info)
 
