@@ -93,6 +93,8 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
                                 if not hgnc_entry:
                                     continue
 
+                                hgnc_entry = hgnc_entry[0]  # Use the first element queried
+
                                 node_info[HGNC] = identifier
                                 node_info['HGNC symbol'] = hgnc_entry.symbol
 
