@@ -3,21 +3,18 @@
 """This module contains functions to parse KGML files."""
 
 import itertools as itt
+import logging
 import xml.etree.ElementTree as ET
 from collections import defaultdict
-import logging
-import networkx as nx
+
 import requests
-from bio2bel_chebi import Manager as ChebiManager
-from bio2bel_hgnc import Manager as HgncManager
 from bio2bel_kegg.constants import API_KEGG_GET
 from bio2bel_kegg.parsers.description import parse_description
 
-from pathme.wikipathways.utils import merge_two_dicts
 from pathme.constants import HGNC
+from pathme.wikipathways.utils import merge_two_dicts
 
 log = logging.getLogger(__name__)
-
 
 """Import XML"""
 
@@ -87,8 +84,17 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
                                 if not hgnc_entry:
                                     continue
 
-                            node_info[resource] = identifier
-                            node_info['HGNC symbol'] = hgnc_entry.symbol
+                                node_info[HGNC] = identifier
+                                node_info['HGNC symbol'] = hgnc_entry.symbol
+
+                            else:
+                                hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(identifier)
+
+                                if not hgnc_entry:
+                                    continue
+
+                                node_info[HGNC] = identifier
+                                node_info['HGNC symbol'] = hgnc_entry.symbol
 
                     entry_dict[entry_id].append(node_info)
 

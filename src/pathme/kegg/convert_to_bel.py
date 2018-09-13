@@ -18,6 +18,7 @@ from pybel import BELGraph
 from pybel.dsl.edges import activity
 from pybel.dsl.node_classes import CentralDogma
 from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
+from pybel.struct.summary import count_functions, edge_summary
 
 log = logging.getLogger(__name__)
 
@@ -136,7 +137,6 @@ def xml_complexes_to_bel(graph, node_dict, complex_ids, flatten_complexes=None):
 
 
 def complexes_to_bel_node(graph, members):
-
     complex_node = complex_abundance(members=members)
     graph.add_node_from_data(complex_node)
 
@@ -158,7 +158,7 @@ def gene_to_bel_node(graph, node):
         for attribute in node:
 
             if HGNC in attribute:
-                protein_node = protein(namespace=HGNC, name=attribute[HGNC], identifier=attribute['HGNC symbol'])
+                protein_node = protein(namespace=HGNC, name=attribute['HGNC symbol'], identifier=attribute[HGNC])
                 graph.add_node_from_data(protein_node)
                 return protein_node
 
@@ -194,13 +194,9 @@ def flatten_gene_to_bel_node(graph, node):
     # if only 1 protein node, return corresponding BEL node
     if len(node) == 1:
         node_dict = node[0]
-        if HGNC in node_dict:
-            protein_node = protein(namespace=HGNC, name=node_dict['HGNC symbol'], identifier=node_dict['HGNC'])
-            graph.add_node_from_data(protein_node)
-            return protein_node
 
-        elif 'UniProt' in node_dict:
-            protein_node = protein(namespace='UniProt', name=node_dict['UniProt'], identifier=node_dict['UniProt'])
+        if HGNC in node_dict:
+            protein_node = protein(namespace=HGNC, name=node_dict['HGNC symbol'], identifier=node_dict[HGNC])
             graph.add_node_from_data(protein_node)
             return protein_node
 
@@ -215,11 +211,6 @@ def flatten_gene_to_bel_node(graph, node):
 
         if HGNC in node_dict:
             protein_node = protein(namespace=HGNC, name=node_dict['HGNC symbol'], identifier=node_dict[HGNC])
-            graph.add_node_from_data(protein_node)
-            proteins_list.append(protein_node)
-
-        elif 'UniProt' in node_dict:
-            protein_node = protein(namespace='UniProt', name=node_dict['UniProt'], identifier=node_dict['UniProt'])
             graph.add_node_from_data(protein_node)
             proteins_list.append(protein_node)
 
@@ -291,11 +282,7 @@ def flatten_complex_to_bel_node(graph, node):
     for attribute in node:
 
         if HGNC in attribute:
-            protein_node = protein(namespace=HGNC, name=attribute['HGNC symbol'], identifier=attribute['HGNC'])
-            members.append(protein_node)
-
-        elif 'UniProt' in attribute:
-            protein_node = protein(namespace='UniProt', name=attribute['UniProt'], identifier=attribute['UniProt'])
+            protein_node = protein(namespace=HGNC, name=attribute['HGNC symbol'], identifier=attribute[HGNC])
             members.append(protein_node)
 
         else:
@@ -445,26 +432,25 @@ def add_simple_edge(graph, u, v, relation_type):
         raise ValueError('Unexpected relation type {}'.format(relation_type))
 
 
-def get_bel_types(path, flatten=False):
+def get_bel_types(path, hgnc_manager, chebi_manager, flatten=False):
     """Get all BEL node and edge type statistics.
 
     :param str path: path to KGML file
+    :param bio2bel_hgnc.Manager hgnc_manager: HGNC manager
+    :param bio2bel_chebi.Manager chebi_manager: ChEBI manager
     :param bool flatten: flat nodes
     :return: count of all nodes and edges in BEL graph
     :rtype: dict
     """
     bel_stats = {}
 
-    if flatten == False:
-        bel_graph = kegg_to_bel(path, flatten=False)
-    else:
-        bel_graph = kegg_to_bel(path, flatten=True)
+    bel_graph = kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=True if flatten else False)
 
     bel_stats['nodes'] = bel_graph.number_of_nodes()
     bel_stats['edges'] = bel_graph.number_of_edges()
 
     # Get count of all BEL function types
-    bel_functions_dict = structSummary.count_functions(bel_graph)
+    bel_functions_dict = count_functions(bel_graph)
     bel_stats.update(bel_functions_dict)
 
     # Get count of all BEL edge types
