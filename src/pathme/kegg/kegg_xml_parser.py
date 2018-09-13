@@ -94,9 +94,11 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
 
         elif kegg_type.startswith('compound'):
 
-            compound_info = get_compound_info(kegg_ids, chebi_manager)
-            if compound_info:
-                compound_dict[entry_id].append(compound_info)
+            for compound_id in kegg_ids.split(' '):
+                compound_info = get_compound_info(compound_id, chebi_manager)
+
+                if compound_info:
+                    compound_dict[entry_id].append(compound_info)
 
         elif kegg_type.startswith('map'):
 
@@ -374,7 +376,13 @@ def get_compound_info(compound_name, chebi_manager):
     """
     node_info = {'compound_name': compound_name}
 
-    kegg_url = API_KEGG_GET.format(compound_name.strip('cdp:'))
+    if compound_name.startswith('cpd:'):
+        compound_name.strip('cpd:')
+
+    elif compound_name.startswith('dr:'):
+        compound_name.strip('dr:')
+
+    kegg_url = API_KEGG_GET.format(compound_name)
 
     node_meta_data = parse_description(requests.get(kegg_url))
 
