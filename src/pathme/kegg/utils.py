@@ -43,24 +43,6 @@ def download_kgml_files(kegg_pathway_ids):
         with open(os.path.join(DATA_DIR, KEGG, '{}.xml'.format(kegg_id)), 'w+') as file:
             file.write(request.text)
             file.close()
-            
-
-def parse_kegg(path):
-    """Parse a folder and returns graph objects.
-
-    :param str path: path to folder containing XML files
-    :rtype: list[networkx.MultiDiGraph]
-    """
-    pathways = []
-
-    files = get_files_in_folder(path)
-
-    for file_name in tqdm.tqdm(files, desc='Parsing KEGG files'):
-        file_path = os.path.join(path, file_name)
-
-        pathways.append((file_name, populate_graph(file_path)))
-
-    return pathways
 
 
 def get_kegg_statistics(path):
