@@ -272,7 +272,7 @@ def get_reactome_statistics(resource_file, hgnc_manager):
     :param bio2bel_hgnc.Manager hgnc_manager: Hgnc Manager
     """
     log.info('Parsing Reactome RDF file')
-    rdf_graph = parse_rdf(resource_file, fmt='xml')
+    rdf_graph = parse_rdf(resource_file, format='xml')
 
     spaqrl_all_pathways = rdf_graph.query(GET_ALL_PATHWAYS, initNs=PREFIXES)
 
@@ -309,7 +309,7 @@ def rdf_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager):
 
     nodes, interactions = _get_pathway_components(pathway_uri, rdf_graph)
 
-    return reactome_to_bel(nodes, interactions, pathway_metadata, hgnc_manager)
+    return convert_to_bel(nodes, interactions, pathway_metadata, hgnc_manager)
 
 
 def reactome_to_bel(resource_file, hgnc_manager):
@@ -320,7 +320,7 @@ def reactome_to_bel(resource_file, hgnc_manager):
     :return:
     """
     log.info('Parsing Reactome RDF file')
-    rdf_graph = parse_rdf(resource_file, fmt='xml')
+    rdf_graph = parse_rdf(resource_file, format='xml')
 
     reactome_pathways = dict()
 

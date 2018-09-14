@@ -17,11 +17,11 @@ from pathme.utils import parse_id_uri
 log = logging.getLogger(__name__)
 
 __all__ = [
-    'reactome_to_bel',
+    'convert_to_bel',
 ]
 
 
-def reactome_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]], pathway_info: Dict,
+def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]], pathway_info: Dict,
                     hgnc_manager) -> BELGraph:
     uri_id = pathway_info['uri_reactome_id']
 

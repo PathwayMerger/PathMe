@@ -13,7 +13,7 @@ from pybel_tools import summary
 from rdflib.namespace import Namespace, RDFS, RDF, DCTERMS, DC
 
 from pathme.utils import parse_rdf, parse_namespace_uri
-from pathme.wikipathways.convert_to_bel import wikipathways_to_bel
+from pathme.wikipathways.convert_to_bel import convert_to_bel
 from pathme.wikipathways.utils import debug_pathway_info, debug_global_statistics, query_result_to_dict
 
 """SPARQL string queries"""
@@ -162,7 +162,7 @@ def rdf_pathway_to_bel(graph) -> BELGraph:
 
     pathway_metadata = _get_pathway_metadata(graph)
 
-    return wikipathways_to_bel(nodes, interactions, pathway_metadata)
+    return convert_to_bel(nodes, interactions, pathway_metadata)
 
 
 """Statistics functions"""
