@@ -6845,9 +6845,9 @@
           "PPARgamma"
         ],
         "location": "3p25.2",
-        "date_approved_reserved": "1996-03-12T00:00:00Z",
-        "date_modified": "2016-10-05T00:00:00Z",
-        "date_name_changed": "2016-01-27T00:00:00Z",
+        "date_approved_reserved": "1996-03-12",
+        "date_modified": "2016-10-05",
+        "date_name_changed": "2016-01-27",
         "ena": [
           "X90563"
         ],
