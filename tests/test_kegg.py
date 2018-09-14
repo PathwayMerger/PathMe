@@ -7,7 +7,7 @@ from pybel_tools.summary import edge_summary
 from pathme.kegg.convert_to_bel import kegg_to_bel, xml_entities_to_bel, xml_complexes_to_bel
 from pathme.kegg.kegg_xml_parser import *
 from pybel import BELGraph
-from .constants import NOTCH_XML, GLYCOLYSIS_XML, DatabaseMixin
+from .constants import NOTCH_XML, GLYCOLYSIS_XML, PPAR_XML, DatabaseMixin
 
 
 class TestKegg(DatabaseMixin):
@@ -19,11 +19,13 @@ class TestKegg(DatabaseMixin):
         self.glycolysis_tree = import_xml_etree(GLYCOLYSIS_XML)
         self.notch_bel_unflatten = kegg_to_bel(NOTCH_XML, self.hgnc_manager, self.chebi_manager)
         self.notch_bel_flatten = kegg_to_bel(NOTCH_XML, self.hgnc_manager, self.chebi_manager, flatten=True)
-        self.glycolisis_bel_unflatten = kegg_to_bel(GLYCOLYSIS_XML, self.hgnc_manager, self.chebi_manager)
-        self.glycolisis_bel_flatten = kegg_to_bel(GLYCOLYSIS_XML, self.hgnc_manager, self.chebi_manager, flatten=True)
+        self.glycolysis_bel_unflatten = kegg_to_bel(GLYCOLYSIS_XML, self.hgnc_manager, self.chebi_manager)
+        self.glycolysis_bel_flatten = kegg_to_bel(GLYCOLYSIS_XML, self.hgnc_manager, self.chebi_manager, flatten=True)
+        self.ppar_bel_unflatten = kegg_to_bel(PPAR_XML, self.hgnc_manager, self.chebi_manager)
+        self.ppar_bel_flatten = kegg_to_bel(PPAR_XML, self.hgnc_manager, self.chebi_manager)
 
-        self.glycolisis_empty_graph = BELGraph(
-            name='Glycolisis',
+        self.glycolysis_empty_graph = BELGraph(
+            name='Glycolysis',
             version='1.0.0',
             description='Glycolisis',
             pathway_id='Glycolisis',
@@ -31,7 +33,7 @@ class TestKegg(DatabaseMixin):
             contact='daniel.domingo.fernandez@scai.fraunhofer.de'
         )
 
-        self.glycolisis_empty_flatten_graph = BELGraph(
+        self.glycolysis_empty_flatten_graph = BELGraph(
             name='Glycolisis flatten',
             version='1.0.0',
             description='Glycolisis',
@@ -253,14 +255,14 @@ class TestKegg(DatabaseMixin):
         )
 
         glycolysis_nodes = xml_entities_to_bel(
-            graph=self.glycolisis_empty_graph,
+            graph=self.glycolysis_empty_graph,
             genes_dict=glycolysis_genes,
             compounds_dict=glycolysis_compounds,
             maps_dict=glycolysis_maps,
             flattened=False
         )
         flat_glycolysis_nodes = xml_entities_to_bel(
-            graph=self.glycolisis_empty_flatten_graph,
+            graph=self.glycolysis_empty_flatten_graph,
             genes_dict=glycolysis_genes,
             compounds_dict=glycolysis_compounds,
             maps_dict=glycolysis_maps,
@@ -347,6 +349,9 @@ class TestKegg(DatabaseMixin):
         glycolysis_summary_unflatten = self.glycolisis_bel_unflatten.summary_dict()
         glycolysis_summary_flatten = self.glycolisis_bel_flatten.summary_dict()
 
+        ppar_bel_unflatten = self.ppar_bel_unflatten.summary_dict()
+        ppar_bel_flatten = self.ppar_bel_flatten.summary_dict()
+
         self.assertEqual(notch_summary_unflatten['Protein'], 48)
         self.assertEqual(notch_summary_unflatten['Composite'], 15)
         self.assertEqual(notch_summary_unflatten['Complex'], 4)
@@ -371,3 +376,11 @@ class TestKegg(DatabaseMixin):
         self.assertEqual(glycolysis_summary_unflatten['Complex'], 0)
         self.assertEqual(glycolysis_summary_flatten['Abundance'], 31)
         self.assertEqual(glycolysis_summary_unflatten['BiologicalProcess'], 7)
+
+        self.assertEqual(ppar_bel_unflatten['Abundance'], 2)
+        self.assertEqual(ppar_bel_unflatten['Composite'], 1)
+        self.assertEqual(ppar_bel_unflatten['Protein'], 1)
+
+        self.assertEqual(ppar_bel_flatten['Abundance'], 2)
+        self.assertEqual(ppar_bel_flatten['Composite'], 0)
+        self.assertEqual(ppar_bel_flatten['Protein'], 1)
