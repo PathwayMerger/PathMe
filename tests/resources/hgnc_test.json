@@ -6827,6 +6827,71 @@
         "location_sortable": "21q22.3",
         "uuid": "5bc1049e-02f8-4180-8fa4-4d1657824987",
         "_version_": 1610654248674000897
+      },
+      {
+        "hgnc_id": "HGNC:9236",
+        "symbol": "PPARG",
+        "name": "peroxisome proliferator activated receptor gamma",
+        "status": "Approved",
+        "locus_type": "gene with protein product",
+        "prev_name": [
+          "peroxisome proliferative activated receptor, gamma",
+          "peroxisome proliferator-activated receptor gamma"
+        ],
+        "alias_symbol": [
+          "PPARG1",
+          "PPARG2",
+          "NR1C3",
+          "PPARgamma"
+        ],
+        "location": "3p25.2",
+        "date_approved_reserved": "1996-03-12T00:00:00Z",
+        "date_modified": "2016-10-05T00:00:00Z",
+        "date_name_changed": "2016-01-27T00:00:00Z",
+        "ena": [
+          "X90563"
+        ],
+        "entrez_id": "5468",
+        "mgd_id": [
+          "MGI:97747"
+        ],
+        "iuphar": "objectId:595",
+        "cosmic": "PPARG",
+        "orphanet": 117964,
+        "pubmed_id": [
+          7862171,
+          9750197
+        ],
+        "refseq_accession": [
+          "NM_005037"
+        ],
+        "gene_family": [
+          "Nuclear hormone receptors"
+        ],
+        "vega_id": "OTTHUMG00000129764",
+        "ensembl_gene_id": "ENSG00000132170",
+        "ccds_id": [
+          "CCDS2609",
+          "CCDS2610",
+          "CCDS87046"
+        ],
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "601487"
+        ],
+        "uniprot_ids": [
+          "P37231"
+        ],
+        "ucsc_id": "uc003bwx.4",
+        "rgd_id": [
+          "RGD:3371"
+        ],
+        "gene_family_id": [
+          71
+        ],
+        "location_sortable": "03p25.2",
+        "uuid": "7e58272e-bf58-4afc-9566-c63e957fae47",
+        "_version_": 1611556026706821126
       }
     ]
   }
