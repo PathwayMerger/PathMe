@@ -40,17 +40,17 @@ pygments_style = 'sphinx'
 todo_include_todos = True
 html_theme = 'sphinx_rtd_theme'
 html_static_path = []
-htmlhelp_basename = 'compathdoc'
+htmlhelp_basename = 'pathmedoc'
 latex_elements = {}
 latex_documents = [
     (master_doc, 'pathme.tex', 'PathMe Documentation',
-     'Daniel Domingo-Fernández and Charles Tapley Hoyt', 'manual'),
+     'Sarah Mubeen, Josep Marin Llao, and Daniel Domingo-Fernández', 'manual'),
 ]
 man_pages = [
     (master_doc, 'pathme', 'PathMe Documentation', [author], 1)
 ]
 texinfo_documents = [
-    (master_doc, 'PathMe', 'ComPathDocumentation', author, 'PathMe'),
+    (master_doc, 'PathMe', 'PathMe Documentation', author, 'PathMe'),
 ]
 
 # Example configuration for intersphinx: refer to the Python standard library.
