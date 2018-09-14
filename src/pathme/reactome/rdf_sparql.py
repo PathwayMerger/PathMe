@@ -12,7 +12,7 @@ from rdflib import URIRef
 from rdflib.namespace import Namespace, RDFS, RDF, DCTERMS, DC, OWL, XSD, SKOS
 
 from pathme.utils import query_result_to_dict, parse_rdf, get_pathway_statitics
-from .convert_to_bel import reactome_to_bel
+from .convert_to_bel import convert_to_bel
 
 log = logging.getLogger(__name__)
 
