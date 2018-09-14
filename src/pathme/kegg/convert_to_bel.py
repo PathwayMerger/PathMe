@@ -397,7 +397,6 @@ def add_simple_edge(graph, u, v, relation_type):
     """
     # Subject activity increases protein modification of object
     if relation_type in {'phosphorylation', 'glycosylation', 'ubiquitination', 'methylation'}:
-
         # If the object is a gene, miRNA, RNA, or protein, add protein modification
         if isinstance(v, CentralDogma):
             v = v.with_variants(pmod(KEGG_MODIFICATIONS[relation_type]))
@@ -405,7 +404,6 @@ def add_simple_edge(graph, u, v, relation_type):
 
     # Subject activity decreases protein modification (i.e. dephosphorylation) of object
     elif relation_type == 'dephosphorylation':
-
         # If the object is a gene, miRNA, RNA, or protein, add protein modification
         if isinstance(v, CentralDogma):
             v = v.with_variants(pmod('Ph'))
@@ -429,7 +427,6 @@ def add_simple_edge(graph, u, v, relation_type):
 
     # Subject increases expression of object
     elif relation_type == 'expression':
-
         # Expression object is converted to RNA abundance
         if isinstance(v, CentralDogma):
             v = v.get_rna()
@@ -437,7 +434,6 @@ def add_simple_edge(graph, u, v, relation_type):
 
     # Subject decreases expression of object
     elif relation_type == 'repression':
-
         # Repression object is converted to RNA abundance
         if isinstance(v, CentralDogma):
             v = v.get_rna()
