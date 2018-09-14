@@ -396,7 +396,7 @@ def add_simple_edge(graph, u, v, relation_type):
     :param list relation_type: list of entity IDs and types of relations
     """
     # Subject activity increases protein modification of object
-    if relation_type in {'phosphorylation', 'glycosylation', 'ubiquitination', 'meythylation'}:
+    if relation_type in {'phosphorylation', 'glycosylation', 'ubiquitination', 'methylation'}:
 
         # If the object is a gene, miRNA, RNA, or protein, add protein modification
         if isinstance(v, CentralDogma):
