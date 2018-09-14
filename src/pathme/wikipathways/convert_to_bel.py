@@ -17,6 +17,7 @@ __all__ = [
 
 
 def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]], pathway_info) -> BELGraph:
+    """Convert  RDF graph info to BEL."""
     graph = BELGraph(
         name=pathway_info['title'],
         version='1.0.0',
