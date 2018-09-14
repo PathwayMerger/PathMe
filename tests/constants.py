@@ -11,6 +11,7 @@ REACTOME_TEST_RESOURCES = os.path.join(TEST_FOLDER, 'resources', 'reactome')
 
 GLYCOLYSIS_XML = os.path.join(KEGG_TEST_RESOURCES, 'hsa00010.xml')
 NOTCH_XML = os.path.join(KEGG_TEST_RESOURCES, 'hsa04330.xml')
+PPAR_XML = os.path.join(KEGG_TEST_RESOURCES, '03320_cpd_test.xml')
 
 WP22 = os.path.join(WP_TEST_RESOURCES, 'WP22.ttl')
 
