@@ -12,7 +12,7 @@ from pathme.utils import parse_id_uri
 log = logging.getLogger(__name__)
 
 
-def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]], pathway_info) -> BELGraph:
+def wikipathways_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]], pathway_info) -> BELGraph:
     graph = BELGraph(
         name=pathway_info['title'],
         version='1.0.0',
