@@ -147,7 +147,7 @@ def load(connection, verbose, only_canonical):
         log.setLevel(logging.DEBUG)
 
     # TODO: Allow for an optional parameter giving the folder of the files
-    resource_folder = os.path.join(WIKIPATHWAYS_DIR, 'wp', 'human')
+    resource_folder = os.path.join(WIKIPATHWAYS_DIR, 'wp', 'Human')
 
     resource_files = get_wikipathways_files(resource_folder, connection, only_canonical)
 
