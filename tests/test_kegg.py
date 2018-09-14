@@ -2,12 +2,12 @@
 
 """Tests for converting KEGG."""
 
-from pybel.struct.summary.graph_summary import summary_dict
 from pybel_tools.summary import edge_summary
 
 from pathme.kegg.convert_to_bel import kegg_to_bel, xml_entities_to_bel, xml_complexes_to_bel
 from pathme.kegg.kegg_xml_parser import *
 from pybel import BELGraph
+from pybel.struct.summary.graph_summary import summary_dict
 from .constants import NOTCH_XML, GLYCOLYSIS_XML, DatabaseMixin
 
 
@@ -343,7 +343,7 @@ class TestKegg(DatabaseMixin):
         """Test transforming kgml into bel nodes."""
         notch_summary_unflatten = summary_dict(self.notch_bel_flatten)
         notch_summary_unflatten_edges = edge_summary.count_relations(self.notch_bel_unflatten)
-        notch_summary_flatten = summary_dict(self.notch_bel_unflatten)
+        notch_summary_flatten = self.notch_bel_unflatten.summary_dict()
 
         glycolysis_summary_unflatten = summary_dict(self.notch_bel_flatten)
         glycolysis_summary_flatten = summary_dict(self.notch_bel_unflatten)
