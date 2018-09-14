@@ -132,12 +132,7 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
         graph.add_translation(u, v)
 
     elif 'DirectedInteraction' in edge_types:
-        graph.add_association(u, v, citation=uri_id, evidence='', annotations={
-            'EdgeTypes': {
-                t: True
-                for t in edge_types
-            }
-        })
+        graph.add_association(u, v, citation=uri_id, evidence='', annotations={'EdgeTypes': edge_types})
 
     elif 'Interaction' in edge_types:
         pass
