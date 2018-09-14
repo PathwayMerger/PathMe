@@ -72,7 +72,7 @@ def populate(flatten):
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     log.setLevel(logging.INFO)
 
-    KEGG_DOWNLOAD_FOLDER = os.path.join(DATA_DIR, KEGG)
+    kegg_download_folder = os.path.join(DATA_DIR, KEGG)
 
     log.info('Initiating HGNC Manager')
     hgnc_manager = HgncManager()
@@ -83,10 +83,10 @@ def populate(flatten):
     if flatten:
         log.info('Flattening mode activated')
 
-    for file in get_files_in_folder(KEGG_DOWNLOAD_FOLDER):
+    for file in get_files_in_folder(kegg_download_folder):
         log.info('Parsing %s', file)
         kegg_to_bel(
-            path=os.path.join(KEGG_DOWNLOAD_FOLDER, file),
+            path=os.path.join(kegg_download_folder, file),
             hgnc_manager=hgnc_manager,
             chebi_manager=chebi_manager,
             flatten=True if flatten else False

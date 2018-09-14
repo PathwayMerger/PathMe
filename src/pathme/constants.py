@@ -8,7 +8,7 @@ from bio2bel.utils import get_connection
 
 
 def get_data_dir(module_name):
-    """Ensures the appropriate data directory exists for the given module, then returns the file path
+    """Ensures the appropriate data directory exists for the given module, then returns the file path.
 
     :param str module_name: The name of the module. Ex: 'pathme'
     :return: The module's data directory
@@ -58,12 +58,12 @@ KEGG_STATS_COLUMN_NAMES = {
     'Protein': 'BEL Proteins',
     'gene': 'XML Genes',
     'Composite': 'BEL Composites',
-    'RNA':'BEL RNA Entities',
-    'Complex':'BEL Complexes',
+    'RNA': 'BEL RNA Entities',
+    'Complex': 'BEL Complexes',
     'group': 'XML Complexes',
     'Abundance': 'BEL Compounds',
     'compound entity': 'XML Compounds',
-    'BiologicalProcess':'BEL Biological Processes',
+    'BiologicalProcess': 'BEL Biological Processes',
     'map': 'XML Biological Processes',
     'Reaction': 'BEL Reactions',
     'ortholog': 'XML Orthologs',
@@ -92,4 +92,4 @@ KEGG_STATS_COLUMN_NAMES = {
     'hidden compound': 'XML Hidden Compound Relations',
     'missing interaction': 'XML missing interaction Relations',
     'state change': 'XML State Change Relations'
-     }
+}

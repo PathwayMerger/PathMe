@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""PathMe
+"""PathMe.
 
 PathMe facilitates a systematic comparison across three of the major pathway databases.
 
