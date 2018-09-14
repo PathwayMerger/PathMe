@@ -2,15 +2,15 @@
 
 """Tests for converting KEGG."""
 
-from pybel_tools.summary import edge_summary
+from pybel_tools.summary.edge_summary import count_relations
 
-from pathme.kegg.convert_to_bel import xml_entities_to_bel, xml_complexes_to_bel
+from pathme.kegg.convert_to_bel import xml_complexes_to_bel, xml_entities_to_bel
 from pathme.kegg.kegg_xml_parser import *
 from pybel.struct.summary.node_summary import count_functions
-from .constants import DatabaseMixin
+from .constants import KeggTest
 
 
-class TestKegg(DatabaseMixin):
+class TestKegg(KeggTest):
     """Tests for dealing with the KEGG sub-module."""
 
     def test_get_entities_from_xml(self):
@@ -296,16 +296,16 @@ class TestKegg(DatabaseMixin):
     def test_bel_nodes(self):
         """Test transforming kgml into bel nodes."""
         notch_summary_flatten_nodes = count_functions(self.notch_bel_flatten)
-        notch_summary_unflatten_edges = edge_summary.count_relations(self.notch_bel_unflatten)
+        notch_summary_unflatten_edges = count_relations(self.notch_bel_unflatten)
         notch_summary_unflatten_nodes = count_functions(self.notch_bel_unflatten)
 
         glycolysis_summary_unflatten_nodes = count_functions(self.glycolysis_bel_unflatten)
         glycolysis_summary_flatten_nodes = count_functions(self.glycolysis_bel_flatten)
 
         ppar_bel_unflatten_nodes = count_functions(self.ppar_bel_unflatten)
-        ppar_bel_unflatten_edges = edge_summary.count_relations(self.ppar_bel_unflatten)
+        ppar_bel_unflatten_edges = count_relations(self.ppar_bel_unflatten)
         ppar_bel_flatten_nodes = count_functions(self.ppar_bel_flatten)
-        ppar_bel_flatten_edges = edge_summary.count_relations(self.ppar_bel_flatten)
+        ppar_bel_flatten_edges = count_relations(self.ppar_bel_flatten)
 
         self.assertEqual(notch_summary_unflatten_nodes['Protein'], 48)
         self.assertEqual(notch_summary_unflatten_nodes['Composite'], 15)

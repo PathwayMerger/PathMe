@@ -13,6 +13,7 @@ NOTCH_XML = os.path.join(KEGG_TEST_RESOURCES, 'hsa04330.xml')
 PPAR_XML = os.path.join(KEGG_TEST_RESOURCES, '03320_cpd_test.xml')
 
 WP22 = os.path.join(WP_TEST_RESOURCES, 'WP22.ttl')
+WP2359 = os.path.join(WP_TEST_RESOURCES, 'WP2359_mod.ttl')
 
 from pathme.kegg.convert_to_bel import kegg_to_bel
 from pathme.kegg.kegg_xml_parser import *
@@ -32,12 +33,11 @@ pathways = os.path.join(resources_path, 'hsa.txt')
 protein_pathway_url = os.path.join(resources_path, 'pathway_gene.txt')
 
 hgnc_test_path = os.path.join(resources_path, 'hgnc_test.json')
-
 chebi_test_path = os.path.join(resources_path, 'chebi_test.tsv.gz')
 
 
-class DatabaseMixin(TemporaryConnectionMixin):
-    """A test case with a populated database."""
+class KeggTest(TemporaryConnectionMixin):
+    """A test case with a populated HGNC/CheBI databases for KEGG parser."""
 
     @classmethod
     def setUpClass(cls):
