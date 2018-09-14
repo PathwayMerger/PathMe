@@ -133,6 +133,9 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
 
                 ortholog_dict[entry_id].append(ortholog_info)
 
+        elif kegg_type.startswith('brite'):
+            pass
+
     return entry_dict, compound_dict, map_dict, ortholog_dict
 
 

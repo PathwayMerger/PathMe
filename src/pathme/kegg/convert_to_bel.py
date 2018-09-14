@@ -325,8 +325,13 @@ def add_edges(graph, edges, nodes):
     """
     for source, target, relation in edges:
 
-        u = nodes[source]
-        v = nodes[target]
+        # Catch KeyError if entity node in list of edges is not a BEL node
+        try:
+            u = nodes[source]
+            v = nodes[target]
+
+        except KeyError:
+            pass
 
         # If subject and object are lists, create edges between all products
         if isinstance(u, list) and isinstance(v, list):
