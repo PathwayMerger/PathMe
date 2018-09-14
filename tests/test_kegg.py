@@ -3,11 +3,11 @@
 """Tests for converting KEGG."""
 
 from pybel_tools.summary import edge_summary
-from pybel.struct.summary.node_summary import count_functions
 
 from pathme.kegg.convert_to_bel import kegg_to_bel, xml_entities_to_bel, xml_complexes_to_bel
 from pathme.kegg.kegg_xml_parser import *
 from pybel import BELGraph
+from pybel.struct.summary.node_summary import count_functions
 from .constants import NOTCH_XML, GLYCOLYSIS_XML, PPAR_XML, DatabaseMixin
 
 
@@ -18,11 +18,23 @@ class TestKegg(DatabaseMixin):
         """Parse two examples files."""
         self.notch_tree = import_xml_etree(NOTCH_XML)
         self.glycolysis_tree = import_xml_etree(GLYCOLYSIS_XML)
+
+        log.info('Loading notch unflatten')
         self.notch_bel_unflatten = kegg_to_bel(NOTCH_XML, self.hgnc_manager, self.chebi_manager)
+
+        log.info('Loading notch flatten')
         self.notch_bel_flatten = kegg_to_bel(NOTCH_XML, self.hgnc_manager, self.chebi_manager, flatten=True)
+
+        log.info('Loading glycolysis unflatten')
         self.glycolysis_bel_unflatten = kegg_to_bel(GLYCOLYSIS_XML, self.hgnc_manager, self.chebi_manager)
+
+        log.info('Loading glycolysis flatten')
         self.glycolysis_bel_flatten = kegg_to_bel(GLYCOLYSIS_XML, self.hgnc_manager, self.chebi_manager, flatten=True)
+
+        log.info('Loading PPAR unflatten')
         self.ppar_bel_unflatten = kegg_to_bel(PPAR_XML, self.hgnc_manager, self.chebi_manager)
+
+        log.info('Loading PPAR flatten')
         self.ppar_bel_flatten = kegg_to_bel(PPAR_XML, self.hgnc_manager, self.chebi_manager)
 
         self.glycolysis_empty_graph = BELGraph(
