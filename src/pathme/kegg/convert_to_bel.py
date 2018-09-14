@@ -92,19 +92,23 @@ def xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=
     :return: dictionary of BEL nodes
     :rtype: dict
     """
+    # Create a dictionary of flattened BEL nodes
     if flattened:
         node_dict = {
             node_id: flatten_gene_to_bel_node(graph, node_att)
             for node_id, node_att in genes_dict.items()
         }
+        for node_id, node_att in compounds_dict.items():
+            node_dict[node_id] = flatten_compound_to_bel_node(graph, node_att)
+
+    # Create a dictionary of un-flattened BEL nodes
     else:
         node_dict = {
             node_id: gene_to_bel_node(graph, node_att)
             for node_id, node_att in genes_dict.items()
         }
-
-    for node_id, node_att in compounds_dict.items():
-        node_dict[node_id] = compound_to_bel(graph, node_att)
+        for node_id, node_att in compounds_dict.items():
+            node_dict[node_id] = compound_to_bel(graph, node_att)
 
     for node_id, node_att in maps_dict.items():
         node_dict[node_id] = map_to_bel_node(graph, node_att)
@@ -236,29 +240,33 @@ def flatten_gene_to_bel_node(graph, node):
 
 
 def compound_to_bel(graph, node):
-    """Create an abundance BEL node.
+    """Create an abundance BEL node or composite abundances BEL node and add to BEL Graph.
 
     :param graph: BELGraph
     :param dict node: dictionary of node attributes
     :return: BEL node dictionary
     :rtype: dict
     """
-    for attribute in node:
+    members = list()
 
-        if CHEBI in attribute:
+    # Create a compound BEL node
+    if len(node) == 1:
+        node_dict = node[0]
 
-            identifier = attribute[CHEBI]
-            name = attribute['ChEBI name']
+        if CHEBI in node_dict:
+
+            identifier = node_dict[CHEBI]
+            name = node_dict['ChEBI name']
             namespace = CHEBI
 
             compound = abundance(namespace=namespace, name=name, identifier=identifier)
             graph.add_node_from_data(compound)
             return compound
 
-        elif 'PubChem' in attribute:
+        elif 'PubChem' in node_dict:
 
-            identifier = attribute['PubChem']
-            name = attribute['PubChem']
+            identifier = node_dict['PubChem']
+            name = node_dict['PubChem']
             namespace = 'PubChem'
 
             compound = abundance(namespace=namespace, name=name, identifier=identifier)
@@ -266,9 +274,89 @@ def compound_to_bel(graph, node):
             return compound
 
         else:
-            compound = abundance(namespace=KEGG, name=attribute['compound_name'], identifier=attribute['compound_name'])
+            compound = abundance(namespace=KEGG, name=node_dict['compound_name'], identifier=node_dict['compound_name'])
             graph.add_node_from_data(compound)
             return compound
+
+    # Create a composite abundance BEL node
+    else:
+        for member in node:
+            bel_node = gene_to_bel_node(graph, [member])
+            members.append(bel_node)
+
+        compound_composite = composite_abundance(members=members)
+        graph.add_node_from_data(compound_composite)
+        return compound_composite
+
+
+def flatten_compound_to_bel_node(graph, node):
+    """Create an abundance or list of abundance BEL nodes and add to BEL Graph.
+
+    :param graph: BELGraph
+    :param dict node: dictionary of node attributes
+    :return: BEL node dictionary
+    :rtype: dict
+    """
+    # if only 1 compound node, return corresponding BEL node
+    if len(node) == 1:
+        node_dict = node[0]
+
+        if CHEBI in node_dict:
+
+            identifier = node_dict[CHEBI]
+            name = node_dict['ChEBI name']
+            namespace = CHEBI
+
+            compound = abundance(namespace=namespace, name=name, identifier=identifier)
+            graph.add_node_from_data(compound)
+            return compound
+
+        elif 'PubChem' in node_dict:
+
+            identifier = node_dict['PubChem']
+            name = node_dict['PubChem']
+            namespace = 'PubChem'
+
+            compound = abundance(namespace=namespace, name=name, identifier=identifier)
+            graph.add_node_from_data(compound)
+            return compound
+
+        else:
+            compound = abundance(namespace=KEGG, name=node_dict['compound_name'], identifier=node_dict['compound_name'])
+            graph.add_node_from_data(compound)
+            return compound
+
+    compounds_list = []
+
+    # If multiple compound nodes, return flattened list of BEL nodes
+    for node_dict in node:
+
+        if CHEBI in node_dict:
+
+            identifier = node_dict[CHEBI]
+            name = node_dict['ChEBI name']
+            namespace = CHEBI
+
+            compound_node = abundance(namespace=namespace, name=name, identifier=identifier)
+            graph.add_node_from_data(compound_node)
+            compounds_list.append(compound_node)
+
+        elif 'PubChem' in node_dict:
+
+            identifier = node_dict['PubChem']
+            name = node_dict['PubChem']
+            namespace = 'PubChem'
+
+            compound_node = abundance(namespace=namespace, name=name, identifier=identifier)
+            graph.add_node_from_data(compound_node)
+            compounds_list.append(compound_node)
+
+        else:
+            compound_node = abundance(namespace=KEGG, name=node_dict['compound_name'], identifier=node_dict['compound_name'])
+            graph.add_node_from_data(compound_node)
+            compounds_list.append(compound_node)
+
+    return compounds_list
 
 
 def map_to_bel_node(graph, node):
