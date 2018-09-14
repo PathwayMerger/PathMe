@@ -17,3 +17,4 @@ Index
 =====
 
 * :ref:`genindex`
+

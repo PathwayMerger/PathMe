@@ -11,6 +11,10 @@ from pathme.utils import parse_id_uri
 
 log = logging.getLogger(__name__)
 
+__all__ = [
+    'wikipathways_to_bel',
+]
+
 
 def wikipathways_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]], pathway_info) -> BELGraph:
     graph = BELGraph(

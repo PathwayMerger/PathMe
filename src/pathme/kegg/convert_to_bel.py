@@ -20,6 +20,10 @@ from pybel.dsl.node_classes import CentralDogma
 from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
 from pybel.struct.summary import count_functions, edge_summary
 
+__all__ = [
+    'kegg_to_bel',
+]
+
 log = logging.getLogger(__name__)
 
 """Populate empty BEL graph with KEGG pathway entities and interactions"""

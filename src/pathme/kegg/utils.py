@@ -14,6 +14,11 @@ from pathme.kegg.kegg_xml_parser import import_xml_etree, get_xml_types
 from pathme.wikipathways.utils import get_files_in_folder
 from ..constants import DATA_DIR, KEGG, KEGG_KGML_URL, KEGG_STATS_COLUMN_NAMES
 
+__all__ = [
+    'get_kegg_statistics',
+    'get_kegg_pathway_ids'
+]
+
 
 def get_kegg_pathway_ids(connection=None):
     """Return a list of all pathway identifiers stored in the KEGG database.

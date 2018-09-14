@@ -12,7 +12,7 @@ from rdflib import URIRef
 from rdflib.namespace import Namespace, RDFS, RDF, DCTERMS, DC, OWL, XSD, SKOS
 
 from pathme.utils import query_result_to_dict, parse_rdf, get_pathway_statitics
-from .convert_to_bel import convert_to_bel
+from .convert_to_bel import reactome_to_bel
 
 log = logging.getLogger(__name__)
 
@@ -289,7 +289,7 @@ def get_reactome_statistics(resource_file, hgnc_manager):
             edge['metadata']['interaction_type'] for edge in edges
         ]
 
-        bel_graph = convert_to_bel(nodes, edges, pathway_metadata, hgnc_manager)
+        bel_graph = reactome_to_bel(nodes, edges, pathway_metadata, hgnc_manager)
 
         global_statistics, pathway_statistics = get_pathway_statitics(
             nodes_types, edges_types, bel_graph, global_statistics=global_statistics
@@ -309,7 +309,7 @@ def rdf_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager):
 
     nodes, interactions = _get_pathway_components(pathway_uri, rdf_graph)
 
-    return convert_to_bel(nodes, interactions, pathway_metadata, hgnc_manager)
+    return reactome_to_bel(nodes, interactions, pathway_metadata, hgnc_manager)
 
 
 def reactome_to_bel(resource_file, hgnc_manager):

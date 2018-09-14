@@ -18,7 +18,6 @@ log = logging.getLogger(__name__)
 
 """Import XML"""
 
-
 def import_xml_etree(filename):
     """Return XML tree from KGML file.
 
