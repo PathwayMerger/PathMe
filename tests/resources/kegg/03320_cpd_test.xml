@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE pathway SYSTEM "http://www.kegg.jp/kegg/xml/KGML_v0.7.2_.dtd">
+<!-- Creation date: Jun 3, 2016 10:41:11 +0900 (GMT+9) -->
+<pathway name="path:hsa03320" org="hsa" number="03320"
+         title="PPAR signaling pathway"
+         image="http://www.kegg.jp/kegg/pathway/hsa/hsa03320.png"
+         link="http://www.kegg.jp/kegg-bin/show_pathway?hsa03320">   
+    <entry id="18" name="hsa:5468" type="gene"
+        link="http://www.kegg.jp/dbget-bin/www_bget?hsa:5468">
+        <graphics name="PPARG, CIMT1, GLM1, NR1C3, PPARG1, PPARG2, PPARgamma" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="570" y="660" width="46" height="17"/>
+    </entry>    
+    <entry id="48" name="cpd:C14767 cpd:C14762" type="compound"
+        link="http://www.kegg.jp/dbget-bin/www_bget?C14767+C14762">
+        <graphics name="C14767..." fgcolor="#000000" bgcolor="#FFFFFF"
+             type="circle" x="435" y="613" width="8" height="8"/>
+    </entry>
+    <relation entry1="48" entry2="18" type="PCrel">
+        <subtype name="activation" value="--&gt;"/>
+        <subtype name="phosphorylation" value="+p"/>
+    </relation>
+</pathway>
