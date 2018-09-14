@@ -281,7 +281,7 @@ def compound_to_bel(graph, node):
     # Create a composite abundance BEL node
     else:
         for member in node:
-            bel_node = gene_to_bel_node(graph, [member])
+            bel_node = compound_to_bel(graph, [member])
             members.append(bel_node)
 
         compound_composite = composite_abundance(members=members)
@@ -569,3 +569,4 @@ def get_bel_types(path, hgnc_manager, chebi_manager, flatten=None):
     bel_stats.update(bel_edges_dict)
 
     return bel_stats
+
