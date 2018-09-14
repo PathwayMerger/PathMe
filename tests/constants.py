@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 """Tests constants."""
-import logging
 import os
 
 TEST_FOLDER = os.path.dirname(os.path.realpath(__file__))
@@ -15,6 +14,9 @@ PPAR_XML = os.path.join(KEGG_TEST_RESOURCES, '03320_cpd_test.xml')
 
 WP22 = os.path.join(WP_TEST_RESOURCES, 'WP22.ttl')
 
+from pathme.kegg.convert_to_bel import kegg_to_bel
+from pathme.kegg.kegg_xml_parser import *
+from pybel import BELGraph
 from bio2bel.testing import TemporaryConnectionMixin
 from bio2bel_hgnc import Manager as HgncManager
 from bio2bel_chebi import Manager as ChebiManager
@@ -65,6 +67,63 @@ class DatabaseMixin(TemporaryConnectionMixin):
         cls.chebi_manager._populate_compounds(url=chebi_test_path)
 
         log.info('ChEBI database loaded')
+
+        cls.notch_tree = import_xml_etree(NOTCH_XML)
+        cls.glycolysis_tree = import_xml_etree(GLYCOLYSIS_XML)
+
+        log.info('Loading notch unflatten')
+        cls.notch_bel_unflatten = kegg_to_bel(NOTCH_XML, cls.hgnc_manager, cls.chebi_manager)
+
+        log.info('Loading notch flatten')
+        cls.notch_bel_flatten = kegg_to_bel(NOTCH_XML, cls.hgnc_manager, cls.chebi_manager, flatten=True)
+
+        log.info('Loading glycolysis unflatten')
+        cls.glycolysis_bel_unflatten = kegg_to_bel(GLYCOLYSIS_XML, cls.hgnc_manager, cls.chebi_manager)
+
+        log.info('Loading glycolysis flatten')
+        cls.glycolysis_bel_flatten = kegg_to_bel(GLYCOLYSIS_XML, cls.hgnc_manager, cls.chebi_manager, flatten=True)
+
+        log.info('Loading PPAR unflatten')
+        cls.ppar_bel_unflatten = kegg_to_bel(PPAR_XML, cls.hgnc_manager, cls.chebi_manager)
+
+        log.info('Loading PPAR flatten')
+        cls.ppar_bel_flatten = kegg_to_bel(PPAR_XML, cls.hgnc_manager, cls.chebi_manager)
+
+        cls.glycolysis_empty_graph = BELGraph(
+            name='Glycolysis',
+            version='1.0.0',
+            description='Glycolisis',
+            pathway_id='Glycolisis',
+            authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+        )
+
+        cls.glycolysis_empty_flatten_graph = BELGraph(
+            name='Glycolisis flatten',
+            version='1.0.0',
+            description='Glycolisis',
+            pathway_id='Glycolisis',
+            authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+        )
+
+        cls.notch_empty_graph = BELGraph(
+            name='Notch',
+            version='1.0.0',
+            description='Notch',
+            pathway_id='Notch',
+            authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+        )
+
+        cls.notch_empty_flatten_graph = BELGraph(
+            name='Notch flatten',
+            version='1.0.0',
+            description='Notch',
+            pathway_id='Notch',
+            authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+        )
 
     @classmethod
     def tearDownClass(cls):
