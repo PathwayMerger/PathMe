@@ -87,7 +87,7 @@ class DatabaseMixin(TemporaryConnectionMixin):
         cls.ppar_bel_unflatten = kegg_to_bel(PPAR_XML, cls.hgnc_manager, cls.chebi_manager)
 
         log.info('Loading PPAR flatten')
-        cls.ppar_bel_flatten = kegg_to_bel(PPAR_XML, cls.hgnc_manager, cls.chebi_manager)
+        cls.ppar_bel_flatten = kegg_to_bel(PPAR_XML, cls.hgnc_manager, cls.chebi_manager, flatten=True)
 
         cls.glycolysis_empty_graph = BELGraph(
             name='Glycolysis',
