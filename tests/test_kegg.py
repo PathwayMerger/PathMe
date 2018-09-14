@@ -2,11 +2,12 @@
 
 """Tests for converting KEGG."""
 
-from pybel.struct import summary as pybel_summary
+from pybel.struct.summary.graph_summary import summary_dict
 from pybel_tools.summary import edge_summary
 
 from pathme.kegg.convert_to_bel import kegg_to_bel, xml_entities_to_bel, xml_complexes_to_bel
 from pathme.kegg.kegg_xml_parser import *
+from pybel import BELGraph
 from .constants import NOTCH_XML, GLYCOLYSIS_XML, DatabaseMixin
 
 
@@ -21,6 +22,42 @@ class TestKegg(DatabaseMixin):
         self.notch_bel_flatten = kegg_to_bel(NOTCH_XML, self.hgnc_manager, self.chebi_manager, flatten=True)
         self.glycolisis_bel_unflatten = kegg_to_bel(GLYCOLYSIS_XML, self.hgnc_manager, self.chebi_manager)
         self.glycolisis_bel_flatten = kegg_to_bel(GLYCOLYSIS_XML, self.hgnc_manager, self.chebi_manager, flatten=True)
+
+        self.glycolisis_empty_graph = BELGraph(
+            name='Glycolisis',
+            version='1.0.0',
+            description='Glycolisis',
+            pathway_id='Glycolisis',
+            authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+        )
+
+        self.glycolisis_empty_flatten_graph = BELGraph(
+            name='Glycolisis flatten',
+            version='1.0.0',
+            description='Glycolisis',
+            pathway_id='Glycolisis',
+            authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+        )
+
+        self.notch_empty_graph = BELGraph(
+            name='Notch',
+            version='1.0.0',
+            description='Notch',
+            pathway_id='Notch',
+            authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+        )
+
+        self.notch_empty_flatten_graph = BELGraph(
+            name='Notch flatten',
+            version='1.0.0',
+            description='Notch',
+            pathway_id='Notch',
+            authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+        )
 
     def test_get_entities_from_xml(self):
         """Test entity creation."""
@@ -118,6 +155,8 @@ class TestKegg(DatabaseMixin):
         notch_relations = get_all_relationships(self.notch_tree)
         glycolysis_relations = get_all_relationships(self.glycolysis_tree)
 
+        notch_relation, glycolysis_relation = None, None
+
         for source, target, relation in notch_relations:
             if source == '21' and target == '22':
                 notch_relation = relation
@@ -141,7 +180,12 @@ class TestKegg(DatabaseMixin):
 
     def test_get_all_reactions(self):
         """Test reactions substrates, products."""
-        substrates, products = get_all_reactions(self.glycolysis_tree)
+        glycolysis_genes, glycolysis_compounds, glycolysis_maps, glycolysis_orthologs = get_entity_nodes(
+            self.glycolysis_tree,
+            self.hgnc_manager,
+            self.chebi_manager
+        )
+        substrates, products = get_all_reactions(self.glycolysis_tree, glycolysis_compounds)
 
         self.assertEqual(len(substrates), 35)
         self.assertEqual(len(products), 35)
@@ -149,9 +193,16 @@ class TestKegg(DatabaseMixin):
         self.assertEqual(products['49'], ['102', '136'])
 
     def test_get_reaction_edges(self):
-        """Test reaction pathway edges."""
-        substrate_dict, product_dict = get_all_reactions(self.glycolysis_tree)
+        """Test reaction pathway edges on glycolysis."""
+        glycolysis_genes, glycolysis_compounds, glycolysis_maps, glycolysis_orthologs = get_entity_nodes(
+            self.glycolysis_tree,
+            self.hgnc_manager,
+            self.chebi_manager
+        )
+        substrate_dict, product_dict = get_all_reactions(self.glycolysis_tree, glycolysis_compounds)
         reactions = get_reaction_pathway_edges(self.glycolysis_tree, substrate_dict, product_dict)
+
+        returned_reaction, returned_product = None, None
 
         for k, v in reactions.items():
             for substrate, product, reaction in v:
@@ -176,6 +227,8 @@ class TestKegg(DatabaseMixin):
         complexes = get_entities_in_complex(self.notch_tree, notch_genes)
         edges = get_pathway_edges(notch_genes, relations, set_of_complexes=complexes)
 
+        returned_relation, complex_relation = None, None
+
         for source, target, relation in edges:
             if source == 'hsa:11317' and target == 'hsa:171558':
                 returned_relation = relation
@@ -189,13 +242,40 @@ class TestKegg(DatabaseMixin):
     def test_get_nodes(self):
         """Test nodes."""
         glycolysis_genes, glycolysis_compounds, glycolysis_maps, glycolysis_orthologs = get_entity_nodes(
-            self.glycolysis_tree, self.hgnc_manager, self.chebi_manager)
-        notch_genes, notch_compounds, notch_maps, notch_orthologs = get_entity_nodes(self.notch_tree, self.hgnc_manager,
-                                                                                     self.chebi_manager)
-        glycolysis_nodes = xml_entities_to_bel(glycolysis_genes, glycolysis_compounds, glycolysis_maps, flattened=False)
-        flat_glycolysis_nodes = xml_entities_to_bel(glycolysis_genes, glycolysis_compounds, glycolysis_maps,
-                                                    flattened=True)
-        notch_nodes = xml_entities_to_bel(notch_genes, notch_compounds, notch_maps, flattened=False)
+            tree=self.glycolysis_tree,
+            hgnc_manager=self.hgnc_manager,
+            chebi_manager=self.chebi_manager
+        )
+
+        notch_genes, notch_compounds, notch_maps, notch_orthologs = get_entity_nodes(
+            tree=self.notch_tree,
+            hgnc_manager=self.hgnc_manager,
+            chebi_manager=self.chebi_manager
+        )
+
+        glycolysis_nodes = xml_entities_to_bel(
+            graph=self.glycolisis_empty_graph,
+            genes_dict=glycolysis_genes,
+            compounds_dict=glycolysis_compounds,
+            maps_dict=glycolysis_maps,
+            flattened=False
+        )
+        flat_glycolysis_nodes = xml_entities_to_bel(
+            graph=self.glycolisis_empty_flatten_graph,
+            genes_dict=glycolysis_genes,
+            compounds_dict=glycolysis_compounds,
+            maps_dict=glycolysis_maps,
+            flattened=True
+        )
+        notch_nodes = xml_entities_to_bel(
+            graph=self.notch_empty_graph,
+            genes_dict=notch_genes,
+            compounds_dict=notch_compounds,
+            maps_dict=notch_maps,
+            flattened=False
+        )
+
+        path_name = None
 
         self.assertEqual(len(glycolysis_nodes), 73)
         self.assertEqual(len(flat_glycolysis_nodes), 73)
@@ -213,9 +293,10 @@ class TestKegg(DatabaseMixin):
             path_name = pathway_info['name']
 
         self.assertEqual(path_name, 'Citrate cycle (TCA cycle)')
-        self.assertEqual(glycolysis_nodes['85'],
-                         {'function': 'Abundance', 'namespace': 'ChEBI', 'identifier': '17835'
-                          })
+        self.assertEqual(
+            glycolysis_nodes['85'],
+            {'function': 'Abundance', 'namespace': 'ChEBI', 'identifier': '17835'}
+        )
 
         # Test compound nodes
         self.assertEqual(glycolysis_nodes['85'], {
@@ -223,7 +304,7 @@ class TestKegg(DatabaseMixin):
         })
 
     def test_complex_node(self):
-        """Test complex nodes"""
+        """Test complex nodes on the notch pathway."""
         notch_genes, notch_compounds, notch_maps, notch_orthologs = get_entity_nodes(
             self.notch_tree,
             self.hgnc_manager,
@@ -232,23 +313,40 @@ class TestKegg(DatabaseMixin):
         complex_ids, flattened_complexes = get_complex_components(self.notch_tree, notch_genes, flattened=False)
         flat_complex_ids, flattened_complexes = get_complex_components(self.notch_tree, notch_genes, flattened=True)
 
-        node_dict = xml_entities_to_bel(notch_genes, notch_compounds, notch_maps, flattened=False)
+        node_dict = xml_entities_to_bel(
+            graph=self.notch_empty_graph,
+            genes_dict=notch_genes,
+            compounds_dict=notch_compounds,
+            maps_dict=notch_maps,
+            flattened=False
+        )
         node_dict = xml_complexes_to_bel(node_dict, complex_ids, flattened_complexes)
-        flat_node_dict = xml_entities_to_bel(notch_genes, notch_compounds, notch_maps, flattened=True)
-        flat_node_dict = xml_complexes_to_bel(flat_node_dict, flat_complex_ids, flatten_complexes=flattened_complexes)
+
+        flat_node_dict = xml_entities_to_bel(
+            graph=self.notch_empty_flatten_graph,
+            genes_dict=notch_genes,
+            compounds_dict=notch_compounds,
+            maps_dict=notch_maps,
+            flattened=True
+        )
+        flat_node_dict = xml_complexes_to_bel(
+            graph=self.notch_empty_flatten_graph,
+            node_dict=flat_node_dict,
+            complex_ids=flat_complex_ids,
+            flatten_complexes=flattened_complexes
+        )
 
         self.assertEqual(len(node_dict), 28)
         self.assertEqual(len(flat_node_dict), 28)
 
     def test_bel_nodes(self):
-        """Test transforming kgml into bel nodes"""
-
-        notch_summary_unflatten = pybel_summary(self.notch_bel_flatten)
+        """Test transforming kgml into bel nodes."""
+        notch_summary_unflatten = summary_dict(self.notch_bel_flatten)
         notch_summary_unflatten_edges = edge_summary.count_relations(self.notch_bel_unflatten)
-        notch_summary_flatten = pybel_summary(self.notch_bel_unflatten)
+        notch_summary_flatten = summary_dict(self.notch_bel_unflatten)
 
-        glycolysis_summary_unflatten = pybel_summary(self.notch_bel_flatten)
-        glycolysis_summary_flatten = pybel_summary(self.notch_bel_unflatten)
+        glycolysis_summary_unflatten = summary_dict(self.notch_bel_flatten)
+        glycolysis_summary_flatten = summary_dict(self.notch_bel_unflatten)
 
         self.assertEqual(notch_summary_unflatten['Protein'], 48)
         self.assertEqual(notch_summary_unflatten['Composite'], 15)
