@@ -2,12 +2,12 @@
 
 """Tests for converting KEGG."""
 
-from pathme.kegg.convert_to_bel import *
-from pathme.kegg.convert_to_bel import kegg_to_bel
-from pathme.kegg.kegg_xml_parser import *
 from pybel.struct import summary as pybel_summary
-from .constants import NOTCH_XML, GLYCOLYSIS_XML, DatabaseMixin
 from pybel_tools.summary import edge_summary
+
+from pathme.kegg.convert_to_bel import kegg_to_bel, xml_entities_to_bel, xml_complexes_to_bel
+from pathme.kegg.kegg_xml_parser import *
+from .constants import NOTCH_XML, GLYCOLYSIS_XML, DatabaseMixin
 
 
 class TestKegg(DatabaseMixin):
@@ -17,10 +17,10 @@ class TestKegg(DatabaseMixin):
         """Parse two examples files."""
         self.notch_tree = import_xml_etree(NOTCH_XML)
         self.glycolysis_tree = import_xml_etree(GLYCOLYSIS_XML)
-        self.notch_bel_unflatten = kegg_to_bel(NOTCH_XML)
-        self.notch_bel_flatten = kegg_to_bel(NOTCH_XML, flatten=True)
-        self.glycolisis_bel_unflatten = kegg_to_bel(GLYCOLYSIS_XML)
-        self.glycolisis_bel_flatten = kegg_to_bel(GLYCOLYSIS_XML, flatten=True)
+        self.notch_bel_unflatten = kegg_to_bel(NOTCH_XML, self.hgnc_manager, self.chebi_manager)
+        self.notch_bel_flatten = kegg_to_bel(NOTCH_XML, self.hgnc_manager, self.chebi_manager, flatten=True)
+        self.glycolisis_bel_unflatten = kegg_to_bel(GLYCOLYSIS_XML, self.hgnc_manager, self.chebi_manager)
+        self.glycolisis_bel_flatten = kegg_to_bel(GLYCOLYSIS_XML, self.hgnc_manager, self.chebi_manager, flatten=True)
 
     def test_get_entities_from_xml(self):
         """Test entity creation."""
@@ -192,7 +192,6 @@ class TestKegg(DatabaseMixin):
             self.glycolysis_tree, self.hgnc_manager, self.chebi_manager)
         notch_genes, notch_compounds, notch_maps, notch_orthologs = get_entity_nodes(self.notch_tree, self.hgnc_manager,
                                                                                      self.chebi_manager)
-
         glycolysis_nodes = xml_entities_to_bel(glycolysis_genes, glycolysis_compounds, glycolysis_maps, flattened=False)
         flat_glycolysis_nodes = xml_entities_to_bel(glycolysis_genes, glycolysis_compounds, glycolysis_maps,
                                                     flattened=True)
