@@ -54,10 +54,14 @@ class DatabaseMixin(TemporaryConnectionMixin):
         cls.hgnc_manager = HgncManager(engine=cls.manager.engine, session=cls.manager.session)
         cls.hgnc_manager.populate(hgnc_file_path=hgnc_test_path, use_hcop=False)
 
+        log.info('HGNC database loaded')
+
         """CHEBI Manager"""
 
         cls.chebi_manager = ChebiManager(engine=cls.manager.engine, session=cls.manager.session)
         cls.chebi_manager._populate_compounds(url=chebi_test_path)
+
+        log.info('ChEBI database loaded')
 
     @classmethod
     def tearDownClass(cls):
