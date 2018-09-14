@@ -3,6 +3,7 @@
 """Tests for converting KEGG."""
 
 from pybel_tools.summary import edge_summary
+from pybel.struct.summary.node_summary import count_functions
 
 from pathme.kegg.convert_to_bel import kegg_to_bel, xml_entities_to_bel, xml_complexes_to_bel
 from pathme.kegg.kegg_xml_parser import *
@@ -342,45 +343,54 @@ class TestKegg(DatabaseMixin):
 
     def test_bel_nodes(self):
         """Test transforming kgml into bel nodes."""
-        notch_summary_flatten = self.notch_bel_flatten.summary_dict()
+        notch_summary_flatten_nodes = count_functions(self.notch_bel_flatten)
         notch_summary_unflatten_edges = edge_summary.count_relations(self.notch_bel_unflatten)
-        notch_summary_unflatten = self.notch_bel_unflatten.summary_dict()
+        notch_summary_unflatten_nodes = count_functions(self.notch_bel_unflatten)
 
-        glycolysis_summary_unflatten = self.glycolisis_bel_unflatten.summary_dict()
-        glycolysis_summary_flatten = self.glycolisis_bel_flatten.summary_dict()
+        glycolysis_summary_unflatten_nodes = count_functions(self.glycolysis_bel_unflatten)
+        glycolysis_summary_flatten_nodes = count_functions(self.glycolysis_bel_flatten)
 
-        ppar_bel_unflatten = self.ppar_bel_unflatten.summary_dict()
-        ppar_bel_flatten = self.ppar_bel_flatten.summary_dict()
+        ppar_bel_unflatten_nodes = count_functions(self.ppar_bel_unflatten)
+        ppar_bel_unflatten_edges = edge_summary.count_relations(self.ppar_bel_unflatten)
+        ppar_bel_flatten_nodes = count_functions(self.ppar_bel_flatten)
+        ppar_bel_flatten_edges = edge_summary.count_relations(self.ppar_bel_flatten)
 
-        self.assertEqual(notch_summary_unflatten['Protein'], 48)
-        self.assertEqual(notch_summary_unflatten['Composite'], 15)
-        self.assertEqual(notch_summary_unflatten['Complex'], 4)
-        self.assertEqual(notch_summary_unflatten['BiologicalProcess'], 2)
+        self.assertEqual(notch_summary_unflatten_nodes['Protein'], 48)
+        self.assertEqual(notch_summary_unflatten_nodes['Composite'], 15)
+        self.assertEqual(notch_summary_unflatten_nodes['Complex'], 4)
+        self.assertEqual(notch_summary_unflatten_nodes['BiologicalProcess'], 2)
         self.assertEqual(notch_summary_unflatten_edges['decreases'], 6)
         self.assertEqual(notch_summary_unflatten_edges['increases'], 9)
         self.assertEqual(notch_summary_unflatten_edges['association'], 1)
 
-        self.assertEqual(notch_summary_flatten['Protein'], 48)
-        self.assertEqual(notch_summary_flatten['Composite'], 0)
-        self.assertEqual(notch_summary_flatten['Complex'], 4)
-        self.assertEqual(notch_summary_flatten['BiologicalProcess'], 2)
+        self.assertEqual(notch_summary_flatten_nodes['Protein'], 48)
+        self.assertEqual(notch_summary_flatten_nodes['Composite'], 0)
+        self.assertEqual(notch_summary_flatten_nodes['Complex'], 4)
+        self.assertEqual(notch_summary_flatten_nodes['BiologicalProcess'], 2)
 
-        self.assertEqual(glycolysis_summary_flatten['Protein'], 68)
-        self.assertEqual(glycolysis_summary_flatten['Composite'], 0)
-        self.assertEqual(glycolysis_summary_flatten['Complex'], 0)
-        self.assertEqual(glycolysis_summary_flatten['Abundance'], 31)
-        self.assertEqual(glycolysis_summary_flatten['BiologicalProcess'], 7)
+        self.assertEqual(glycolysis_summary_flatten_nodes['Protein'], 68)
+        self.assertEqual(glycolysis_summary_flatten_nodes['Composite'], 0)
+        self.assertEqual(glycolysis_summary_flatten_nodes['Complex'], 0)
+        self.assertEqual(glycolysis_summary_flatten_nodes['Abundance'], 31)
+        self.assertEqual(glycolysis_summary_flatten_nodes['BiologicalProcess'], 7)
 
-        self.assertEqual(glycolysis_summary_unflatten['Protein'], 68)
-        self.assertEqual(glycolysis_summary_unflatten['Composite'], 18)
-        self.assertEqual(glycolysis_summary_unflatten['Complex'], 0)
-        self.assertEqual(glycolysis_summary_flatten['Abundance'], 31)
-        self.assertEqual(glycolysis_summary_unflatten['BiologicalProcess'], 7)
+        self.assertEqual(glycolysis_summary_unflatten_nodes['Protein'], 68)
+        self.assertEqual(glycolysis_summary_unflatten_nodes['Composite'], 18)
+        self.assertEqual(glycolysis_summary_unflatten_nodes['Complex'], 0)
+        self.assertEqual(glycolysis_summary_flatten_nodes['Abundance'], 31)
+        self.assertEqual(glycolysis_summary_unflatten_nodes['BiologicalProcess'], 7)
 
-        self.assertEqual(ppar_bel_unflatten['Abundance'], 2)
-        self.assertEqual(ppar_bel_unflatten['Composite'], 1)
-        self.assertEqual(ppar_bel_unflatten['Protein'], 1)
+        self.assertEqual(self.ppar_bel_flatten.summary_dict()['Number of Nodes'], 4)
+        self.assertEqual(ppar_bel_unflatten_nodes['Abundance'], 2)
+        self.assertEqual(ppar_bel_unflatten_nodes['Composite'], 1)
+        self.assertEqual(ppar_bel_unflatten_nodes['Protein'], 1)
+        self.assertEqual(self.ppar_bel_flatten.summary_dict()['Number of Edges'], 3)
+        self.assertEqual(ppar_bel_unflatten_edges['increases'], 1)
+        self.assertEqual(ppar_bel_unflatten_edges['hasComponent'], 2)
 
-        self.assertEqual(ppar_bel_flatten['Abundance'], 2)
-        self.assertEqual(ppar_bel_flatten['Composite'], 0)
-        self.assertEqual(ppar_bel_flatten['Protein'], 1)
+        self.assertEqual(self.ppar_bel_flatten.summary_dict()['Number of Nodes'], 3)
+        self.assertEqual(ppar_bel_flatten_nodes['Abundance'], 2)
+        self.assertEqual(ppar_bel_flatten_nodes['Composite'], 0)
+        self.assertEqual(ppar_bel_flatten_nodes['Protein'], 1)
+        self.assertEqual(self.ppar_bel_flatten.summary_dict()['Number of Edges'], 2)
+        self.assertEqual(ppar_bel_flatten_edges['increases'], 2)
