@@ -11,7 +11,8 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'sphinx.ext.viewcode'
+    'sphinx.ext.viewcode',
+    'sphinx_click.ext'
 ]
 templates_path = ['_templates']
 source_suffix = '.rst'
