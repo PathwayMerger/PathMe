@@ -75,7 +75,7 @@ KEGG_STATS_COLUMN_NAMES = {
     'phosphorylation': 'XML Phosphorylation Relations',
     'glycosylation': 'XML Glycosylation Relations',
     'ubiquitination': 'XML Ubiquitination Relations',
-    'meythylation': 'XML Methylation Relations',
+    'methylation': 'XML Methylation Relations',
     'decreases': 'BEL Decrease Relations',
     'inhibition': 'XML Inhibition Relations',
     'repression': 'XML Repression Relations',
