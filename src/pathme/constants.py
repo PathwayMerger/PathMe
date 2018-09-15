@@ -91,5 +91,6 @@ KEGG_STATS_COLUMN_NAMES = {
     'dissociation': 'XML Dissociation Relations',
     'hidden compound': 'XML Hidden Compound Relations',
     'missing interaction': 'XML missing interaction Relations',
-    'state change': 'XML State Change Relations'
+    'state change': 'XML State Change Relations',
+    'brite': 'XML Brite Hierarchy'
 }
