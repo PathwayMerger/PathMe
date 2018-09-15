@@ -193,7 +193,7 @@ def get_entities_in_complex(tree, entry_dict):
 
 def get_complex_components(tree, genes_dict, flattened=False):
     """Get IDs of complex components to construct complexes of protein composites (i.e. similar proteins)
-    or get dictionary of flattened lists of all proteins involved in complexes
+    or get dictionary of flattened lists of all proteins involved in complexes.
 
     :param xml.etree.ElementTree.ElementTree tree: XML tree
     :param dict genes_dict: dictionary of all genes in pathway
@@ -257,10 +257,7 @@ def get_xml_types(tree):
     for entry in tree.findall('entry'):
         entry_type = entry.get('type')
 
-        if not entry_type in {'gene', 'ortholog', 'compound'}:
-            entity_types_dict[entry_type] += 1
-
-        elif entry_type.startswith('gene'):
+        if entry_type.startswith('gene'):
             gene_ids = entry.get('name')
             for gene_id in gene_ids.split(' '):
                 entity_types_dict['gene'] += 1
@@ -270,8 +267,11 @@ def get_xml_types(tree):
             for ortholog_id in ortholog_ids.split(' '):
                 entity_types_dict['ortholog'] += 1
 
-        if entry_type.startswith('compound'):
+        elif entry_type.startswith('compound'):
             entity_types_dict['compound entity'] += 1
+
+        else:
+            entity_types_dict[entry_type] += 1
 
     for relation in tree.findall('relation'):
         for subtype in relation.iter('subtype'):
