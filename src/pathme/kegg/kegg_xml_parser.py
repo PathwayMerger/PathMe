@@ -93,8 +93,8 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
                                     continue
 
                                 hgnc_entry = hgnc_entry[0]  # Use the first element queried
-
-                                node_info[HGNC] = identifier
+                                hgnc_id = str(hgnc_entry.identifier)
+                                node_info[HGNC] = hgnc_id
 
                                 if hgnc_entry.symbol:
                                     node_info['HGNC symbol'] = hgnc_entry.symbol
@@ -315,16 +315,12 @@ def get_all_relationships(tree):
             if not relation_subtype:
                 log.warning("No relation type declared")
 
-            # Add protein-protein and transcription factor and target gene product interations
-            if relation_type in {'PPrel', 'GErel'}:
+            # Add protein-protein, protein-compound and transcription factor-target gene product interactions
+            if relation_type in {'PPrel', 'PCrel', 'GErel'}:
                 if relation_subtype == 'compound':
                     relations_list.append((relation_entry1, relation_entry2, 'binding/association'))
                 else:
                     relations_list.append((relation_entry1, relation_entry2, relation_subtype))
-
-            # Add Protein-compound interations
-            elif relation_type.startswith('PCrel'):
-                relations_list.append((relation_entry1, relation_entry2, relation_subtype))
 
             # Add enzyme-enzyme relations denoted as binding/association
             elif relation_type.startswith('ECrel'):
