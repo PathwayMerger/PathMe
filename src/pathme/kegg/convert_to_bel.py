@@ -14,11 +14,13 @@ from pathme.kegg.kegg_xml_parser import (
     get_reaction_pathway_edges,
     import_xml_etree
 )
+
 from pybel import BELGraph
 from pybel.dsl.edges import activity
 from pybel.dsl.node_classes import CentralDogma
 from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
 from pybel.struct.summary import count_functions, edge_summary
+
 
 __all__ = [
     'kegg_to_bel',
@@ -118,8 +120,9 @@ def xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=
 
 def xml_complexes_to_bel(graph, node_dict, complex_ids, flatten_complexes=None):
     """ Convert complexes in XML to BEL nodes where each complex is made up of proteins
-    and/or composites (i.e. groups of related proteins)
+    and/or composites (i.e. groups of related proteins).
 
+    :param graph: BELGraph
     :param dict node_dict: dictionary of BEL nodes
     :param dict complex_ids: dictionary of complex IDs and component IDs
     :param Optional[dict]: dictionary of complex IDs and flattened list of all components
@@ -569,4 +572,3 @@ def get_bel_types(path, hgnc_manager, chebi_manager, flatten=None):
     bel_stats.update(bel_edges_dict)
 
     return bel_stats
-
