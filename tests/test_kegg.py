@@ -144,6 +144,8 @@ class TestKegg(KeggTest):
         self.assertEqual(len(products), 35)
         self.assertEqual(substrates['62'], ['90'])
         self.assertEqual(products['49'], ['102', '136'])
+        self.assertEqual(substrates['48'], ['98','136'])
+        self.assertEqual(products['48'], ['99'])
 
     def test_get_reaction_edges(self):
         """Test reaction pathway edges on glycolysis."""
@@ -155,19 +157,21 @@ class TestKegg(KeggTest):
         substrate_dict, product_dict = get_all_reactions(self.glycolysis_tree, glycolysis_compounds)
         reactions = get_reaction_pathway_edges(self.glycolysis_tree, substrate_dict, product_dict)
 
-        returned_reaction, returned_product = None, None
+        returned_reaction = None
 
         for k, v in reactions.items():
             for substrate, product, reaction in v:
 
                 if substrate == ['85'] and product == ['92']:
                     returned_reaction = reaction
-                if substrate == ['136', '98']:
-                    returned_product = product
 
         self.assertEqual(len(reactions), 35)
         self.assertEqual(returned_reaction, 'reversible')
-        self.assertEqual(returned_product, ['99'])
+        self.assertEqual(reactions['48'], [(
+            ['98','136'],
+            ['99'],
+            'irreversible'
+        )])
 
     def test_get_pathway_edges(self):
         """Test edges."""
