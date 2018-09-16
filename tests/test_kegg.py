@@ -37,23 +37,20 @@ class TestKegg(KeggTest):
             {'kegg_id': 'hsa:5663',
              'kegg_type': 'gene',
              'HGNC symbol': 'PSEN1',
-             'HGNC': '9508',
-             'UniProt': 'P49768 A0A024R6A3'},
+             'HGNC': '9508'},
             {'kegg_id': 'hsa:5664',
              'kegg_type': 'gene',
              'HGNC symbol': 'PSEN2',
-             'HGNC': '9509',
-             'UniProt': 'P49810'}
+             'HGNC': '9509'}
         ])
         self.assertEqual(glycolysis_genes['45'], [
             {'kegg_id': 'hsa:10327',
              'kegg_type': 'gene',
              'HGNC symbol': 'AKR1A1',
-             'HGNC': '380',
-             'UniProt': 'P14550 V9HWI0'}
+             'HGNC': '380'}
         ])
         self.assertEqual(glycolysis_compounds['83'], [
-            {'compound_name': 'cpd:C00031', 'kegg_type': 'compound', 'ChEBI': '4167', 'ChEBI name': 'D-glucopyranose'}
+            {'compound_name': 'cpd:C00031', 'ChEBI': '4167', 'ChEBI name': 'D-glucopyranose', 'PubChem': '3333'}
         ])
         self.assertEqual(notch_maps['4'], [
             {'kegg_id': 'path:hsa04010', 'map_name': 'MAPK signaling pathway'}
@@ -85,23 +82,19 @@ class TestKegg(KeggTest):
             {'kegg_id': 'hsa:3065',
              'kegg_type': 'gene',
              'HGNC symbol': 'HDAC1',
-             'HGNC': '4852',
-             'UniProt': 'Q13547 Q6IT96'},
+             'HGNC': '4852'},
             {'kegg_id': 'hsa:3066',
              'kegg_type': 'gene',
              'HGNC symbol': 'HDAC2',
-             'HGNC': '4853',
-             'UniProt': 'Q92769'},
+             'HGNC': '4853'},
             {'kegg_id': 'hsa:1487',
              'kegg_type': 'gene',
              'HGNC symbol': 'CTBP1',
-             'HGNC': '2494',
-             'UniProt': 'Q13363 X5D8Y5'},
+             'HGNC': '2494'},
             {'kegg_id': 'hsa:1488',
              'kegg_type': 'gene',
              'HGNC symbol': 'CTBP2',
-             'HGNC': '2495',
-             'UniProt': 'P56545'}
+             'HGNC': '2495'}
         ])
 
     def test_get_all_relationships(self):
@@ -128,9 +121,15 @@ class TestKegg(KeggTest):
         """Test compound info."""
         compound_name = 'cpd:C01172'
         compound_info = get_compound_info(compound_name, self.chebi_manager)
-
-        self.assertEqual(compound_info['ChEBI'], '17719')
-        self.assertEqual(compound_info['ChEBI name'], 'beta-D-glucose 6-phosphate')
+        self.assertEqual(compound_info, {
+            'compound_name': 'cpd:C01172',
+            'ChEBI': '17719',
+            'ChEBI name': 'beta-D-glucose 6-phosphate',
+            'PubChem': '4399'
+        })
+        compound_name = 'gl:G10505'
+        compound_info = get_compound_info(compound_name, self.chebi_manager)
+        self.assertEqual(compound_info, {'compound_name': 'gl:G10505'})
 
     def test_get_all_reactions(self):
         """Test reactions substrates, products."""
