@@ -17,7 +17,7 @@ class TestUtils(unittest.TestCase):
 
         self.assertEqual(len(files), 2)
         self.assertEqual(os.path.join(WP_TEST_RESOURCES, WP22), WP22)
-d
+
     def test_merge_dict(self):
         dict_1 = {1: 'uno'}
         dict_2 = {2: 'dos'}
