@@ -138,59 +138,6 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
     return entry_dict, compound_dict, map_dict, ortholog_dict
 
 
-def get_entities_in_complex(tree, entry_dict):
-    """Find all entities participating in a complex in XML.
-
-    :param xml.etree.ElementTree.ElementTree tree: XML tree
-    :param dict entry_dict: dictionary of entities with metadata
-    :return: set of tuples with kegg ids of entities in complex {((entity1, entity2,...,nth_entity),complex_id)}
-    :rtype: set[tuple]
-    """
-    complexes = defaultdict(list)
-    complex_dict = defaultdict(list)
-    complex_id_dict = defaultdict(list)
-    products = set()
-
-    # get component ids of entities participating in complex
-    for entry in (tree.findall("entry")):
-
-        entry_id = entry.get("id")
-        entry_type = entry.get("type")
-
-        for component in entry.iter("component"):
-
-            component_id = component.get("id")
-            complexes[entry_id].append(component_id)
-            complexes[entry_id].append(entry_type)
-
-            # get KEGG ids of component ids
-            for k, v in entry_dict.items():
-
-                for node_info in v:
-
-                    if component_id == k:
-                        kegg_id = node_info.get('kegg_id', 'kegg_id')
-                        complex_dict[component_id].append(kegg_id)
-
-    # get complex ids and kegg ids of entities participating in complex
-    for entity_id, components in complexes.items():
-
-        for entity, kegg_ids in complex_dict.items():
-
-            for component in components:
-
-                if component == entity:
-                    complex_id_dict[entity_id].append(kegg_ids)
-
-    # get complex
-    for k, v in complex_id_dict.items():
-
-        for element in itt.product(*v):
-            products.add((element, k))
-
-    return products
-
-
 def get_complex_components(tree, genes_dict, flattened=False):
     """Get IDs of complex components to construct complexes of protein composites (i.e. similar proteins)
     or get dictionary of flattened lists of all proteins involved in complexes.
@@ -410,22 +357,6 @@ def get_all_reactions(tree, compounds_dict):
                     products_dict[reaction_id].append(product_id)
 
     return substrates_dict, products_dict
-
-
-def get_reaction_edge_types(tree):
-    """Get edge types of reactions between 2 entities in XML.
-
-    :param xml.etree.ElementTree.ElementTree tree: XML tree
-    :return: count of types of reactions present in XML
-    :rtype: dict
-    """
-    rxn_edge_types_dict = defaultdict(int)
-
-    for reaction in tree.findall("reaction"):
-        reaction_type = reaction.get("type")
-        rxn_edge_types_dict[reaction_type] += 1
-
-    return rxn_edge_types_dict
 
 
 def get_reaction_pathway_edges(xml_tree, substrates_dict, products_dict):
