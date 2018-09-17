@@ -6,7 +6,9 @@ from pybel_tools.summary.edge_summary import count_relations
 
 from pathme.kegg.convert_to_bel import xml_complexes_to_bel, xml_entities_to_bel
 from pathme.kegg.kegg_xml_parser import *
+from pathme.constants import KEGG, CHEBI
 from pybel.struct.summary.node_summary import count_functions
+from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
 from .constants import KeggTest
 
 
@@ -22,6 +24,9 @@ class TestKegg(KeggTest):
         )
         glycolysis_genes, glycolysis_compounds, glycolysis_maps, glycolysis_orthologs = get_entity_nodes(
             self.glycolysis_tree, self.hgnc_manager, self.chebi_manager)
+
+        ppar_genes, ppar_compounds, ppar_maps, ppar_orthologs = get_entity_nodes(
+            self.ppar_tree, self.hgnc_manager, self.chebi_manager)
 
         self.assertEqual(len(notch_genes), 22)
         self.assertEqual(len(notch_compounds), 0)
@@ -50,7 +55,7 @@ class TestKegg(KeggTest):
              'HGNC': '380'}
         ])
         self.assertEqual(glycolysis_compounds['83'], [
-            {'compound_name': 'cpd:C00031', 'ChEBI': '4167', 'ChEBI name': 'D-glucopyranose', 'PubChem': '3333'}
+            {'compound_name': 'cpd:C00031', CHEBI: '4167', 'ChEBI name': 'D-glucopyranose', 'PubChem': '3333'}
         ])
         self.assertEqual(notch_maps['4'], [
             {'kegg_id': 'path:hsa04010', 'map_name': 'MAPK signaling pathway'}
@@ -123,7 +128,7 @@ class TestKegg(KeggTest):
         compound_info = get_compound_info(compound_name, self.chebi_manager)
         self.assertEqual(compound_info, {
             'compound_name': 'cpd:C01172',
-            'ChEBI': '17719',
+            CHEBI: '17719',
             'ChEBI name': 'beta-D-glucose 6-phosphate',
             'PubChem': '4399'
         })
@@ -173,29 +178,6 @@ class TestKegg(KeggTest):
             'irreversible'
         )])
 
-    def test_get_pathway_edges(self):
-        """Test edges."""
-        notch_genes, notch_compounds, notch_maps, notch_orthologs = get_entity_nodes(
-            self.notch_tree,
-            self.hgnc_manager,
-            self.chebi_manager
-        )
-        relations = get_all_relationships(self.notch_tree)
-        complexes = get_entities_in_complex(self.notch_tree, notch_genes)
-        edges = get_pathway_edges(notch_genes, relations, set_of_complexes=complexes)
-
-        returned_relation, complex_relation = None, None
-
-        for source, target, relation in edges:
-            if source == 'hsa:11317' and target == 'hsa:171558':
-                returned_relation = relation
-
-            if source == ('hsa:3065', 'hsa:1487') and target == 'hsa:11317':
-                complex_relation = relation
-
-        self.assertEqual(returned_relation, 'expression')
-        self.assertEqual(complex_relation, 'inhibition')
-
     def test_get_nodes(self):
         """Test nodes."""
         glycolysis_genes, glycolysis_compounds, glycolysis_maps, glycolysis_orthologs = get_entity_nodes(
@@ -209,6 +191,10 @@ class TestKegg(KeggTest):
             hgnc_manager=self.hgnc_manager,
             chebi_manager=self.chebi_manager
         )
+        ppar_genes, ppar_compounds, ppar_maps, ppar_orthologs = get_entity_nodes(
+            self.ppar_tree,
+            self.hgnc_manager,
+            self.chebi_manager)
 
         glycolysis_nodes = xml_entities_to_bel(
             graph=self.glycolysis_empty_graph,
@@ -231,34 +217,79 @@ class TestKegg(KeggTest):
             maps_dict=notch_maps,
             flattened=False
         )
-
-        path_name = None
+        flat_notch_nodes = xml_entities_to_bel(
+            graph=self.notch_empty_flatten_graph,
+            genes_dict=notch_genes,
+            compounds_dict=notch_compounds,
+            maps_dict=notch_maps,
+            flattened=True
+        )
+        ppar_nodes = xml_entities_to_bel(
+            graph=self.ppar_empty_graph,
+            genes_dict=ppar_genes,
+            compounds_dict=ppar_compounds,
+            maps_dict=ppar_maps,
+            flattened=False
+        )
+        flat_ppar_nodes = xml_entities_to_bel(
+            graph=self.ppar_empty_flatten_graph,
+            genes_dict=ppar_genes,
+            compounds_dict=ppar_compounds,
+            maps_dict=ppar_maps,
+            flattened=True
+        )
 
         self.assertEqual(len(glycolysis_nodes), 73)
         self.assertEqual(len(flat_glycolysis_nodes), 73)
         self.assertEqual(len(notch_nodes), 24)
+        self.assertEqual(len(flat_notch_nodes), 24)
+
+        # Test un-flattened protein nodes
+        self.assertEqual(glycolysis_nodes['53'], composite_abundance([
+            protein(namespace=HGNC, name='PKLR', identifier='9020'),
+            protein(namespace=HGNC, name='PKM', identifier='9021')
+        ]))
+        self.assertEqual(notch_nodes['22'], composite_abundance([
+            protein(namespace=HGNC, name='NOTCH1', identifier='7881'),
+            protein(namespace=HGNC, name='NOTCH2', identifier='7882'),
+            protein(namespace=HGNC, name='NOTCH3', identifier='7883'),
+            protein(namespace=HGNC, name='NOTCH4', identifier='7884')
+        ]))
 
         # Test flattened list of protein nodes
         self.assertEqual(flat_glycolysis_nodes['53'], [
-            {'function': 'Protein', 'namespace': 'HGNC', 'name': 'PKLR', 'identifier': '9020'},
-            {'function': 'Protein', 'namespace': 'HGNC', 'name': 'PKM', 'identifier': '9021'}
+            protein(namespace=HGNC, name='PKLR', identifier='9020'),
+            protein(namespace=HGNC, name='PKM', identifier='9021')
+        ])
+        self.assertEqual(flat_notch_nodes['22'], [
+            protein(namespace=HGNC, name='NOTCH1', identifier='7881'),
+            protein(namespace=HGNC, name='NOTCH2', identifier='7882'),
+            protein(namespace=HGNC, name='NOTCH3', identifier='7883'),
+            protein(namespace=HGNC, name='NOTCH4', identifier='7884')
         ])
 
         # Test pathway map nodes
-        pathway_info = glycolysis_nodes['54']
-        if pathway_info['identifier'] == 'path:hsa00020':
-            path_name = pathway_info['name']
-
-        self.assertEqual(path_name, 'Citrate cycle (TCA cycle)')
-        self.assertEqual(
-            glycolysis_nodes['85'],
-            {'function': 'Abundance', 'namespace': 'ChEBI', 'identifier': '17835'}
+        self.assertEqual(flat_glycolysis_nodes['54'],
+            bioprocess(namespace=KEGG, name='Citrate cycle (TCA cycle)', identifier='path:hsa00020')
+        )
+        self.assertEqual(flat_notch_nodes['4'],
+            bioprocess(namespace=KEGG, name='MAPK signaling pathway', identifier='path:hsa04010')
         )
 
-        # Test compound nodes
-        self.assertEqual(glycolysis_nodes['85'], {
-            'function': 'Abundance', 'namespace': 'ChEBI', 'identifier': '17835'
-        })
+        # Test un-flattened compound nodes
+        self.assertEqual(ppar_nodes['48'], composite_abundance([
+            abundance(namespace=CHEBI, name='9(S)-HODE', identifier='	34496'),
+            abundance(namespace=CHEBI, name='13(S)-HODE', identifier='34154')
+        ]))
+
+        # Test flattened compound nodes
+        self.assertEqual(flat_ppar_nodes['48'], [
+            abundance(namespace=CHEBI, name='9(S)-HODE', identifier='	34496'),
+            abundance(namespace=CHEBI, name='13(S)-HODE', identifier='34154')
+        ])
+        self.assertEqual(flat_glycolysis_nodes['85'],
+            abundance(namespace=CHEBI, name='2-phospho-D-glyceric acid', identifier='17835')
+        )
 
     def test_complex_node(self):
         """Test complex nodes on the notch pathway."""
