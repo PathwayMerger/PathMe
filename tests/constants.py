@@ -70,6 +70,7 @@ class KeggTest(TemporaryConnectionMixin):
 
         cls.notch_tree = import_xml_etree(NOTCH_XML)
         cls.glycolysis_tree = import_xml_etree(GLYCOLYSIS_XML)
+        cls.ppar_tree = import_xml_etree(PPAR_XML)
 
         log.info('Loading notch unflatten')
         cls.notch_bel_unflatten = kegg_to_bel(NOTCH_XML, cls.hgnc_manager, cls.chebi_manager)
@@ -92,17 +93,17 @@ class KeggTest(TemporaryConnectionMixin):
         cls.glycolysis_empty_graph = BELGraph(
             name='Glycolysis',
             version='1.0.0',
-            description='Glycolisis',
-            pathway_id='Glycolisis',
+            description='Glycolysis',
+            pathway_id='path:hsa00010',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
             contact='daniel.domingo.fernandez@scai.fraunhofer.de'
         )
 
         cls.glycolysis_empty_flatten_graph = BELGraph(
-            name='Glycolisis flatten',
+            name='Glycolysis flatten',
             version='1.0.0',
-            description='Glycolisis',
-            pathway_id='Glycolisis',
+            description='Glycolysis',
+            pathway_id='path:hsa00010',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
             contact='daniel.domingo.fernandez@scai.fraunhofer.de'
         )
@@ -110,8 +111,8 @@ class KeggTest(TemporaryConnectionMixin):
         cls.notch_empty_graph = BELGraph(
             name='Notch',
             version='1.0.0',
-            description='Notch',
-            pathway_id='Notch',
+            description='Notch signaling pathway',
+            pathway_id='path:hsa04330',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
             contact='daniel.domingo.fernandez@scai.fraunhofer.de'
         )
@@ -119,26 +120,26 @@ class KeggTest(TemporaryConnectionMixin):
         cls.notch_empty_flatten_graph = BELGraph(
             name='Notch flatten',
             version='1.0.0',
-            description='Notch',
-            pathway_id='Notch',
+            description='Notch signaling pathway',
+            pathway_id='path:hsa04330',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
             contact='daniel.domingo.fernandez@scai.fraunhofer.de'
         )
 
         cls.ppar_empty_graph = BELGraph(
-            name='Notch',
+            name='PPAR',
             version='1.0.0',
-            description='Notch',
-            pathway_id='Notch',
+            description='PPAR signaling pathway',
+            pathway_id='path:hsa03320',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
             contact='daniel.domingo.fernandez@scai.fraunhofer.de'
         )
 
         cls.ppar_empty_flatten_graph = BELGraph(
-            name='Notch flatten',
+            name='PPAR flatten',
             version='1.0.0',
-            description='Notch',
-            pathway_id='Notch',
+            description='PPAR signaling pathway',
+            pathway_id='path:hsa03320',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
             contact='daniel.domingo.fernandez@scai.fraunhofer.de'
         )
