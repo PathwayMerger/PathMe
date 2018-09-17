@@ -144,7 +144,7 @@ class TestKegg(KeggTest):
         self.assertEqual(len(products), 35)
         self.assertEqual(substrates['62'], ['90'])
         self.assertEqual(products['49'], ['102', '136'])
-        self.assertEqual(substrates['48'], ['98','136'])
+        self.assertEqual(substrates['48'], ['98', '136'])
         self.assertEqual(products['48'], ['99'])
 
     def test_get_reaction_edges(self):
@@ -168,7 +168,7 @@ class TestKegg(KeggTest):
         self.assertEqual(len(reactions), 35)
         self.assertEqual(returned_reaction, 'reversible')
         self.assertEqual(reactions['48'], [(
-            ['98','136'],
+            ['98', '136'],
             ['99'],
             'irreversible'
         )])
@@ -270,6 +270,7 @@ class TestKegg(KeggTest):
         complex_ids, flattened_complexes = get_complex_components(self.notch_tree, notch_genes, flattened=False)
         flat_complex_ids, flattened_complexes = get_complex_components(self.notch_tree, notch_genes, flattened=True)
 
+        # not flatten part
         node_dict = xml_entities_to_bel(
             graph=self.notch_empty_graph,
             genes_dict=notch_genes,
@@ -277,8 +278,13 @@ class TestKegg(KeggTest):
             maps_dict=notch_maps,
             flattened=False
         )
-        node_dict = xml_complexes_to_bel(node_dict, complex_ids, flattened_complexes)
+        node_dict = xml_complexes_to_bel(
+            graph=self.notch_empty_graph,
+            node_dict=node_dict,
+            complex_ids=complex_ids,
+        )
 
+        # Flatten part
         flat_node_dict = xml_entities_to_bel(
             graph=self.notch_empty_flatten_graph,
             genes_dict=notch_genes,
