@@ -125,6 +125,24 @@ class KeggTest(TemporaryConnectionMixin):
             contact='daniel.domingo.fernandez@scai.fraunhofer.de'
         )
 
+        cls.ppar_empty_graph = BELGraph(
+            name='Notch',
+            version='1.0.0',
+            description='Notch',
+            pathway_id='Notch',
+            authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+        )
+
+        cls.ppar_empty_flatten_graph = BELGraph(
+            name='Notch flatten',
+            version='1.0.0',
+            description='Notch',
+            pathway_id='Notch',
+            authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+        )
+
     @classmethod
     def tearDownClass(cls):
         """Close the connection in the manager and deletes the temporary database."""
