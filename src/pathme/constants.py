@@ -38,7 +38,7 @@ KEGG_MODIFICATIONS = {
     'phosphorylation': 'Ph',
     'glycosylation': 'Glyco',
     'ubiquitination': 'Ub',
-    'meythylation': 'Me'
+    'methylation': 'Me'
 }
 KEGG_CITATION = '10592173'
 
@@ -90,7 +90,7 @@ KEGG_STATS_COLUMN_NAMES = {
     'compound': 'XML Compound Relations',
     'dissociation': 'XML Dissociation Relations',
     'hidden compound': 'XML Hidden Compound Relations',
-    'missing interaction': 'XML missing interaction Relations',
+    'missing interaction': 'XML Missing Interaction Relations',
     'state change': 'XML State Change Relations',
     'brite': 'XML Brite Hierarchy'
 }
