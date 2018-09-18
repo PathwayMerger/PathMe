@@ -6,7 +6,7 @@ import os
 import unittest
 
 from pathme.wikipathways.utils import get_files_in_folder, merge_two_dicts, get_file_name_from_url
-from .constants import WP_TEST_RESOURCES, WP22
+from .constants import WP_TEST_RESOURCES, WP22, WP2359
 
 
 class TestUtils(unittest.TestCase):
@@ -15,7 +15,7 @@ class TestUtils(unittest.TestCase):
     def test_get_wikipathways_files(self):
         files = get_files_in_folder(WP_TEST_RESOURCES)
 
-        self.assertEqual(len(files), 1)
+        self.assertEqual(len(files), 2)
         self.assertEqual(os.path.join(WP_TEST_RESOURCES, WP22), WP22)
 
     def test_merge_dict(self):
