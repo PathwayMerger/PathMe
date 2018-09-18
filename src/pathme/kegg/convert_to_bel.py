@@ -64,9 +64,8 @@ def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False):
     # Get complexes
     complex_ids, flattened_complexes = get_complex_components(xml_tree, genes_dict, flattened=flatten)
 
-    # Add nodes and edges to graph
+    # Add nodes to graph
     nodes = xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=flatten)
-
     nodes = xml_complexes_to_bel(
         graph=graph,
         node_dict=nodes,
@@ -74,6 +73,7 @@ def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False):
         flatten_complexes=flattened_complexes if flatten else None
     )
 
+    # Add edges to graph
     add_edges(graph, relations_list, nodes)
     add_reaction_edges(graph, reactions_dict, nodes)
 
@@ -515,7 +515,7 @@ def add_simple_edge(graph, u, v, relation_type):
 
     # Catalytic activity of subject increases transformation of reactant(s) to product(s)
     elif relation_type in {'reversible', 'irreversible'}:
-        graph.add_increases(u, v, citation='KEGG_CITATION', evidence='', subject_modifier=activity('cat'))
+        graph.add_increases(u, v, citation=KEGG_CITATION, evidence='', subject_modifier=activity('cat'))
 
     # Subject decreases activity of object
     elif relation_type == 'inhibition':
