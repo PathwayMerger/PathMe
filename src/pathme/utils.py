@@ -109,7 +109,7 @@ def entry_result_to_dict(entry, **kwargs):
     attributes_dict = {
         str(label): str(entry[label])
         for label in entry.labels
-        if str(label) and entry[label] != None
+        if str(label) and entry[label] is not None
     }
 
     if 'attr_empty' in kwargs:
