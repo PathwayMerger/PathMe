@@ -119,14 +119,14 @@ def xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=
 
 
 def xml_complexes_to_bel(graph, node_dict, complex_ids, flatten_complexes=None):
-    """ Convert complexes in XML to BEL nodes where each complex is made up of proteins
+    """Convert complexes in XML to BEL nodes where each complex is made up of proteins
     and/or composites (i.e. groups of related proteins).
 
     :param graph: BELGraph
-    :param dict node_dict: dictionary of BEL nodes
-    :param dict complex_ids: dictionary of complex IDs and component IDs
-    :param Optional[dict]: dictionary of complex IDs and flattened list of all components
-    :return: dictionary of BEL nodes
+    :param dict[str,pybel.dsl.BaseEntity] node_dict: kegg_id to BEL node dictionary
+    :param dict[str,str] complex_ids: complex IDs to corresponding component IDs
+    :param Optional[dict] flatten_complexes: complex IDs and flattened list of all components
+    :return: kegg_ids to BEL nodes
     :rtype: dict
     """
     member_dict = defaultdict(list)
@@ -158,7 +158,7 @@ def gene_to_bel_node(graph, node):
     """Create a protein or protein composite BEL node and add to BEL Graph.
 
     :param graph: BELGraph
-    :param list[dict] node: dictionary of node attributes
+    :param list[dict[str,str]] node: dictionary of node attributes
     :return: corresponding BEL node
     :rtype: pybel.dsl.BaseEntity
     """
@@ -198,9 +198,9 @@ def flatten_gene_to_bel_node(graph, node):
     """Create a protein or list of protein BEL nodes and add to BEL Graph.
 
     :param graph: BELGraph
-    :param dict node: dictionary of node attributes
-    :return: BEL node dictionary
-    :rtype: dict
+    :param dict[str,str] node: dictionary of node attributes
+    :return: corresponding BEL node
+    :rtype: pybel.dsl.BaseEntity
     """
     # if only 1 protein node, return corresponding BEL node
     if len(node) == 1:
@@ -247,8 +247,8 @@ def compound_to_bel(graph, node):
 
     :param graph: BELGraph
     :param dict node: dictionary of node attributes
-    :return: BEL node dictionary
-    :rtype: dict
+    :return: corresponding BEL node
+    :rtype: pybel.dsl.BaseEntity
     """
     members = list()
 
@@ -297,8 +297,8 @@ def flatten_compound_to_bel_node(graph, node):
 
     :param graph: BELGraph
     :param dict node: dictionary of node attributes
-    :return: BEL node dictionary
-    :rtype: dict
+    :return: corresponding BEL node
+    :rtype: pybel.dsl.BaseEntity
     """
     # if only 1 compound node, return corresponding BEL node
     if len(node) == 1:
@@ -367,8 +367,8 @@ def map_to_bel_node(graph, node):
 
     :param graph: BELGraph
     :param dict node: dictionary of node attributes
-    :return: BEL node dictionary
-    :rtype: dict
+    :return: corresponding BEL node
+    :rtype: pybel.dsl.BaseEntity
     """
     for attribute in node:
         name = attribute['map_name']
@@ -384,7 +384,7 @@ def flatten_complex_to_bel_node(graph, node):
 
     :param dict node: dictionary of node attributes
     :return: BEL node dictionary
-    :rtype: dict
+    :rtype: pybel.dsl.BaseEntity
     """
     members = list()
 
@@ -451,7 +451,7 @@ def add_edges(graph, edges, nodes):
 def add_reaction_edges(graph, reaction_dict, nodes):
     """Add edges from reactants to products and enzymes to reactions to BEL Graph.
 
-    :param graph: BELGraph
+    :param pybel.BELGraph graph: BEL Graph
     :param dict reaction_dict: dictionary of reaction IDs and reactant and product IDs
     :param dict nodes: dictionary of BEL nodes
     """
