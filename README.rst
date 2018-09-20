@@ -82,13 +82,3 @@ WikiPathways
 .. |build| image:: https://travis-ci.org/ComPath/PathMe.svg?branch=master
     :target: https://travis-ci.org/ComPath/PathMe
     :alt: Build Status
-
-
-
-
-
-
-
-
-
-

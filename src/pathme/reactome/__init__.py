@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""This part of the package contains all the Reactome related modules."""
+"""Part of the package dedicated to convert Reactome to BEL."""
 
 from .convert_to_bel import *

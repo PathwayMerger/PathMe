@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""This part of the package contains all the KEGG related modules."""
+"""Part of the package dedicated to convert KEGG to BEL."""
 
 from .convert_to_bel import *
 from .utils import *
