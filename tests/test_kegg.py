@@ -124,15 +124,18 @@ class TestKegg(KeggTest):
         """Test compound info."""
         compound_name = 'cpd:C01172'
         compound_info = _process_kegg_api_get_entity(compound_name, 'compound', self.hgnc_manager, self.chebi_manager)
+
         self.assertEqual(compound_info, {
             'kegg_id': 'cpd:C01172',
+            'kegg_type': 'compound',
             CHEBI: '17719',
             'ChEBI name': 'beta-D-glucose 6-phosphate',
-            'PubChem': '4399'
+            PUBCHEM: '4399'
         })
         compound_name = 'gl:G10505'
         compound_info = _process_kegg_api_get_entity(compound_name, 'compound', self.hgnc_manager, self.chebi_manager)
-        self.assertEqual(compound_info, {'kegg_id': 'gl:G10505'})
+
+        self.assertEqual(compound_info, {'kegg_id': 'gl:G10505', 'kegg_type': 'compound'})
 
     def test_get_all_reactions(self):
         """Test reactions substrates, products."""
@@ -285,9 +288,10 @@ class TestKegg(KeggTest):
             abundance(namespace=CHEBI, name='9(S)-HODE', identifier='	34496'),
             abundance(namespace=CHEBI, name='13(S)-HODE', identifier='34154')
         ])
-        self.assertEqual(flat_glycolysis_nodes['85'],
-                         abundance(namespace=CHEBI, name='2-phospho-D-glyceric acid', identifier='17835')
-                         )
+        self.assertEqual(
+            flat_glycolysis_nodes['85'],
+            abundance(namespace=CHEBI, name='2-phospho-D-glyceric acid', identifier='17835')
+        )
 
     def test_complex_node(self):
         """Test complex nodes on the notch pathway."""
