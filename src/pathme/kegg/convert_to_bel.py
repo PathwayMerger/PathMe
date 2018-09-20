@@ -94,12 +94,12 @@ def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False, cache=True):
 def xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=False):
     """Convert gene and compound entities in XML to BEL nodes.
 
-    :param graph: BELGraph
-    :param dict genes_dict: dictionary of genes in XML
-    :param dict compounds_dict: dictionary of compounds in XML
-    :param dict maps_dict: dictionary of pathway maps in XML
+    :param pybel.BELGraph graph: BEL Graph
+    :param dict genes_dict: KEGG genes
+    :param dict compounds_dict: KEGG compounds
+    :param dict maps_dict: KEGG pathway maps
     :param bool flattened: True to flatten to list of similar genes grouped together
-    :return: dictionary of BEL nodes
+    :return: KEGG entities to BEL nodes
     :rtype: dict
     """
     # Create a dictionary of flattened BEL nodes
@@ -130,7 +130,7 @@ def xml_complexes_to_bel(graph, node_dict, complex_ids, flatten_complexes=None):
     """Convert complexes in XML to BEL nodes where each complex is made up of proteins
     and/or composites (i.e. groups of related proteins).
 
-    :param graph: BELGraph
+    :param pybel.BELGraph graph: BEL Graph
     :param dict[str,pybel.dsl.BaseEntity] node_dict: kegg_id to BEL node dictionary
     :param dict[str,str] complex_ids: complex IDs to corresponding component IDs
     :param Optional[dict] flatten_complexes: complex IDs and flattened list of all components
@@ -165,7 +165,7 @@ def complexes_to_bel_node(graph, members):
 def gene_to_bel_node(graph, node):
     """Create a protein or protein composite BEL node and add to BEL Graph.
 
-    :param graph: BELGraph
+    :param pybel.BELGraph graph: BEL Graph
     :param list[dict[str,str]] node: dictionary of node attributes
     :return: corresponding BEL node
     :rtype: pybel.dsl.BaseEntity
@@ -205,7 +205,7 @@ def gene_to_bel_node(graph, node):
 def flatten_gene_to_bel_node(graph, node):
     """Create a protein or list of protein BEL nodes and add to BEL Graph.
 
-    :param graph: BELGraph
+    :param pybel.BELGraph graph: BEL Graph
     :param dict[str,str] node: dictionary of node attributes
     :return: corresponding BEL node
     :rtype: pybel.dsl.BaseEntity
@@ -253,7 +253,7 @@ def flatten_gene_to_bel_node(graph, node):
 def compound_to_bel(graph, node):
     """Create an abundance BEL node or composite abundances BEL node and add to BEL Graph.
 
-    :param graph: BELGraph
+    :param pybel.BELGraph graph: BEL Graph
     :param dict node: dictionary of node attributes
     :return: corresponding BEL node
     :rtype: pybel.dsl.BaseEntity
@@ -303,7 +303,7 @@ def compound_to_bel(graph, node):
 def flatten_compound_to_bel_node(graph, node):
     """Create an abundance or list of abundance BEL nodes and add to BEL Graph.
 
-    :param graph: BELGraph
+    :param pybel.BELGraph graph: BEL Graph
     :param dict node: dictionary of node attributes
     :return: corresponding BEL node
     :rtype: pybel.dsl.BaseEntity
@@ -373,6 +373,7 @@ def flatten_compound_to_bel_node(graph, node):
 def map_to_bel_node(graph, node):
     """Create a biological process BEL node.
 
+    :param pybel.BELGraph graph: BEL Graph
     :param graph: BELGraph
     :param dict node: dictionary of node attributes
     :return: corresponding BEL node
@@ -390,6 +391,7 @@ def map_to_bel_node(graph, node):
 def flatten_complex_to_bel_node(graph, node):
     """Create complex abundance BEL node.
 
+    :param pybel.BELGraph graph: BEL Graph
     :param dict node: dictionary of node attributes
     :return: BEL node dictionary
     :rtype: pybel.dsl.BaseEntity
@@ -422,8 +424,8 @@ def flatten_complex_to_bel_node(graph, node):
 def add_edges(graph, edges, nodes):
     """Add edges to BEL graph.
 
-    :param graph: BELGraph
-    :param list edges: list of relationships with entity IDs and interaction types
+    :param pybel.BELGraph graph: BEL Graph
+    :param list[tuple] edges: list of relationships with entity IDs and interaction types
     :param dict nodes: dictionary of BEL nodes
     """
     for source, target, relation in edges:
@@ -434,7 +436,7 @@ def add_edges(graph, edges, nodes):
             v = nodes[target]
 
         except KeyError:
-            pass
+            continue
 
         # If subject and object are lists, create edges between all products
         if isinstance(u, list) and isinstance(v, list):
@@ -498,10 +500,10 @@ def add_reaction_edges(graph, reaction_dict, nodes):
 def add_simple_edge(graph, u, v, relation_type):
     """Add corresponding edge type to BEL graph.
 
-    :param graph: BELGraph
+    :param pybel.BELGraph graph: BEL Graph
     :param u: source node
     :param v: target node
-    :param list relation_type: list of entity IDs and types of relations
+    :param list relation_type: source ID, target ID and relation types
     """
     # Subject activity increases protein modification of object
     if relation_type in {'phosphorylation', 'glycosylation', 'ubiquitination', 'methylation'}:
