@@ -26,6 +26,7 @@ def _ensure_cache_folders():
     os.makedirs(REACTOME_DIR, exist_ok=True)
     os.makedirs(WIKIPATHWAYS_DIR, exist_ok=True)
     os.makedirs(KEGG_CACHE, exist_ok=True)
+    os.makedirs(KEGG_BEL, exist_ok=True)
 
 
 MODULE_NAME = 'pathme'
@@ -41,6 +42,7 @@ KEGG_DIR = os.path.join(DATA_DIR, KEGG)
 REACTOME_DIR = os.path.join(DATA_DIR, REACTOME)
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
 KEGG_CACHE = os.path.join(DATA_DIR, KEGG, 'cache')
+KEGG_BEL = os.path.join(DATA_DIR, KEGG, 'bel')
 
 _ensure_cache_folders()
 

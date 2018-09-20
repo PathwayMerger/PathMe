@@ -5,7 +5,7 @@ import logging
 from collections import defaultdict
 from itertools import product
 
-from pybel import BELGraph
+from pybel import BELGraph, to_pickle
 from pybel.dsl.edges import activity
 from pybel.dsl.node_classes import CentralDogma
 from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
@@ -30,13 +30,14 @@ log = logging.getLogger(__name__)
 """Populate empty BEL graph with KEGG pathway entities and interactions"""
 
 
-def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False):
+def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False, cache=True):
     """Convert KGML file to a BELGraph.
 
     :param str path: path to KGML file
     :param bio2bel_hgnc.Manager hgnc_manager: HGNC manager
     :param bio2bel_chebi.Manager chebi_manager: ChEBI manager
     :param bool flatten: flat nodes
+    :param bool cache: cache graph into pathme folder
     :rtype: BELGraph
     """
     # Load xml
@@ -75,6 +76,14 @@ def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False):
     # Add edges to graph
     add_edges(graph, relations_list, nodes)
     add_reaction_edges(graph, reactions_dict, nodes)
+
+    if cache:
+        to_pickle(
+            graph,
+            os.path.join(KEGG_BEL, '{}_{}.pickle'.format(
+                root.attrib['title'],
+                'flatten' if flatten else 'unflatten'))
+        )
 
     return graph
 
@@ -557,7 +566,7 @@ def get_bel_types(path, hgnc_manager, chebi_manager, flatten=None):
     """
     bel_stats = {}
 
-    bel_graph = kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=True if flatten else False)
+    bel_graph = kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=True if flatten else False, cache=False)
 
     bel_stats['nodes'] = bel_graph.number_of_nodes()
     bel_stats['edges'] = bel_graph.number_of_edges()
