@@ -65,9 +65,10 @@ def match_entry_type(types):
     if types == {'core#Collection', 'wp#Pathway'} or types == {'wp#PublicationReference'}:
         return 'pathway_info'
 
-    elif types == {'wp#DataNode', 'wp#Protein'} or types == {'wp#DataNode', 'wp#Metabolite'} or types == {'wp#DataNode',
-                                                                                                          'wp#GeneProduct'} or types == {
-        'wp#DataNode'}:
+    elif types == {'wp#DataNode', 'wp#Protein'} \
+            or types == {'wp#DataNode', 'wp#Metabolite'} \
+            or types == {'wp#DataNode', 'wp#GeneProduct'} \
+            or types == {'wp#DataNode'}:
         return 'nodes'
 
     elif types == {'wp#Interaction', 'wp#DirectedInteraction'} \
@@ -128,7 +129,9 @@ def match_entry(entry):
     # Get the entry type id calling the get_entry_type function, if the the entry has an attribute with type
     if '@type' in entry:
         entry_type = get_entry_type(entry['@type'])
-    # Assign literally the entry type when the entry has no type attribute, if the entry id namespace is recognized (like the pathway id entry), else raise an exeption
+
+    # Assign literally the entry type when the entry has no type attribute,
+    # if the entry id namespace is recognized (like the pathway id entry), else raise an exeption
     else:
         if namespace == 'wikipathways':
             entry_type = 'pathway_info'
@@ -151,13 +154,15 @@ def match_attribute(uri):
     # TODO: /dc/terms attribute_prefix_namespaces
 
     # Check if the prefix is recognized (could also be treated different for specific prefix cases)
-    if attribute_prefix not in {'http://www.w3.org/2000/01', 'http://identifiers.org',
-                                'http://vocabularies.wikipathways.org',
-                                'http://purl.org/dc/terms',
-                                'http://purl.org/dc/elements/1.1',
-                                'http://xmlns.com',
-                                'http://xmlns.com/foaf/0.1',
-                                'http://purl.org/pav'}:
+    if attribute_prefix not in {
+        'http://www.w3.org/2000/01', 'http://identifiers.org',
+        'http://vocabularies.wikipathways.org',
+        'http://purl.org/dc/terms',
+        'http://purl.org/dc/elements/1.1',
+        'http://xmlns.com',
+        'http://xmlns.com/foaf/0.1',
+        'http://purl.org/pav'
+    }:
         raise Exception('Invalid attribute prefix %s', attribute_prefix, attribute_namespace)
 
     # Get the attribute_type depending on the attribute_namespace, calling the match_attribute_label function.
@@ -185,8 +190,6 @@ def get_entry_attribute_value(entry_label, node_id, attribute_label, graph):
         elif attribute_label in graph[entry_label]:
             return graph[entry_label][attribute_label]
 
-        raise Exception('Error in get node attribute: %s value: %s', entry_label, attribute_label, node_id)
-
     raise Exception('Error in get node attribute: %s value: %s', entry_label, attribute_label, node_id)
 
 
@@ -210,8 +213,7 @@ def set_entry_attribute(entry_type, node_id, attribute_label, value, graph):
     elif entry_type == 'pathway_info':
         graph['pathway_info'][attribute_label] = value
 
-    else:
-        raise Exception('Error in set node attribute: %s value: %s %s', entry_type, node_id, attribute_label)
+    raise Exception('Error in set node attribute: %s value: %s %s', entry_type, node_id, attribute_label)
 
 
 def set_interaction(entry, graph):

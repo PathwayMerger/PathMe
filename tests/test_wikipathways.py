@@ -8,7 +8,7 @@ from pybel import BELGraph
 from pybel_tools.summary.edge_summary import count_relations
 
 from pathme.wikipathways.rdf_sparql import wikipathways_to_bel
-from .constants import WP2359
+from .constants import WP2359, WP22
 
 
 class TestWikipathways(unittest.TestCase):
@@ -23,3 +23,12 @@ class TestWikipathways(unittest.TestCase):
         self.assertEqual(test_graph.summary_dict()['Number of Nodes'], 2)
         self.assertEqual(test_graph.summary_dict()['Number of Edges'], 1)
         self.assertEqual(count_relations(test_graph)['association'], 1)
+
+    def test_wikipathways_22(self):
+        """Test 22."""
+        test_graph = wikipathways_to_bel(WP22)
+
+        self.assertEqual(type(test_graph), BELGraph, msg='Error with graph type')
+
+        self.assertEqual(test_graph.summary_dict()['Number of Nodes'], 11)
+        self.assertEqual(test_graph.summary_dict()['Number of Edges'], 10)

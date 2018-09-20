@@ -171,11 +171,10 @@ def rdf_pathway_to_bel(graph) -> BELGraph:
 def get_rdf_statistics(rdf_graph, primary_type) -> Dict[str, int]:
     """Get types statistics for a pathway entries type (nodes or interactions) set.
 
-    :param str rdf_graph: primary entries type identifier (ex: DataNode or Interaction)
-    :param str primary_type: primary entries type identifier (ex: DataNode or Interaction)
+    :param rdf_graph: primary entries type identifier (ex: DataNode or Interaction)
+    :param primary_type: primary entries type identifier (ex: DataNode or Interaction)
     """
-    query_results = rdf_graph.query(GET_ENTRIES_SUBTYPES_SPARQL.format(rdf_type=primary_type),
-                                    initNs=PREFIXES)
+    query_results = rdf_graph.query(GET_ENTRIES_SUBTYPES_SPARQL.format(rdf_type=primary_type), initNs=PREFIXES)
 
     entries_types = _get_subtypes(query_results)
     type_statistics = defaultdict(int)
@@ -198,7 +197,8 @@ def get_wikipathways_statistics(resource_files, resource_folder) -> Tuple[
     Dict[str, Dict[str, int]], Dict[str, Dict[str, Dict[str, int]]]]:
     """Load WikiPathways RDF to BELGraph
 
-    :param graph: RDF file path
+    :param iter[str] resource_files: RDF file path
+    :param str resource_folder: RDF file path
     """
     global_statistics = defaultdict(lambda: defaultdict(int))
     all_pathways_statistics = {}
