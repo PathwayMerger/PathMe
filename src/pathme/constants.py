@@ -17,12 +17,15 @@ def get_data_dir(module_name):
     module_name = module_name.lower()
     data_dir = os.path.join(PATHME_DIR, module_name)
     os.makedirs(data_dir, exist_ok=True)
+    return data_dir
+
+
+def _ensure_cache_folders():
     # Ensure data folders are created
     os.makedirs(KEGG_DIR, exist_ok=True)
     os.makedirs(REACTOME_DIR, exist_ok=True)
     os.makedirs(WIKIPATHWAYS_DIR, exist_ok=True)
     os.makedirs(KEGG_CACHE, exist_ok=True)
-    return data_dir
 
 
 MODULE_NAME = 'pathme'
@@ -38,6 +41,8 @@ KEGG_DIR = os.path.join(DATA_DIR, KEGG)
 REACTOME_DIR = os.path.join(DATA_DIR, REACTOME)
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
 KEGG_CACHE = os.path.join(DATA_DIR, KEGG, 'cache')
+
+_ensure_cache_folders()
 
 HGNC = 'HGNC'
 HGNC_SYMBOL = 'HGNC symbol'
