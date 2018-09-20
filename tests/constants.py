@@ -73,22 +73,23 @@ class KeggTest(TemporaryConnectionMixin):
         cls.ppar_tree = import_xml_etree(PPAR_XML)
 
         log.info('Loading notch unflatten')
-        cls.notch_bel_unflatten = kegg_to_bel(NOTCH_XML, cls.hgnc_manager, cls.chebi_manager)
+        cls.notch_bel_unflatten = kegg_to_bel(NOTCH_XML, cls.hgnc_manager, cls.chebi_manager, cache=False)
 
         log.info('Loading notch flatten')
-        cls.notch_bel_flatten = kegg_to_bel(NOTCH_XML, cls.hgnc_manager, cls.chebi_manager, flatten=True)
+        cls.notch_bel_flatten = kegg_to_bel(NOTCH_XML, cls.hgnc_manager, cls.chebi_manager, flatten=True, cache=False)
 
         log.info('Loading glycolysis unflatten')
-        cls.glycolysis_bel_unflatten = kegg_to_bel(GLYCOLYSIS_XML, cls.hgnc_manager, cls.chebi_manager)
+        cls.glycolysis_bel_unflatten = kegg_to_bel(GLYCOLYSIS_XML, cls.hgnc_manager, cls.chebi_manager, cache=False)
 
         log.info('Loading glycolysis flatten')
-        cls.glycolysis_bel_flatten = kegg_to_bel(GLYCOLYSIS_XML, cls.hgnc_manager, cls.chebi_manager, flatten=True)
+        cls.glycolysis_bel_flatten = kegg_to_bel(GLYCOLYSIS_XML, cls.hgnc_manager, cls.chebi_manager, flatten=True,
+                                                 cache=False)
 
         log.info('Loading PPAR unflatten')
-        cls.ppar_bel_unflatten = kegg_to_bel(PPAR_XML, cls.hgnc_manager, cls.chebi_manager)
+        cls.ppar_bel_unflatten = kegg_to_bel(PPAR_XML, cls.hgnc_manager, cls.chebi_manager, cache=False)
 
         log.info('Loading PPAR flatten')
-        cls.ppar_bel_flatten = kegg_to_bel(PPAR_XML, cls.hgnc_manager, cls.chebi_manager, flatten=True)
+        cls.ppar_bel_flatten = kegg_to_bel(PPAR_XML, cls.hgnc_manager, cls.chebi_manager, flatten=True, cache=False)
 
         cls.glycolysis_empty_graph = BELGraph(
             name='Glycolysis',
