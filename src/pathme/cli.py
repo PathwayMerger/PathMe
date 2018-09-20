@@ -14,6 +14,7 @@ from pathme.constants import (
     DATA_DIR,
     RDF_WIKIPATHWAYS,
     KEGG,
+    KEGG_CACHE,
     WIKIPATHWAYS,
     REACTOME,
     RDF_REACTOME
@@ -41,6 +42,7 @@ log = logging.getLogger(__name__)
 os.makedirs(KEGG_DIR, exist_ok=True)
 os.makedirs(REACTOME_DIR, exist_ok=True)
 os.makedirs(WIKIPATHWAYS_DIR, exist_ok=True)
+os.makedirs(KEGG_CACHE, exist_ok=True)
 
 
 @click.group(help='PathMe')
