@@ -108,7 +108,6 @@ def _process_kegg_api_get_entity(entity, type, hgnc_manager, chebi_manager):
     :return: JSON retrieved from the API
     :rtype: dict[str,str]
     """
-    print(entity)
     _entity_filepath = os.path.join(KEGG_CACHE, '{}.json'.format(entity))
 
     if os.path.exists(_entity_filepath):
