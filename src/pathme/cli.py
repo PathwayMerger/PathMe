@@ -3,22 +3,13 @@
 """Command line interface."""
 
 import logging
-import os
 import time
 
 import click
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
 
-from pathme.constants import (
-    DATA_DIR,
-    RDF_WIKIPATHWAYS,
-    KEGG,
-    KEGG_CACHE,
-    WIKIPATHWAYS,
-    REACTOME,
-    RDF_REACTOME
-)
+from pathme.constants import *
 from pathme.constants import DEFAULT_CACHE_CONNECTION
 from pathme.kegg.convert_to_bel import kegg_to_bel
 from pathme.kegg.utils import download_kgml_files, get_kegg_pathway_ids
@@ -32,17 +23,7 @@ from pathme.wikipathways.utils import (
     unzip_file
 )
 
-KEGG_DIR = os.path.join(DATA_DIR, KEGG)
-REACTOME_DIR = os.path.join(DATA_DIR, REACTOME)
-WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
-
 log = logging.getLogger(__name__)
-
-# Ensure data folders are created
-os.makedirs(KEGG_DIR, exist_ok=True)
-os.makedirs(REACTOME_DIR, exist_ok=True)
-os.makedirs(WIKIPATHWAYS_DIR, exist_ok=True)
-os.makedirs(KEGG_CACHE, exist_ok=True)
 
 
 @click.group(help='PathMe')
