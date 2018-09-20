@@ -12,7 +12,7 @@ import requests
 from bio2bel_kegg.constants import API_KEGG_GET
 from bio2bel_kegg.parsers.description import parse_description
 
-from pathme.constants import CHEBI, HGNC, HGNC_SYMBOL, UNIPROT, KEGG_CACHE, PUBCHEM
+from pathme.constants import CHEBI, CHEBI_NAME, HGNC, HGNC_SYMBOL, UNIPROT, KEGG_CACHE, PUBCHEM
 from pathme.wikipathways.utils import merge_two_dicts
 
 log = logging.getLogger(__name__)
