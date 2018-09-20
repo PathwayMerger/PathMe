@@ -93,7 +93,7 @@ def _post_process_api_query(node_meta_data, hgnc_manager, chebi_manager):
                         if not chebi_entry:
                             continue
 
-                        node_dict['ChEBI name'] = chebi_entry
+                        node_dict['ChEBI name'] = chebi_entry.name
 
     return node_dict
 
@@ -108,6 +108,7 @@ def _process_kegg_api_get_entity(entity, type, hgnc_manager, chebi_manager):
     :return: JSON retrieved from the API
     :rtype: dict[str,str]
     """
+    print(entity)
     _entity_filepath = os.path.join(KEGG_CACHE, '{}.json'.format(entity))
 
     if os.path.exists(_entity_filepath):
@@ -158,15 +159,6 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
 
         elif kegg_type.startswith('compound'):
             for compound_id in kegg_ids.split(' '):
-
-                if compound_id.startswith('cpd:'):
-                    compound_id.strip('cpd:')
-
-                elif compound_id.startswith('dr:'):
-                    compound_id.strip('dr:')
-
-                elif compound_id.startswith('gl:'):
-                    compound_id.strip('gl:')
 
                 compound_info = _process_kegg_api_get_entity(compound_id, kegg_type, hgnc_manager, chebi_manager)
 

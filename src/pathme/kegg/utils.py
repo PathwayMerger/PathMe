@@ -15,6 +15,7 @@ from pathme.wikipathways.utils import get_files_in_folder
 from ..constants import DATA_DIR, KEGG, KEGG_KGML_URL, KEGG_STATS_COLUMN_NAMES
 
 __all__ = [
+    'download_kgml_files',
     'get_kegg_statistics',
     'get_kegg_pathway_ids'
 ]
