@@ -5,7 +5,13 @@ import logging
 from collections import defaultdict
 from itertools import product
 
-from pathme.constants import CHEBI, HGNC, KEGG_CITATION, KEGG_MODIFICATIONS, KEGG
+from pybel import BELGraph
+from pybel.dsl.edges import activity
+from pybel.dsl.node_classes import CentralDogma
+from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
+from pybel.struct.summary import count_functions, edge_summary
+
+from pathme.constants import *
 from pathme.kegg.kegg_xml_parser import (
     get_all_reactions,
     get_all_relationships,
@@ -14,13 +20,6 @@ from pathme.kegg.kegg_xml_parser import (
     get_reaction_pathway_edges,
     import_xml_etree
 )
-
-from pybel import BELGraph
-from pybel.dsl.edges import activity
-from pybel.dsl.node_classes import CentralDogma
-from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
-from pybel.struct.summary import count_functions, edge_summary
-
 
 __all__ = [
     'kegg_to_bel',
@@ -169,17 +168,17 @@ def gene_to_bel_node(graph, node):
         for attribute in node:
 
             if HGNC in attribute:
-                protein_node = protein(namespace=HGNC, name=attribute['HGNC symbol'], identifier=attribute[HGNC])
+                protein_node = protein(namespace=HGNC, name=attribute[HGNC_SYMBOL], identifier=attribute[HGNC])
                 graph.add_node_from_data(protein_node)
                 return protein_node
 
-            elif 'UniProt' in attribute:
-                protein_node = protein(namespace='UniProt', name=attribute['UniProt'], identifier=attribute['UniProt'])
+            elif UNIPROT in attribute:
+                protein_node = protein(namespace=UNIPROT, name=attribute[UNIPROT], identifier=attribute[UNIPROT])
                 graph.add_node_from_data(protein_node)
                 return protein_node
 
             else:
-                protein_node = protein(namespace=KEGG, name=attribute['kegg_id'], identifier=attribute['kegg_id'])
+                protein_node = protein(namespace=KEGG, name=attribute[KEGG_ID], identifier=attribute[KEGG_ID])
                 graph.add_node_from_data(protein_node)
                 return protein_node
 
@@ -207,17 +206,17 @@ def flatten_gene_to_bel_node(graph, node):
         node_dict = node[0]
 
         if HGNC in node_dict:
-            protein_node = protein(namespace=HGNC, name=node_dict['HGNC symbol'], identifier=node_dict[HGNC])
+            protein_node = protein(namespace=HGNC, name=node_dict[HGNC_SYMBOL], identifier=node_dict[HGNC])
             graph.add_node_from_data(protein_node)
             return protein_node
 
-        elif 'UniProt' in node_dict:
-            protein_node = protein(namespace='UniProt', name=node_dict['UniProt'], identifier=node_dict['UniProt'])
+        elif UNIPROT in node_dict:
+            protein_node = protein(namespace=UNIPROT, name=node_dict[UNIPROT], identifier=node_dict[UNIPROT])
             graph.add_node_from_data(protein_node)
             return protein_node
 
         else:
-            protein_node = protein(namespace=KEGG, name=node_dict['kegg_id'], identifier=node_dict['kegg_id'])
+            protein_node = protein(namespace=KEGG, name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
             graph.add_node_from_data(protein_node)
             return protein_node
 
@@ -226,16 +225,16 @@ def flatten_gene_to_bel_node(graph, node):
     for node_dict in node:
 
         if HGNC in node_dict:
-            protein_node = protein(namespace=HGNC, name=node_dict['HGNC symbol'], identifier=node_dict[HGNC])
+            protein_node = protein(namespace=HGNC, name=node_dict[HGNC_SYMBOL], identifier=node_dict[HGNC])
             graph.add_node_from_data(protein_node)
             proteins_list.append(protein_node)
 
-        elif 'UniProt' in node_dict:
-            protein_node = protein(namespace='UniProt', name=node_dict['UniProt'], identifier=node_dict['UniProt'])
+        elif UNIPROT in node_dict:
+            protein_node = protein(namespace=UNIPROT, name=node_dict[UNIPROT], identifier=node_dict[UNIPROT])
             proteins_list.append(protein_node)
 
         else:
-            protein_node = protein(namespace=KEGG, name=node_dict['kegg_id'], identifier=node_dict['kegg_id'])
+            protein_node = protein(namespace=KEGG, name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
             graph.add_node_from_data(protein_node)
             proteins_list.append(protein_node)
 
@@ -259,25 +258,25 @@ def compound_to_bel(graph, node):
         if CHEBI in node_dict:
 
             identifier = node_dict[CHEBI]
-            name = node_dict['ChEBI name']
+            name = node_dict[CHEBI_NAME]
             namespace = CHEBI
 
             compound = abundance(namespace=namespace, name=name, identifier=identifier)
             graph.add_node_from_data(compound)
             return compound
 
-        elif 'PubChem' in node_dict:
+        elif PUBCHEM in node_dict:
 
-            identifier = node_dict['PubChem']
-            name = node_dict['PubChem']
-            namespace = 'PubChem'
+            identifier = node_dict[PUBCHEM]
+            name = node_dict[PUBCHEM]
+            namespace = PUBCHEM
 
             compound = abundance(namespace=namespace, name=name, identifier=identifier)
             graph.add_node_from_data(compound)
             return compound
 
         else:
-            compound = abundance(namespace=KEGG, name=node_dict['kegg_id'], identifier=node_dict['kegg_id'])
+            compound = abundance(namespace=KEGG, name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
             graph.add_node_from_data(compound)
             return compound
 
@@ -307,25 +306,25 @@ def flatten_compound_to_bel_node(graph, node):
         if CHEBI in node_dict:
 
             identifier = node_dict[CHEBI]
-            name = node_dict['ChEBI name']
+            name = node_dict[CHEBI_NAME]
             namespace = CHEBI
 
             compound = abundance(namespace=namespace, name=name, identifier=identifier)
             graph.add_node_from_data(compound)
             return compound
 
-        elif 'PubChem' in node_dict:
+        elif PUBCHEM in node_dict:
 
-            identifier = node_dict['PubChem']
-            name = node_dict['PubChem']
-            namespace = 'PubChem'
+            identifier = node_dict[PUBCHEM]
+            name = node_dict[PUBCHEM]
+            namespace = PUBCHEM
 
             compound = abundance(namespace=namespace, name=name, identifier=identifier)
             graph.add_node_from_data(compound)
             return compound
 
         else:
-            compound = abundance(namespace=KEGG, name=node_dict['kegg_id'], identifier=node_dict['kegg_id'])
+            compound = abundance(namespace=KEGG, name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
             graph.add_node_from_data(compound)
             return compound
 
@@ -337,25 +336,25 @@ def flatten_compound_to_bel_node(graph, node):
         if CHEBI in node_dict:
 
             identifier = node_dict[CHEBI]
-            name = node_dict['ChEBI name']
+            name = node_dict[CHEBI_NAME]
             namespace = CHEBI
 
             compound_node = abundance(namespace=namespace, name=name, identifier=identifier)
             graph.add_node_from_data(compound_node)
             compounds_list.append(compound_node)
 
-        elif 'PubChem' in node_dict:
+        elif PUBCHEM in node_dict:
 
-            identifier = node_dict['PubChem']
-            name = node_dict['PubChem']
-            namespace = 'PubChem'
+            identifier = node_dict[PUBCHEM]
+            name = node_dict[PUBCHEM]
+            namespace = PUBCHEM
 
             compound_node = abundance(namespace=namespace, name=name, identifier=identifier)
             graph.add_node_from_data(compound_node)
             compounds_list.append(compound_node)
 
         else:
-            compound_node = abundance(namespace=KEGG, name=node_dict['kegg_id'], identifier=node_dict['kegg_id'])
+            compound_node = abundance(namespace=KEGG, name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
             graph.add_node_from_data(compound_node)
             compounds_list.append(compound_node)
 
@@ -372,7 +371,7 @@ def map_to_bel_node(graph, node):
     """
     for attribute in node:
         name = attribute['map_name']
-        identifier = attribute['kegg_id']
+        identifier = attribute[KEGG_ID]
 
         bio_process = bioprocess(namespace=KEGG, name=name, identifier=identifier)
         graph.add_node_from_data(bio_process)
@@ -391,15 +390,15 @@ def flatten_complex_to_bel_node(graph, node):
     for node_dict in node:
 
         if HGNC in node_dict:
-            protein_node = protein(namespace=HGNC, name=node_dict['HGNC symbol'], identifier=node_dict[HGNC])
+            protein_node = protein(namespace=HGNC, name=node_dict[HGNC_SYMBOL], identifier=node_dict[HGNC])
             members.append(protein_node)
 
-        elif 'UniProt' in node_dict:
-            protein_node = protein(namespace='UniProt', name=node_dict['UniProt'], identifier=node_dict['UniProt'])
+        elif UNIPROT in node_dict:
+            protein_node = protein(namespace=UNIPROT, name=node_dict[UNIPROT], identifier=node_dict[UNIPROT])
             members.append(protein_node)
 
         else:
-            protein_node = protein(namespace=KEGG, name=node_dict['kegg_id'], identifier=node_dict['kegg_id'])
+            protein_node = protein(namespace=KEGG, name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
             members.append(protein_node)
 
     complex_members = complex_abundance(members=members)

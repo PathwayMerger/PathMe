@@ -93,7 +93,7 @@ def _post_process_api_query(node_meta_data, hgnc_manager, chebi_manager):
                         if not chebi_entry:
                             continue
 
-                        node_dict['ChEBI name'] = chebi_entry.name
+                        node_dict[CHEBI_NAME] = chebi_entry.name
 
     return node_dict
 

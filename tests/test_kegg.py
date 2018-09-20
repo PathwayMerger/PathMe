@@ -37,36 +37,37 @@ class TestKegg(KeggTest):
         self.assertEqual(len(glycolysis_orthologs), 27)
 
         self.assertEqual(notch_genes['3'], [
-            {'kegg_id': 'hsa:5663',
-             'kegg_type': 'gene',
-             'HGNC symbol': 'PSEN1',
-             'HGNC': '9508'},
-            {'kegg_id': 'hsa:5664',
-             'kegg_type': 'gene',
-             'HGNC symbol': 'PSEN2',
-             'HGNC': '9509'}
+            {KEGG_ID: 'hsa:5663',
+             KEGG_TYPE: 'gene',
+             HGNC_SYMBOL: 'PSEN1',
+             HGNC: '9508'},
+            {KEGG_ID: 'hsa:5664',
+             KEGG_TYPE: 'gene',
+             HGNC_SYMBOL: 'PSEN2',
+             HGNC: '9509'}
         ])
         self.assertEqual(glycolysis_genes['45'], [
-            {'kegg_id': 'hsa:10327',
-             'kegg_type': 'gene',
-             'HGNC symbol': 'AKR1A1',
-             'HGNC': '380'}
+            {KEGG_ID: 'hsa:10327',
+             KEGG_TYPE: 'gene',
+             HGNC_SYMBOL: 'AKR1A1',
+             HGNC: '380'}
         ])
         self.assertEqual(glycolysis_compounds['83'], [
-            {'kegg_id': 'cpd:C00031', CHEBI: '4167', 'ChEBI name': 'D-glucopyranose', 'PubChem': '3333'}
+            {KEGG_ID: 'cpd:C00031', CHEBI: '4167', CHEBI_NAME: 'D-glucopyranose', PUBCHEM: '3333',
+             KEGG_TYPE: 'compound'}
         ])
         self.assertEqual(notch_maps['4'], [
-            {'kegg_id': 'path:hsa04010', 'map_name': 'MAPK signaling pathway'}
+            {KEGG_ID: 'path:hsa04010', 'map_name': 'MAPK signaling pathway'}
         ])
         self.assertEqual(glycolysis_maps['52'], [
-            {'kegg_id': 'path:hsa00620', 'map_name': 'Pyruvate metabolism'}
+            {KEGG_ID: 'path:hsa00620', 'map_name': 'Pyruvate metabolism'}
         ])
         self.assertEqual(notch_orthologs['7'], [
-            {'kegg_id': 'ko:K04497', 'kegg_type': 'ortholog'}
+            {KEGG_ID: 'ko:K04497', KEGG_TYPE: 'ortholog'}
         ])
         self.assertEqual(glycolysis_orthologs['73'], [
-            {'kegg_id': 'ko:K01085', 'kegg_type': 'ortholog'},
-            {'kegg_id': 'ko:K20866', 'kegg_type': 'ortholog'}
+            {KEGG_ID: 'ko:K01085', KEGG_TYPE: 'ortholog'},
+            {KEGG_ID: 'ko:K20866', KEGG_TYPE: 'ortholog'}
         ])
 
     def test_get_complex_components(self):
@@ -82,22 +83,22 @@ class TestKegg(KeggTest):
         self.assertEqual(len(flattened_complexes), 4)
         self.assertEqual(complex_ids['29'], ['5', '8'])
         self.assertEqual(flattened_complexes['29'], [
-            {'kegg_id': 'hsa:3065',
-             'kegg_type': 'gene',
-             'HGNC symbol': 'HDAC1',
-             'HGNC': '4852'},
-            {'kegg_id': 'hsa:3066',
-             'kegg_type': 'gene',
-             'HGNC symbol': 'HDAC2',
-             'HGNC': '4853'},
-            {'kegg_id': 'hsa:1487',
-             'kegg_type': 'gene',
-             'HGNC symbol': 'CTBP1',
-             'HGNC': '2494'},
-            {'kegg_id': 'hsa:1488',
-             'kegg_type': 'gene',
-             'HGNC symbol': 'CTBP2',
-             'HGNC': '2495'}
+            {KEGG_ID: 'hsa:3065',
+             KEGG_TYPE: 'gene',
+             HGNC_SYMBOL: 'HDAC1',
+             HGNC: '4852'},
+            {KEGG_ID: 'hsa:3066',
+             KEGG_TYPE: 'gene',
+             HGNC_SYMBOL: 'HDAC2',
+             HGNC: '4853'},
+            {KEGG_ID: 'hsa:1487',
+             KEGG_TYPE: 'gene',
+             HGNC_SYMBOL: 'CTBP1',
+             HGNC: '2494'},
+            {KEGG_ID: 'hsa:1488',
+             KEGG_TYPE: 'gene',
+             HGNC_SYMBOL: 'CTBP2',
+             HGNC: '2495'}
         ])
 
     def test_get_all_relationships(self):
@@ -126,16 +127,16 @@ class TestKegg(KeggTest):
         compound_info = _process_kegg_api_get_entity(compound_name, 'compound', self.hgnc_manager, self.chebi_manager)
 
         self.assertEqual(compound_info, {
-            'kegg_id': 'cpd:C01172',
-            'kegg_type': 'compound',
+            KEGG_ID: 'cpd:C01172',
+            KEGG_TYPE: 'compound',
             CHEBI: '17719',
-            'ChEBI name': 'beta-D-glucose 6-phosphate',
+            CHEBI_NAME: 'beta-D-glucose 6-phosphate',
             PUBCHEM: '4399'
         })
         compound_name = 'gl:G10505'
         compound_info = _process_kegg_api_get_entity(compound_name, 'compound', self.hgnc_manager, self.chebi_manager)
 
-        self.assertEqual(compound_info, {'kegg_id': 'gl:G10505', 'kegg_type': 'compound'})
+        self.assertEqual(compound_info, {KEGG_ID: 'gl:G10505', KEGG_TYPE: 'compound'})
 
     def test_get_all_reactions(self):
         """Test reactions substrates, products."""

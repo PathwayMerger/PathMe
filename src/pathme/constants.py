@@ -44,11 +44,15 @@ KEGG_CACHE = os.path.join(DATA_DIR, KEGG, 'cache')
 
 _ensure_cache_folders()
 
+KEGG_ID = 'kegg_id'
+KEGG_NAME = 'kegg_name'
+KEGG_TYPE = 'kegg_type'
 HGNC = 'HGNC'
 HGNC_SYMBOL = 'HGNC symbol'
 ENSEMBL = 'ENSEMBL'
 UNIPROT = 'UNIPROT'
 CHEBI = 'ChEBI'
+CHEBI_NAME = 'ChEBI name'
 PUBCHEM = 'PubChem'
 
 KEGG_MODIFICATIONS = {
