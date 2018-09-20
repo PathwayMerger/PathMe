@@ -67,7 +67,13 @@ def populate(flatten):
         log.info('Flattening mode activated')
 
     for file in get_files_in_folder(kegg_download_folder):
+
+        # Skip not KGML files
+        if not file.endswith('.xml'):
+            continue
+
         log.info('Parsing %s', file)
+
         kegg_to_bel(
             path=os.path.join(kegg_download_folder, file),
             hgnc_manager=hgnc_manager,
