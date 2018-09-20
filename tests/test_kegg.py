@@ -2,13 +2,14 @@
 
 """Tests for converting KEGG."""
 
+from pybel.dsl.nodes import abundance, bioprocess, composite_abundance, protein
+from pybel.struct.summary.node_summary import count_functions
 from pybel_tools.summary.edge_summary import count_relations
 
+from pathme.constants import *
 from pathme.kegg.convert_to_bel import xml_complexes_to_bel, xml_entities_to_bel
-from pathme.kegg.kegg_xml_parser import *
-from pathme.constants import KEGG, CHEBI
-from pybel.struct.summary.node_summary import count_functions
-from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
+from pathme.kegg.kegg_xml_parser import _process_kegg_api_get_entity, get_all_reactions, get_all_relationships, \
+    get_complex_components, get_entity_nodes, get_reaction_pathway_edges
 from .constants import KeggTest
 
 
@@ -24,9 +25,6 @@ class TestKegg(KeggTest):
         )
         glycolysis_genes, glycolysis_compounds, glycolysis_maps, glycolysis_orthologs = get_entity_nodes(
             self.glycolysis_tree, self.hgnc_manager, self.chebi_manager)
-
-        ppar_genes, ppar_compounds, ppar_maps, ppar_orthologs = get_entity_nodes(
-            self.ppar_tree, self.hgnc_manager, self.chebi_manager)
 
         self.assertEqual(len(notch_genes), 22)
         self.assertEqual(len(notch_compounds), 0)
@@ -55,7 +53,7 @@ class TestKegg(KeggTest):
              'HGNC': '380'}
         ])
         self.assertEqual(glycolysis_compounds['83'], [
-            {'compound_name': 'cpd:C00031', CHEBI: '4167', 'ChEBI name': 'D-glucopyranose', 'PubChem': '3333'}
+            {'kegg_id': 'cpd:C00031', CHEBI: '4167', 'ChEBI name': 'D-glucopyranose', 'PubChem': '3333'}
         ])
         self.assertEqual(notch_maps['4'], [
             {'kegg_id': 'path:hsa04010', 'map_name': 'MAPK signaling pathway'}
@@ -125,16 +123,16 @@ class TestKegg(KeggTest):
     def test_get_compound(self):
         """Test compound info."""
         compound_name = 'cpd:C01172'
-        compound_info = get_compound_info(compound_name, self.chebi_manager)
+        compound_info = _process_kegg_api_get_entity(compound_name, 'compound', self.hgnc_manager, self.chebi_manager)
         self.assertEqual(compound_info, {
-            'compound_name': 'cpd:C01172',
+            'kegg_id': 'cpd:C01172',
             CHEBI: '17719',
             'ChEBI name': 'beta-D-glucose 6-phosphate',
             'PubChem': '4399'
         })
         compound_name = 'gl:G10505'
-        compound_info = get_compound_info(compound_name, self.chebi_manager)
-        self.assertEqual(compound_info, {'compound_name': 'gl:G10505'})
+        compound_info = _process_kegg_api_get_entity(compound_name, 'compound', self.hgnc_manager, self.chebi_manager)
+        self.assertEqual(compound_info, {'kegg_id': 'gl:G10505'})
 
     def test_get_all_reactions(self):
         """Test reactions substrates, products."""
@@ -270,11 +268,11 @@ class TestKegg(KeggTest):
 
         # Test pathway map nodes
         self.assertEqual(flat_glycolysis_nodes['54'],
-            bioprocess(namespace=KEGG, name='Citrate cycle (TCA cycle)', identifier='path:hsa00020')
-        )
+                         bioprocess(namespace=KEGG, name='Citrate cycle (TCA cycle)', identifier='path:hsa00020')
+                         )
         self.assertEqual(flat_notch_nodes['4'],
-            bioprocess(namespace=KEGG, name='MAPK signaling pathway', identifier='path:hsa04010')
-        )
+                         bioprocess(namespace=KEGG, name='MAPK signaling pathway', identifier='path:hsa04010')
+                         )
 
         # Test un-flattened compound nodes
         self.assertEqual(ppar_nodes['48'], composite_abundance([
@@ -288,8 +286,8 @@ class TestKegg(KeggTest):
             abundance(namespace=CHEBI, name='13(S)-HODE', identifier='34154')
         ])
         self.assertEqual(flat_glycolysis_nodes['85'],
-            abundance(namespace=CHEBI, name='2-phospho-D-glyceric acid', identifier='17835')
-        )
+                         abundance(namespace=CHEBI, name='2-phospho-D-glyceric acid', identifier='17835')
+                         )
 
     def test_complex_node(self):
         """Test complex nodes on the notch pathway."""

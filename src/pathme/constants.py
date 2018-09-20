@@ -29,10 +29,14 @@ KEGG = 'kegg'
 REACTOME = 'reactome'
 WIKIPATHWAYS = 'wikipathways'
 
+KEGG_CACHE = os.path.join(DATA_DIR, KEGG, 'cache')
+
 HGNC = 'HGNC'
+HGNC_SYMBOL = 'HGNC symbol'
 ENSEMBL = 'ENSEMBL'
 UNIPROT = 'UNIPROT'
 CHEBI = 'ChEBI'
+PUBCHEM = 'PubChem'
 
 KEGG_MODIFICATIONS = {
     'phosphorylation': 'Ph',

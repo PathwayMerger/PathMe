@@ -277,7 +277,7 @@ def compound_to_bel(graph, node):
             return compound
 
         else:
-            compound = abundance(namespace=KEGG, name=node_dict['compound_name'], identifier=node_dict['compound_name'])
+            compound = abundance(namespace=KEGG, name=node_dict['kegg_id'], identifier=node_dict['kegg_id'])
             graph.add_node_from_data(compound)
             return compound
 
@@ -325,7 +325,7 @@ def flatten_compound_to_bel_node(graph, node):
             return compound
 
         else:
-            compound = abundance(namespace=KEGG, name=node_dict['compound_name'], identifier=node_dict['compound_name'])
+            compound = abundance(namespace=KEGG, name=node_dict['kegg_id'], identifier=node_dict['kegg_id'])
             graph.add_node_from_data(compound)
             return compound
 
@@ -355,7 +355,7 @@ def flatten_compound_to_bel_node(graph, node):
             compounds_list.append(compound_node)
 
         else:
-            compound_node = abundance(namespace=KEGG, name=node_dict['compound_name'], identifier=node_dict['compound_name'])
+            compound_node = abundance(namespace=KEGG, name=node_dict['kegg_id'], identifier=node_dict['kegg_id'])
             graph.add_node_from_data(compound_node)
             compounds_list.append(compound_node)
 
