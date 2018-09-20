@@ -78,7 +78,8 @@ def populate(flatten):
             path=os.path.join(kegg_download_folder, file),
             hgnc_manager=hgnc_manager,
             chebi_manager=chebi_manager,
-            flatten=True if flatten else False
+            flatten=True if flatten else False,
+            cache=True
         )
 
 
