@@ -459,7 +459,7 @@ def add_edges(graph, edges, nodes):
 
 
 def add_reaction_edges(graph, reaction_dict, nodes):
-    """Add edges from reactants to products and enzymes to reactions to BEL Graph.
+    """Add reaction nodes and edges from reactants to products and enzymes to reactions to BEL Graph.
 
     :param pybel.BELGraph graph: BEL Graph
     :param dict reaction_dict: dictionary of reaction IDs and reactant and product IDs
@@ -486,10 +486,33 @@ def add_reaction_edges(graph, reaction_dict, nodes):
                 product = nodes[target_id]
                 products_list.append(product)
 
-                # Add reaction BEL node to graph
-                reaction_node = reaction(reactants=reactants_list, products=products_list)
-                graph.add_node_from_data(reaction_node)
+                for reactant_compound in reactants_list:
+                    for product_compound in products_list:
 
+                        # If multiple compounds represent a reactant or a product, add reaction BEL nodes to graph
+                        if isinstance(reactants_list, list) and isinstance(products_list, list):
+                            reaction_node = reaction(reactants=reactant_compound, products=product_compound)
+                            graph.add_node_from_data(reaction_node)
+
+                        # If multiple compounds represent a reactant, add reaction BEL node to graph
+                        elif isinstance(reactants_list, list) and not isinstance(products_list, list):
+                            for reactant_compound in reactants_list:
+                                reaction_node = reaction(reactants=reactant_compound, products=products_list)
+                                graph.add_node_from_data(reaction_node)
+
+                        # If multiple compounds represent a product, add reaction BEL node to graph
+                        elif not isinstance(reactants_list, list) and isinstance(products_list, list):
+                            for product_compound in products_list:
+                                reaction_node = reaction(reactants=reactants_list, products=product_compound)
+                                graph.add_node_from_data(reaction_node)
+
+                        # If reactant and product is represented by a single compound, add reaction BEL node to graph
+                        else:
+                            reaction_node = reaction(reactants=reactants_list, products=products_list)
+                            print(k, reaction_node)
+                            graph.add_node_from_data(reaction_node)
+
+                # If enzyme is a list of genes, add edges between all enzymes and reactions
                 if isinstance(enzyme, list):
                     for gene_type in enzyme:
                         add_simple_edge(graph, gene_type, reaction_node, reaction_type)
