@@ -81,7 +81,7 @@ def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False, cache=True):
         to_pickle(
             graph,
             os.path.join(KEGG_BEL, '{}_{}.pickle'.format(
-                root.attrib['title'].strip(),
+                root.attrib['title'].strip().replace(' / ', '_'),
                 'flatten' if flatten else 'unflatten'))
         )
 
