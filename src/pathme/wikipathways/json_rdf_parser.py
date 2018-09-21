@@ -213,7 +213,8 @@ def set_entry_attribute(entry_type, node_id, attribute_label, value, graph):
     elif entry_type == 'pathway_info':
         graph['pathway_info'][attribute_label] = value
 
-    raise Exception('Error in set node attribute: %s value: %s %s', entry_type, node_id, attribute_label)
+    else:
+        raise Exception('Error in set node attribute: %s value: %s %s', entry_type, node_id, attribute_label)
 
 
 def set_interaction(entry, graph):
