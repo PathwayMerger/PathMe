@@ -509,7 +509,6 @@ def add_reaction_edges(graph, reaction_dict, nodes):
                         # If reactant and product is represented by a single compound, add reaction BEL node to graph
                         else:
                             reaction_node = reaction(reactants=reactants_list, products=products_list)
-                            print(k, reaction_node)
                             graph.add_node_from_data(reaction_node)
 
                 # If enzyme is a list of genes, add edges between all enzymes and reactions
