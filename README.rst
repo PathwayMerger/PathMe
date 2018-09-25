@@ -28,7 +28,7 @@ Installation
 How to use
 ----------
 
-1. Download content
+1. **Download content**
 
 PathMe first requires to download the raw files from the original pathway databases.
 
@@ -36,7 +36,7 @@ PathMe first requires to download the raw files from the original pathway databa
 
     python3 -m pathme download
     
-2. Generate BEL Graphs
+2. **Generate BEL Graphs**
 
 .. code-block:: python
 
