@@ -16,7 +16,8 @@ __all__ = [
 ]
 
 
-def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]], pathway_info) -> BELGraph:
+def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]],
+                   pathway_info) -> BELGraph:
     """Convert  RDF graph info to BEL."""
     graph = BELGraph(
         name=pathway_info['title'],
@@ -28,12 +29,11 @@ def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Di
     )
 
     nodes = nodes_to_bel(nodes)
+    nodes.update(complexes_to_bel(complexes, nodes, graph))
 
     for interaction in interactions:
-        participants = interaction['participants']
-        interaction_info = interaction['metadata']
-
-        add_edges(graph, participants, nodes, interaction_info)
+        participants = interaction.pop('participants')
+        add_edges(graph, participants, nodes, interaction)
 
     return graph
 
@@ -48,58 +48,84 @@ def nodes_to_bel(nodes: Dict[str, Dict]) -> Dict[str, BaseEntity]:
 
 def node_to_bel(node: Dict) -> BaseEntity:
     """Create a BEL node."""
-    node_types = node.pop('rdf_types')
-    uri_id = node.pop('uri_id')
-    _, _, node['namespace'], _ = parse_id_uri(uri_id)
+    node_types = node['node_types']
+    uri_id = node['uri_id']
+
+    if 'hgnc_uri' in node.keys():
+        namespace ='hgnc'
+    else:
+        _, _, namespace, _ = parse_id_uri(uri_id)
+
+    if 'identifier' in node.keys():
+        identifier = node['identifier']
+    else:
+        identifier = uri_id
+
+    name = node['name']
+    variants = []
+    if isinstance(name, set):
+        name = list(node['name'])[0]
+        variants = list(node['name'])[1:]
 
     if 'Protein' in node_types:
-        return protein(**node)
+        #TODO: Bug variants protein(... variants=variants)
+        return protein(namespace = namespace, name=name, identifier=identifier)
 
     elif 'Pathway' in node_types:
-        return bioprocess(**node)
+        return bioprocess(namespace=namespace, name=name, identifier=identifier)
 
     elif 'Rna' in node_types:
-        return rna(**node)
+        return rna(namespace=namespace, name=name, identifier=identifier)
 
     elif 'Metabolite' in node_types:
-        return abundance(**node)
+        return abundance(namespace=namespace, name=name, identifier=identifier)
 
     elif 'GeneProduct' in node_types:
-        return gene(**node)
+        #TODO: Bug variants gene(... variants=variants)
+        return gene(namespace=namespace, name=name, identifier=identifier)
 
     elif 'DataNode' in node_types:
-        return abundance(**node)
+        return abundance(namespace=namespace, name=name, identifier=identifier)
 
     else:
         log.warning('Unknown %s', node_types)
 
 
+def complexes_to_bel(complexes: Dict[str, Dict], nodes: Dict[str, BaseEntity], graph: BELGraph) -> Dict[str, BaseEntity]:
+    """Convert node to Bel"""
+    return {
+        complex_id: complex_to_bel(complex, nodes, graph)
+        for complex_id, complex in complexes.items()
+    }
+
+
+def complex_to_bel(complex, nodes, graph: BELGraph):
+    members = {
+        nodes[member_id]
+        for member_id in complex['participants']
+    }
+
+    _, _, _, identifier = parse_id_uri(complex['uri_id'])
+
+    complex_bel_node = complex_abundance(members=members, identifier=identifier, namespace='wp_complex')
+    graph.add_node_from_data(complex_bel_node)
+
+    return complex_bel_node
+
+
 def add_edges(graph: BELGraph, participants, nodes, att: Dict):
     """Add edges to BELGraph."""
     uri_id = att['uri_id']
-    edge_types = att['rdf_types']
+    edge_types = att['interaction_types']
     _, _, namespace, interaction_id = parse_id_uri(uri_id)
 
-    members = set()
 
-    if 'Complex' and 'ComplexBinding' in edge_types:
-        for source, target in participants:
-            members.update({source, target})
-
-        members = {
-            nodes[member_id]
-            for member_id in members
-        }
-
-        complex_abundance(members=members, identifier=interaction_id, namespace=namespace)
-
-
-    elif 'Conversion' in edge_types:
+    if 'Conversion' in edge_types:
         reactants = set()
         products = set()
 
         for source, target in participants:
-            reactants.add(target)
+            reactants.add(source)
             products.add(target)
 
         reactants = {
@@ -119,11 +145,11 @@ def add_edges(graph: BELGraph, participants, nodes, att: Dict):
         for source, target in participants:
             u = nodes[source]
             v = nodes[target]
-
             add_simple_edge(graph, u, v, edge_types, uri_id)
 
 
 def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
+
     if 'Stimulation' in edge_types:
         graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity())
 

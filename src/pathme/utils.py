@@ -109,13 +109,19 @@ def entry_result_to_dict(entry, **kwargs):
     attributes_dict = {
         str(label): str(entry[label])
         for label in entry.labels
-        if str(label) and entry[label] is not None
+        if label and entry[label] is not None
     }
+
+    if 'directed_interaction' in kwargs:
+        directed_interaction = kwargs.get('directed_interaction')
+
+        if directed_interaction[0] and directed_interaction[1] in attributes_dict.keys():
+            attributes_dict['participants'] = (attributes_dict.pop(directed_interaction[0]), attributes_dict.pop(directed_interaction[1]))
 
     if 'attr_empty' in kwargs:
         attr_empty = kwargs.get('attr_empty')
         empty_dict = {
-            str(attr): UNKNOWN
+            str(attr): 'UNKNOWN'
             for attr in attr_empty
             if attr not in attributes_dict
         }
@@ -133,36 +139,46 @@ def query_result_to_dict(entries, **kwargs) -> Union[Dict[str, Dict], Dict[str, 
     """
     entries_dict = {}
 
-    for entry in entries:
-        if 'identifier' in entry.labels:
-            id_key = str(entry.identifier)
+    for rdf_entry in entries:
+        dict_rdf_entry = entry_result_to_dict(rdf_entry, **kwargs)
 
-        elif 'uri_id' in entry.labels:
-            id_key = entry.uri_id
+        if 'identifier' in rdf_entry.labels:
+            id_key = str(rdf_entry.identifier)
+
+        elif 'uri_id' in rdf_entry.labels:
+            id_key = rdf_entry.uri_id
 
         else:
-            id_key = entry
+            raise Exception
 
         if id_key not in entries_dict:
-            entries_dict[id_key] = entry_result_to_dict(entry, **kwargs)
+            entries_dict[id_key] = dict_rdf_entry
+            if 'participants' in dict_rdf_entry:
+                entries_dict[id_key]['participants'] = {dict_rdf_entry['participants']}
 
         else:
             entry_attributes = entries_dict[id_key]
-            for label, value in entry_attributes.items():
-                label = str(label)
-                new_value = str(entry[label])
-                if isinstance(value, set):
-                    entries_dict[id_key][label].add(new_value)
-                elif value != new_value:
-                    entries_dict[id_key][label] = {value, new_value}
 
-    if len(entries_dict) == 1 and 'id_dict' not in kwargs:
+            for label, new_value in dict_rdf_entry.items():
+                if label in entry_attributes.keys():
+                    value = entry_attributes[label]
+                    if isinstance(value, set):
+                        entries_dict[id_key][label].add(new_value)
+                    elif entries_dict[id_key][label] == 'UNKNOWN':
+                        entries_dict[id_key][label] = new_value
+                    elif value != new_value:
+                        entries_dict[id_key][label] = {value, new_value}
+                else:
+                    entries_dict[id_key][label] = new_value
+
+    if len(entries_dict) == 1 and kwargs.get('id_dict')==False:
         return list(entries_dict.values())[0]
 
     elif not entries and 'attr_empty' in kwargs:
+
         attr_empty = kwargs.get('attr_empty')
         return {
-            str(attr): UNKNOWN
+            str(attr): 'UNKNOWN'
             for attr in attr_empty
         }
 
@@ -233,6 +249,41 @@ def get_pathway_statitics(nodes_types, edges_types, bel_graph, **kwargs):
 
     return pathway_statistics
 
+def statistics_to_df(all_pathways_statistics):
+    """Build a data frame with graph statistics.
+
+    :param dict all_pathways_statistics: pathway statistics
+    :rtype: pandas.DataFrame
+    """
+    pathways_statistics = defaultdict(list)
+    rows = []
+
+    column_types = set()
+    column_primary_types_dict = defaultdict(set)
+
+    # Get pathway type statistics
+    for pathway_name, statistics_primary_type_dict in all_pathways_statistics.items():
+        for statistic_primary_type, statistic_dict in statistics_primary_type_dict.items():
+            column_types.update(set(statistic_dict.keys()))
+            column_primary_types_dict[statistic_primary_type].update(set(statistic_dict.keys()))
+
+    for pathway_name, statistics_primary_type_dict in all_pathways_statistics.items():
+        rows.append(pathway_name)
+        for column_type in column_types:
+            for statistic_primary_type, statistic_dict in statistics_primary_type_dict.items():
+                if column_type in statistic_dict.keys():
+                    pathways_statistics['"' + column_type + '" ' + statistic_primary_type].append(
+                        str(statistic_dict[column_type]))
+                elif column_type in column_primary_types_dict[statistic_primary_type]:
+                    pathways_statistics['"' + column_type + '" ' + statistic_primary_type].append('')
+
+    df = pd.DataFrame(data=pathways_statistics, index=rows)
+
+    return df
+
+
+"""Downloader"""
+
 
 def make_downloader(url, path, database, decompress_file):
     """Make a function that downloads the data for you, or uses a cached version at the given path.
@@ -265,34 +316,3 @@ def make_downloader(url, path, database, decompress_file):
     decompress_file(data, os.path.join(DATA_DIR, database))
 
 
-def statistics_to_df(all_pathways_statistics):
-    """Build a data frame with graph statistics.
-
-    :param dict all_pathways_statistics: pathway statistics
-    :rtype: pandas.DataFrame
-    """
-    pathways_statistics = defaultdict(list)
-    rows = []
-
-    column_types = set()
-    column_primary_types_dict = defaultdict(set)
-
-    # Get pathway type statistics
-    for pathway_name, statistics_primary_type_dict in all_pathways_statistics.items():
-        for statistic_primary_type, statistic_dict in statistics_primary_type_dict.items():
-            column_types.update(set(statistic_dict.keys()))
-            column_primary_types_dict[statistic_primary_type].update(set(statistic_dict.keys()))
-
-    for pathway_name, statistics_primary_type_dict in all_pathways_statistics.items():
-        rows.append(pathway_name)
-        for column_type in column_types:
-            for statistic_primary_type, statistic_dict in statistics_primary_type_dict.items():
-                if column_type in statistic_dict.keys():
-                    pathways_statistics['"' + column_type + '" ' + statistic_primary_type].append(
-                        str(statistic_dict[column_type]))
-                elif column_type in column_primary_types_dict[statistic_primary_type]:
-                    pathways_statistics['"' + column_type + '" ' + statistic_primary_type].append('')
-
-    df = pd.DataFrame(data=pathways_statistics, index=rows)
-
-    return df

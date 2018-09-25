@@ -194,14 +194,6 @@ def _get_reaction_participants(component_uri: str, component, rdf_graph: rdflib.
 
     for interaction in spaqrl_reaction_participants:
 
-        if not 'interaction_type' in interaction.labels:
-            interaction_type = 'unknown'
-        else:
-            interaction_type = interaction.interaction_type
-
-        if interaction.identifier not in interactions.keys():
-            interactions[interaction.identifier] = {'metadata': component
-                                                    }
         reactant_metadata = _get_entity_metadata(interaction.reactant, rdf_graph)
         product_metadata = _get_entity_metadata(interaction.product, rdf_graph)
 
@@ -295,7 +287,7 @@ def get_reactome_statistics(resource_file, hgnc_manager):
             nodes_types, edges_types, bel_graph, global_statistics=global_statistics
         )
 
-    return global_statistics
+    return global_statistics, all_pathway_statistics
 
 
 def rdf_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager):

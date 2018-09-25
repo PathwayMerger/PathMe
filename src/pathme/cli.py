@@ -16,7 +16,7 @@ from pathme.kegg.utils import download_kgml_files, get_kegg_pathway_ids
 from pathme.reactome.rdf_sparql import reactome_to_bel, get_reactome_statistics
 from pathme.reactome.utils import untar_file
 from pathme.utils import make_downloader, statistics_to_df, get_files_in_folder
-from pathme.wikipathways.rdf_sparql import get_wikipathways_statistics, wikipathways_to_pybel
+from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pybel
 from pathme.wikipathways.utils import (
     get_file_name_from_url,
     get_wikipathways_files,
@@ -118,7 +118,7 @@ def statistics(connection, verbose, only_canonical, export):
 
     resource_files = get_wikipathways_files(resource_folder, connection, only_canonical)
 
-    global_statistics, all_pathways_statistics = get_wikipathways_statistics(resource_files, resource_folder)
+    global_statistics, all_pathways_statistics = get_wp_statistics(resource_files, resource_folder)
 
     df = statistics_to_df(all_pathways_statistics)
 
