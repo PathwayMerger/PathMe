@@ -11,7 +11,7 @@ import tqdm
 from pybel import BELGraph
 from rdflib.namespace import Namespace, RDFS, RDF, DCTERMS, DC
 
-from pathme.utils import parse_rdf, query_result_to_dict, get_pathway_statitics
+from pathme.utils import get_pathway_statitics, query_result_to_dict, parse_rdf
 from pathme.wikipathways.convert_to_bel import convert_to_bel
 from pathme.wikipathways.utils import debug_pathway_info
 
@@ -66,7 +66,7 @@ GET_ALL_COMPLEXES_SPARQL = """
     }
     """
 
-#TODO: Check interaction complexes.
+# TODO: Check interaction complexes.
 #: SPARQL query to get all directed interactions in a pathway network with source and target.
 GET_ALL_DIRECTED_INTERACTIONS_SPARQL = """
     SELECT DISTINCT ?source (STRAFTER(STR(?hgnc_source), str(hgnc:)) AS ?source) ?target (STRAFTER(STR(?hgnc_target), str(hgnc:)) AS ?target) ?uri_id (STRAFTER(STR(?uri_type), str(wp:)) AS ?interaction_types)
@@ -100,7 +100,7 @@ GET_PATHWAY_INFO_SPARQL = """
 """Queries managers"""
 
 
-def _get_pathway_metadata(rdf_graph) -> Dict[str, str]:
+def _get_pathway_metadata(rdf_graph) -> Dict[str, Dict[str, Dict[str, str]]]:
     """Get information from a pathway network.
 
     :param rdflib.Graph rdf_graph: RDF graph object
@@ -109,8 +109,9 @@ def _get_pathway_metadata(rdf_graph) -> Dict[str, str]:
     return query_result_to_dict(
         rdf_graph.query(GET_PATHWAY_INFO_SPARQL, initNs=PREFIXES),
         attr_empty=['title', 'identifier', 'description', 'pathway_id'],
-        id_dict = False
+        id_dict=False
     )
+
 
 def _get_nodes(rdf_graph) -> Dict[str, Dict[str, Dict[str, str]]]:
     """Get all nodes from a RDF pathway network.
@@ -150,7 +151,7 @@ def _get_pathway_components(graph) -> Tuple[
     Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]], List[dict]]:
     """Get all components in data structures from a RDF pathway network.
 
-    :param rdflib.Graph rdf_graph: RDF graph object
+    :param graph: RDF graph object
     :returns: Returns at once the retrievals of each component type (nodes, complexes, interactions) functions.
     """
     return _get_nodes(graph), _get_complexes(graph), _get_interactions(graph)
@@ -191,9 +192,9 @@ def get_wp_statistics(resource_files, resource_folder) -> Tuple[
         ]
 
         global_statistics, all_pathways_statistics = get_pathway_statitics(
-            nodes_types, edges_types, bel_graph, global_statistics=global_statistics, all_pathways_statistics=all_pathways_statistics
+            nodes_types, edges_types, bel_graph, global_statistics=global_statistics,
+            all_pathways_statistics=all_pathways_statistics
         )
-
 
     return global_statistics, all_pathways_statistics
 
@@ -201,22 +202,24 @@ def get_wp_statistics(resource_files, resource_folder) -> Tuple[
 """Conversion functions"""
 
 
-def rdf_wp_to_bel(rdf_graph) -> BELGraph:
+def rdf_wikipathways_to_bel(rdf_graph) -> BELGraph:
     """Convert RDF graph to BELGraph
 
     :param rdf_graph: RDF graph
     """
-    return convert_to_bel(_get_pathway_components(rdf_graph), _get_pathway_metadata(rdf_graph))
+    nodes, complexes, interactions = _get_pathway_components(rdf_graph)
+    metadata = _get_pathway_metadata(rdf_graph)
+    return convert_to_bel(nodes, complexes, interactions, metadata)
 
 
-def wp_to_bel(file_path):
+def wikipathways_to_bel(file_path):
     """Convert WikiPathways RDF file to BEL.
 
     :param str file_path: path to the file
     :rtype: pybel.BELGraph
     """
     rdf_graph = parse_rdf(file_path)
-    return rdf_wp_to_bel(rdf_graph)
+    return rdf_wikipathways_to_bel(rdf_graph)
 
 
 def wikipathways_to_pybel(resource_files, resource_folder):
@@ -228,7 +231,7 @@ def wikipathways_to_pybel(resource_files, resource_folder):
     for rdf_file in tqdm.tqdm(resource_files, desc='Loading WikiPathways graphs into PyBEL database'):
         # Parse pathway rdf_file and log stats
         pathway_path = os.path.join(resource_folder, rdf_file)
-        bel_graph = wp_to_bel(pathway_path)
+        bel_graph = wikipathways_to_bel(pathway_path)
 
         debug_pathway_info(bel_graph, pathway_path)
 

@@ -130,7 +130,7 @@ def entry_result_to_dict(entry, **kwargs):
     return attributes_dict
 
 
-def query_result_to_dict(entries, **kwargs) -> Union[Dict[str, Dict], Dict[str, str]]:
+def query_result_to_dict(entries, **kwargs) -> Dict[str, Dict[str, Dict[str, str]]]:
     """Export to a dictionary a SPARQL query result data structure.
 
     :param str rdflib.plugins.sparql.processor.SPARQLResult: SPARQL query result data structure, with all the arguments queried for all entries of a certain primary type.
