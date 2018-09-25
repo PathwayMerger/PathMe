@@ -7,7 +7,9 @@ from typing import Dict, List, Tuple
 from pybel import BELGraph
 from pybel.dsl import abundance, activity, BaseEntity, bioprocess, complex_abundance, gene, protein, reaction, rna
 
+from pathme.constants import HGNC
 from pathme.utils import parse_id_uri
+from pathme.wikipathways.utils import evaluate_wikipathways_metadata
 
 log = logging.getLogger(__name__)
 
@@ -19,10 +21,11 @@ __all__ = [
 def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]],
                    pathway_info) -> BELGraph:
     """Convert  RDF graph info to BEL."""
+
     graph = BELGraph(
         name=pathway_info['title'],
         version='1.0.0',
-        description=pathway_info['description'],
+        description=evaluate_wikipathways_metadata(pathway_info['description']),
         pathway_id=pathway_info['pathway_id'],
         authors="Sarah Mubeen, Daniel Domingo-Fernández & Josep Marín-Llaó",
         contact='daniel.domingo.fernandez@scai.fraunhofer.de',
@@ -52,7 +55,7 @@ def node_to_bel(node: Dict) -> BaseEntity:
     uri_id = node['uri_id']
 
     if 'hgnc_uri' in node.keys():
-        namespace ='hgnc'
+        namespace = HGNC
     else:
         _, _, namespace, _ = parse_id_uri(uri_id)
 
@@ -64,12 +67,14 @@ def node_to_bel(node: Dict) -> BaseEntity:
     name = node['name']
     variants = []
     if isinstance(name, set):
+        # TODO: Load HGNC set and get the HGNC symbol (entry in the set) that belongs to it.
+        # TODO: print the wikipathways bps that return a set because they are probably wrong.
         name = list(node['name'])[0]
         variants = list(node['name'])[1:]
 
     if 'Protein' in node_types:
-        #TODO: Bug variants protein(... variants=variants)
-        return protein(namespace = namespace, name=name, identifier=identifier)
+        # TODO: Bug variants protein(... variants=variants)
+        return protein(namespace=namespace, name=name, identifier=identifier)
 
     elif 'Pathway' in node_types:
         return bioprocess(namespace=namespace, name=name, identifier=identifier)
@@ -81,7 +86,7 @@ def node_to_bel(node: Dict) -> BaseEntity:
         return abundance(namespace=namespace, name=name, identifier=identifier)
 
     elif 'GeneProduct' in node_types:
-        #TODO: Bug variants gene(... variants=variants)
+        # TODO: Bug variants gene(... variants=variants)
         return gene(namespace=namespace, name=name, identifier=identifier)
 
     elif 'DataNode' in node_types:
@@ -91,7 +96,8 @@ def node_to_bel(node: Dict) -> BaseEntity:
         log.warning('Unknown %s', node_types)
 
 
-def complexes_to_bel(complexes: Dict[str, Dict], nodes: Dict[str, BaseEntity], graph: BELGraph) -> Dict[str, BaseEntity]:
+def complexes_to_bel(complexes: Dict[str, Dict], nodes: Dict[str, BaseEntity], graph: BELGraph) -> Dict[
+    str, BaseEntity]:
     """Convert node to Bel"""
     return {
         complex_id: complex_to_bel(complex, nodes, graph)
@@ -118,7 +124,6 @@ def add_edges(graph: BELGraph, participants, nodes, att: Dict):
     uri_id = att['uri_id']
     edge_types = att['interaction_types']
     _, _, namespace, interaction_id = parse_id_uri(uri_id)
-
 
     if 'Conversion' in edge_types:
         reactants = set()
@@ -149,7 +154,6 @@ def add_edges(graph: BELGraph, participants, nodes, att: Dict):
 
 
 def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
-
     if 'Stimulation' in edge_types:
         graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity())
 

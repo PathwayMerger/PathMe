@@ -2,14 +2,12 @@
 
 """This module has utilities method for parsing, handling wikipathways RDF and data."""
 
-import json
 import logging
 import os
 import zipfile
 from typing import Dict, List, Tuple
 
 import networkx as nx
-import rdflib
 from bio2bel_wikipathways import Manager as WikiPathwaysManager
 
 from ..constants import DATA_DIR, WIKIPATHWAYS
@@ -18,6 +16,19 @@ from ..utils import get_files_in_folder
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
 
 log = logging.getLogger(__name__)
+
+
+def evaluate_wikipathways_metadata(metadata):
+    """Evaluates metadata in wikipathways and returns the string representation.
+
+    :param metadata:
+    :rtype: str
+    """
+    if isinstance(metadata, set):
+        return ','.join(metadata)
+
+    return metadata
+
 
 
 def merge_two_dicts(dict1, dict2):
@@ -50,6 +61,7 @@ def convert_to_nx(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Dic
         graph.add_edge(subj, obj, attr=interaction)
 
     return graph
+
 
 def debug_pathway_info(bel_graph, pathway_path, **kwargs):
     """Debug information about the pathway graph representation.
