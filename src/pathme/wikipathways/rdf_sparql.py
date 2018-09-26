@@ -40,7 +40,7 @@ GET_ENTRIES_SUBTYPES_SPARQL = """
 
 #: SPARQL query to get all data nodes in a pathway network with some arguments.
 GET_ALL_DATA_NODES_SPARQL = """
-    SELECT DISTINCT ?uri_id (STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types) ?identifier (STRAFTER(STR(?hgnc_uri), str(hgnc:)) AS ?identifier) ?hgnc_uri ?name
+    SELECT DISTINCT ?uri_id (STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types) ?identifier (STRAFTER(STR(?hgnc_uri), str(hgnc:)) AS ?hgnc_symbol) ?hgnc_uri ?name
     WHERE {
        ?pathway a wp:Pathway .
        ?uri_id dcterms:isPartOf ?pathway .
@@ -54,22 +54,21 @@ GET_ALL_DATA_NODES_SPARQL = """
 
 #: SPARQL query to get all data nodes in a pathway network with some arguments.
 GET_ALL_COMPLEXES_SPARQL = """
-    SELECT DISTINCT ?uri_id (STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types) ?hgnc_uri (STR(?participants_id) AS ?participants) (STRAFTER(STR(?hgnc_uri), str(hgnc:)) AS ?participants) ?name
+    SELECT DISTINCT ?uri_id (STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types) ?participants ?name
     WHERE {
        ?pathway a wp:Pathway .
        ?uri_id dcterms:isPartOf ?pathway .
        ?uri_id a wp:Complex .
        ?uri_id rdf:type ?uri_type .
        ?uri_id wp:participants ?participants .
-       ?participants dcterms:identifier ?participants_id .
-       optional {?participants wp:bdbHgncSymbol ?hgnc_uri .}
+       ?participants dcterms:identifier ?participants .
     }
     """
 
 # TODO: Check interaction complexes.
 #: SPARQL query to get all directed interactions in a pathway network with source and target.
 GET_ALL_DIRECTED_INTERACTIONS_SPARQL = """
-    SELECT DISTINCT ?source (STRAFTER(STR(?hgnc_source), str(hgnc:)) AS ?source) ?target (STRAFTER(STR(?hgnc_target), str(hgnc:)) AS ?target) ?uri_id (STRAFTER(STR(?uri_type), str(wp:)) AS ?interaction_types)
+    SELECT DISTINCT ?source ?target ?uri_id (STRAFTER(STR(?uri_type), str(wp:)) AS ?interaction_types)
     WHERE {
        ?pathway a wp:Pathway .
        ?uri_id dcterms:isPartOf ?pathway .
@@ -80,9 +79,7 @@ GET_ALL_DIRECTED_INTERACTIONS_SPARQL = """
        ?sourceEntry dc:identifier ?sourceUri .
        ?targetEntry dc:identifier ?targetUri .
        ?sourceEntry dcterms:identifier ?source .
-       optional {?sourceEntry wp:bdbHgncSymbol ?hgnc_source .}
        ?targetEntry dcterms:identifier ?target .
-       optional {?targetEntry wp:bdbHgncSymbol ?hgnc_target .}
     }
     """
 

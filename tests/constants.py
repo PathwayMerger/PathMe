@@ -13,6 +13,9 @@ NOTCH_XML = os.path.join(KEGG_TEST_RESOURCES, 'hsa04330.xml')
 PPAR_XML = os.path.join(KEGG_TEST_RESOURCES, '03320_cpd_test.xml')
 
 WP22 = os.path.join(WP_TEST_RESOURCES, 'WP22.ttl')
+WP706 = os.path.join(WP_TEST_RESOURCES, 'WP706.ttl')
+WP1871 = os.path.join(WP_TEST_RESOURCES, 'WP1871.ttl')
+WP2799 = os.path.join(WP_TEST_RESOURCES, 'WP2799.ttl')
 WP2359 = os.path.join(WP_TEST_RESOURCES, 'WP2359_mod.ttl')
 
 from pathme.kegg.convert_to_bel import kegg_to_bel

@@ -54,23 +54,27 @@ def node_to_bel(node: Dict) -> BaseEntity:
     node_types = node['node_types']
     uri_id = node['uri_id']
 
-    if 'hgnc_uri' in node.keys():
-        namespace = HGNC
-    else:
-        _, _, namespace, _ = parse_id_uri(uri_id)
-
     if 'identifier' in node.keys():
         identifier = node['identifier']
+
     else:
         identifier = uri_id
 
-    name = node['name']
-    variants = []
+    _, _, namespace, _ = parse_id_uri(uri_id)
+
+
+    if 'hgnc_symbol' in node.keys():
+        name = node['hgnc_symbol']
+    else:
+        name = node['name']
+
     if isinstance(name, set):
         # TODO: Load HGNC set and get the HGNC symbol (entry in the set) that belongs to it.
         # TODO: print the wikipathways bps that return a set because they are probably wrong.
         name = list(node['name'])[0]
         variants = list(node['name'])[1:]
+    variants = []
+
 
     if 'Protein' in node_types:
         # TODO: Bug variants protein(... variants=variants)
