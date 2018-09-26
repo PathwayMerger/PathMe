@@ -4,11 +4,11 @@
 
 import unittest
 
-from pybel import BELGraph
 from pybel_tools.summary.edge_summary import count_relations
 
 from pathme.utils import parse_rdf
-from pathme.wikipathways.rdf_sparql import wp_to_bel, _get_nodes, _get_interactions
+from pathme.wikipathways.rdf_sparql import wikipathways_to_bel, _get_nodes, _get_interactions
+from pybel import BELGraph
 from .constants import WP22, WP706, WP1871, WP2799, WP2359
 
 
@@ -51,10 +51,9 @@ class TestWikipathways(unittest.TestCase):
         self.assertEqual(len(nodes_wp1871), 102)
         self.assertEqual(len(nodes_wp2799), 38)
 
-
     def test_wp_association_bp(self):
         """Test connect bp with protein."""
-        test_graph = wp_to_bel(WP2359)
+        test_graph = wikipathways_to_bel(WP2359)
 
         self.assertEqual(type(test_graph), BELGraph, msg='Error with graph type')
 
@@ -64,7 +63,7 @@ class TestWikipathways(unittest.TestCase):
 
     def test_wp_22_to_bel(self):
         """Test 22."""
-        test_graph = wp_to_bel(WP22)
+        test_graph = wikipathways_to_bel(WP22)
 
         self.assertEqual(type(test_graph), BELGraph, msg='Error with graph type')
 
