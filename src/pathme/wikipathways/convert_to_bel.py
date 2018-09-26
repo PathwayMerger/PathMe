@@ -5,6 +5,7 @@ import logging
 from typing import Dict, List, Tuple
 
 from pathme.utils import parse_id_uri
+from pathme.constants import HGNC
 from pathme.wikipathways.utils import evaluate_wikipathways_metadata
 from pybel import BELGraph
 from pybel.dsl import abundance, activity, BaseEntity, bioprocess, complex_abundance, gene, protein, reaction, rna
@@ -19,7 +20,6 @@ __all__ = [
 def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]],
                    pathway_info) -> BELGraph:
     """Convert  RDF graph info to BEL."""
-
     graph = BELGraph(
         name=pathway_info['title'],
         version='1.0.0',
@@ -66,16 +66,16 @@ def node_to_bel(node: Dict) -> BaseEntity:
         name = node['name']
 
     if isinstance(name, set):
-        print('{} - {}'.format(name, set))
+        print('{}'.format(name))
         # TODO: Load HGNC set and get the HGNC symbol (entry in the set) that belongs to it.
         # TODO: print the wikipathways bps that return a set because they are probably wrong.
         name = list(node['name'])[0]
 
     if 'Protein' in node_types:
         # TODO: Bug variants protein(... variants=variants)
-        print('{}:{}:{}'.format(namespace, name, identifier))
+        # print('{}:{}:{}'.format(namespace, name, identifier))
 
-        return protein(namespace=namespace, name=name, identifier=identifier)
+        return protein(namespace=HGNC, name=name, identifier=identifier)
 
     elif 'Pathway' in node_types:
         return bioprocess(namespace=namespace, name=name, identifier=identifier)
@@ -88,7 +88,7 @@ def node_to_bel(node: Dict) -> BaseEntity:
 
     elif 'GeneProduct' in node_types:
         # TODO: Bug variants gene(... variants=variants)
-        return gene(namespace=namespace, name=name, identifier=identifier)
+        return gene(namespace=HGNC, name=name, identifier=identifier)
 
     elif 'DataNode' in node_types:
         return abundance(namespace=namespace, name=name, identifier=identifier)
