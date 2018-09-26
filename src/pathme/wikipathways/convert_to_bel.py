@@ -4,9 +4,11 @@
 import logging
 from typing import Dict, List, Tuple
 
-from pathme.utils import parse_id_uri
+from bio2bel_hgnc import Manager
+
 from pathme.constants import HGNC
-from pathme.wikipathways.utils import evaluate_wikipathways_metadata
+from pathme.utils import parse_id_uri
+from pathme.wikipathways.utils import evaluate_wikipathways_metadata, get_valid_gene_identifier
 from pybel import BELGraph
 from pybel.dsl import abundance, activity, BaseEntity, bioprocess, complex_abundance, gene, protein, reaction, rna
 
@@ -18,7 +20,7 @@ __all__ = [
 
 
 def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]],
-                   pathway_info) -> BELGraph:
+                   pathway_info, hgnc_manager: Manager) -> BELGraph:
     """Convert  RDF graph info to BEL."""
     graph = BELGraph(
         name=pathway_info['title'],
@@ -29,7 +31,7 @@ def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interacti
         contact='daniel.domingo.fernandez@scai.fraunhofer.de',
     )
 
-    nodes = nodes_to_bel(nodes)
+    nodes = nodes_to_bel(nodes, hgnc_manager)
     nodes.update(complexes_to_bel(complexes, nodes, graph))
 
     for interaction in interactions:
@@ -39,15 +41,15 @@ def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interacti
     return graph
 
 
-def nodes_to_bel(nodes: Dict[str, Dict]) -> Dict[str, BaseEntity]:
+def nodes_to_bel(nodes: Dict[str, Dict], hgnc_manager: Manager) -> Dict[str, BaseEntity]:
     """Convert node to Bel"""
     return {
-        node_id: node_to_bel(node_att)
+        node_id: node_to_bel(node_att, hgnc_manager)
         for node_id, node_att in nodes.items()
     }
 
 
-def node_to_bel(node: Dict) -> BaseEntity:
+def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
     """Create a BEL node."""
     node_types = node['node_types']
     uri_id = node['uri_id']
@@ -60,38 +62,33 @@ def node_to_bel(node: Dict) -> BaseEntity:
 
     _, _, namespace, _ = parse_id_uri(uri_id)
 
-    if 'hgnc_symbol' in node.keys():
-        name = node['hgnc_symbol']
-    else:
-        name = node['name']
-
-    if isinstance(name, set):
-        print('{}'.format(name))
-        # TODO: Load HGNC set and get the HGNC symbol (entry in the set) that belongs to it.
+    if isinstance(node['name'], set):
+        print('{}'.format(node['name']))
         # TODO: print the wikipathways bps that return a set because they are probably wrong.
         name = list(node['name'])[0]
 
     if 'Protein' in node_types:
-        # TODO: Bug variants protein(... variants=variants)
-        # print('{}:{}:{}'.format(namespace, name, identifier))
-
-        return protein(namespace=HGNC, name=name, identifier=identifier)
-
-    elif 'Pathway' in node_types:
-        return bioprocess(namespace=namespace, name=name, identifier=identifier)
+        namespace, name, identifier = get_valid_gene_identifier(node, hgnc_manager)
+        return protein(namespace=namespace, name=name, identifier=identifier)
 
     elif 'Rna' in node_types:
+        namespace, name, identifier = get_valid_gene_identifier(node, hgnc_manager)
         return rna(namespace=namespace, name=name, identifier=identifier)
 
-    elif 'Metabolite' in node_types:
-        return abundance(namespace=namespace, name=name, identifier=identifier)
-
     elif 'GeneProduct' in node_types:
-        # TODO: Bug variants gene(... variants=variants)
+        namespace, name, identifier = get_valid_gene_identifier(node, hgnc_manager)
         return gene(namespace=HGNC, name=name, identifier=identifier)
 
+    elif 'Metabolite' in node_types:
+        # FIX node[name]
+        return abundance(namespace=namespace, name=node['name'], identifier=identifier)
+
+    elif 'Pathway' in node_types:
+        return bioprocess(namespace=namespace, name=node['name'], identifier=identifier)
+
+
     elif 'DataNode' in node_types:
-        return abundance(namespace=namespace, name=name, identifier=identifier)
+        return abundance(namespace=namespace, name=node['name'], identifier=identifier)
 
     else:
         log.warning('Unknown %s', node_types)

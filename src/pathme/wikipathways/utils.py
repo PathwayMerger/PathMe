@@ -10,7 +10,7 @@ from typing import Dict, List, Tuple
 import networkx as nx
 from bio2bel_wikipathways import Manager as WikiPathwaysManager
 
-from ..constants import DATA_DIR, WIKIPATHWAYS
+from ..constants import DATA_DIR, HGNC, WIKIPATHWAYS
 from ..utils import get_files_in_folder
 
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
@@ -29,6 +29,56 @@ def evaluate_wikipathways_metadata(metadata):
 
     return metadata
 
+
+def get_valid_gene_identifier(node_dict, hgnc_manager):
+    """Return protein/gene identifier for a given RDF node.
+
+    :param dict node_dict: node dictionary
+    :param bio2bel_hgnc.Manager hgnc_manager: hgnc manager
+    :rtype: tuple[str,str,str]
+    :return: namespace, name, identifier
+    """
+    # Tries to get hgnc symbol
+    if 'hgnc_symbol' in node_dict:
+
+        hgnc_symbol = node_dict['hgnc_symbol']
+        hgnc_entry = hgnc_manager.get_gene_by_hgnc_symbol(hgnc_symbol)
+
+        if not hgnc_entry:
+            log.warning('No valid HGNC Symbol %s', hgnc_symbol)
+
+        return HGNC, hgnc_symbol, hgnc_entry.identifier
+
+    # Tries to get UniProt id
+    elif 'uniprot' in node_dict:
+        uniprot_id = node_dict['uniprot']
+        hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(uniprot_id)
+
+        if not hgnc_entry:
+            log.warning('No valid Uniprot %s', uniprot_id)
+            return 'UNIPROT', uniprot_id, uniprot_id
+
+        return HGNC, hgnc_entry.symbol, hgnc_entry.identifier
+
+    # Tries to get ENSEMBL id
+    elif 'ensembl' in node_dict:
+        ensembl_id = node_dict['ensembl']
+        hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(ensembl_id)
+
+        if not hgnc_entry:
+            log.warning('No valid ENSEMBL %s', ensembl_id)
+            return 'ENSEMBL', ensembl_id, ensembl_id
+
+        return HGNC, hgnc_entry.symbol, hgnc_entry.identifier
+
+    elif 'ec-code' in node_dict:
+        enzyme = node_dict['ec-code']
+        # TODO: Fix and get enzyme
+        # hgnc_entry = hgnc_manager.get_enzymes(enzyme)
+
+        return HGNC, 'PASS', 'PASAS'
+
+    raise Exception('Unknown identifier for node %s', node_dict)
 
 
 def merge_two_dicts(dict1, dict2):

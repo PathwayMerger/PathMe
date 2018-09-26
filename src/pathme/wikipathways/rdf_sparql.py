@@ -157,7 +157,7 @@ def _get_pathway_components(graph) -> Tuple[
 """Statistics functions"""
 
 
-def get_wp_statistics(resource_files, resource_folder) -> Tuple[
+def get_wp_statistics(resource_files, resource_folder, hgnc_manager) -> Tuple[
     Dict[str, Dict[str, int]], Dict[str, Dict[str, Dict[str, int]]]]:
     """Load WikiPathways RDF to BELGraph
 
@@ -175,7 +175,7 @@ def get_wp_statistics(resource_files, resource_folder) -> Tuple[
         pathway_metadata = _get_pathway_metadata(rdf_graph)
 
         nodes, complexes, interactions = _get_pathway_components(rdf_graph)
-        bel_graph = convert_to_bel(nodes, complexes, interactions, pathway_metadata)
+        bel_graph = convert_to_bel(nodes, complexes, interactions, pathway_metadata, hgnc_manager)
 
         nodes.update(complexes)
 
@@ -199,38 +199,41 @@ def get_wp_statistics(resource_files, resource_folder) -> Tuple[
 """Conversion functions"""
 
 
-def rdf_wikipathways_to_bel(rdf_graph) -> BELGraph:
+def rdf_wikipathways_to_bel(rdf_graph, hgnc_manager) -> BELGraph:
     """Convert RDF graph to BELGraph
 
     :param rdf_graph: RDF graph
+    :param bio2bel_hgnc.Manager: HGNC manager
     """
     nodes, complexes, interactions = _get_pathway_components(rdf_graph)
     metadata = _get_pathway_metadata(rdf_graph)
-    return convert_to_bel(nodes, complexes, interactions, metadata)
+    return convert_to_bel(nodes, complexes, interactions, metadata, hgnc_manager)
 
 
-def wikipathways_to_bel(file_path):
+def wikipathways_to_bel(file_path, hgnc_manager):
     """Convert WikiPathways RDF file to BEL.
 
     :param str file_path: path to the file
+    :param bio2bel_hgnc.Manager: HGNC manager
     :rtype: pybel.BELGraph
     """
     rdf_graph = parse_rdf(file_path)
-    return rdf_wikipathways_to_bel(rdf_graph)
+    return rdf_wikipathways_to_bel(rdf_graph, hgnc_manager)
 
 
-def wikipathways_to_pickles(resource_files, resource_folder, export_folder=WIKIPATHWAYS_BEL):
+def wikipathways_to_pickles(resource_files, resource_folder, hgnc_manager, export_folder=WIKIPATHWAYS_BEL):
     """Export WikiPathways to Pickles.
 
     :param iter[str] resource_files: iterator with file names
     :param str resource_folder: path folder
+    :param bio2bel_hgnc.Manager: HGNC manager
     :param Optional[str] export_folder: export folder
     """
     for rdf_file in tqdm.tqdm(resource_files, desc='Exporting WikiPathways to BEL'):
         # Parse pathway rdf_file and log stats
         pathway_path = os.path.join(resource_folder, rdf_file)
 
-        bel_graph = wikipathways_to_bel(pathway_path)
+        bel_graph = wikipathways_to_bel(pathway_path, hgnc_manager)
 
         debug_pathway_info(bel_graph, pathway_path)
 

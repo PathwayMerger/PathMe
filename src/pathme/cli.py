@@ -110,12 +110,15 @@ def statistics(connection, verbose, only_canonical, export):
     if verbose:
         log.setLevel(logging.DEBUG)
 
+    log.info('Initiating HGNC Manager')
+    hgnc_manager = HgncManager()
+
     # TODO: Allow for an optional parameter giving the folder of the files
     resource_folder = os.path.join(WIKIPATHWAYS_DIR, 'wp', 'Human')
 
     resource_files = get_wikipathways_files(resource_folder, connection, only_canonical)
 
-    global_statistics, all_pathways_statistics = get_wp_statistics(resource_files, resource_folder)
+    global_statistics, all_pathways_statistics = get_wp_statistics(resource_files, resource_folder, hgnc_manager)
 
     df = statistics_to_df(all_pathways_statistics)
 
@@ -133,6 +136,9 @@ def to_bel(connection, verbose, only_canonical):
     if verbose:
         log.setLevel(logging.DEBUG)
 
+    log.info('Initiating HGNC Manager')
+    hgnc_manager = HgncManager()
+
     t = time.time()
 
     # TODO: Allow for an optional parameter giving the folder of the files
@@ -140,7 +146,7 @@ def to_bel(connection, verbose, only_canonical):
 
     resource_files = get_wikipathways_files(resource_folder, connection, only_canonical)
 
-    wikipathways_to_pickles(resource_files, resource_folder)
+    wikipathways_to_pickles(resource_files, resource_folder, hgnc_manager)
 
     log.info('WikiPathways exported in %.2f seconds', time.time() - t)
 
