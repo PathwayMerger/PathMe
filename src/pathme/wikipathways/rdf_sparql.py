@@ -6,14 +6,14 @@ import os
 from collections import defaultdict
 from typing import Dict, List, Tuple
 
-import pybel
 import tqdm
-from pybel import BELGraph
 from rdflib.namespace import Namespace, RDFS, RDF, DCTERMS, DC
 
+from pathme.constants import WIKIPATHWAYS_BEL
 from pathme.utils import get_pathway_statitics, query_result_to_dict, parse_rdf
 from pathme.wikipathways.convert_to_bel import convert_to_bel
 from pathme.wikipathways.utils import debug_pathway_info
+from pybel import BELGraph, to_pickle
 
 """SPARQL string queries"""
 
@@ -219,17 +219,26 @@ def wikipathways_to_bel(file_path):
     return rdf_wikipathways_to_bel(rdf_graph)
 
 
-def wikipathways_to_pybel(resource_files, resource_folder):
-    """Load WikiPathways graphs in PyBEL database.
+def wikipathways_to_pickles(resource_files, resource_folder, export_folder=WIKIPATHWAYS_BEL):
+    """Export WikiPathways to Pickles.
 
     :param iter[str] resource_files: iterator with file names
     :param str resource_folder: path folder
+    :param Optional[str] export_folder: export folder
     """
-    for rdf_file in tqdm.tqdm(resource_files, desc='Loading WikiPathways graphs into PyBEL database'):
+    for rdf_file in tqdm.tqdm(resource_files, desc='Exporting WikiPathways to BEL'):
         # Parse pathway rdf_file and log stats
         pathway_path = os.path.join(resource_folder, rdf_file)
+
         bel_graph = wikipathways_to_bel(pathway_path)
 
         debug_pathway_info(bel_graph, pathway_path)
 
-        pybel.to_database(bel_graph)
+        # Export BELGraph to pickle
+        to_pickle(
+            bel_graph,
+            os.path.join(
+                export_folder
+                , '{}.pickle'.format(rdf_file.strip('.ttl'))
+            )
+        )

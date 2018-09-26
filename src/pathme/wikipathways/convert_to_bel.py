@@ -4,12 +4,10 @@
 import logging
 from typing import Dict, List, Tuple
 
-from pybel import BELGraph
-from pybel.dsl import abundance, activity, BaseEntity, bioprocess, complex_abundance, gene, protein, reaction, rna
-
-from pathme.constants import HGNC
 from pathme.utils import parse_id_uri
 from pathme.wikipathways.utils import evaluate_wikipathways_metadata
+from pybel import BELGraph
+from pybel.dsl import abundance, activity, BaseEntity, bioprocess, complex_abundance, gene, protein, reaction, rna
 
 log = logging.getLogger(__name__)
 
@@ -62,22 +60,21 @@ def node_to_bel(node: Dict) -> BaseEntity:
 
     _, _, namespace, _ = parse_id_uri(uri_id)
 
-
     if 'hgnc_symbol' in node.keys():
         name = node['hgnc_symbol']
     else:
         name = node['name']
 
     if isinstance(name, set):
+        print('{} - {}'.format(name, set))
         # TODO: Load HGNC set and get the HGNC symbol (entry in the set) that belongs to it.
         # TODO: print the wikipathways bps that return a set because they are probably wrong.
         name = list(node['name'])[0]
-        variants = list(node['name'])[1:]
-    variants = []
-
 
     if 'Protein' in node_types:
         # TODO: Bug variants protein(... variants=variants)
+        print('{}:{}:{}'.format(namespace, name, identifier))
+
         return protein(namespace=namespace, name=name, identifier=identifier)
 
     elif 'Pathway' in node_types:

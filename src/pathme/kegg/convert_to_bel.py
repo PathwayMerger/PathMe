@@ -5,11 +5,7 @@ import logging
 from collections import defaultdict
 from itertools import product
 
-from pybel import BELGraph, to_pickle
-from pybel.dsl.edges import activity
-from pybel.dsl.node_classes import CentralDogma
-from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
-from pybel.struct.summary import count_functions, edge_summary
+import tqdm
 
 from pathme.constants import *
 from pathme.kegg.kegg_xml_parser import (
@@ -20,9 +16,15 @@ from pathme.kegg.kegg_xml_parser import (
     get_reaction_pathway_edges,
     import_xml_etree
 )
+from pybel import BELGraph, to_pickle
+from pybel.dsl.edges import activity
+from pybel.dsl.node_classes import CentralDogma
+from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
+from pybel.struct.summary import count_functions, edge_summary
 
 __all__ = [
     'kegg_to_bel',
+    'kegg_to_pickles'
 ]
 
 log = logging.getLogger(__name__)
@@ -604,3 +606,32 @@ def get_bel_types(path, hgnc_manager, chebi_manager, flatten=None):
     bel_stats.update(bel_edges_dict)
 
     return bel_stats
+
+
+def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager, flatten=None, export_folder=None):
+    """Export WikiPathways to Pickles.
+
+    :param iter[str] resource_files: iterator with file names
+    :param str resource_folder: path folder
+    :param Optional[str] export_folder: export folder
+    """
+    for kgml_file in tqdm.tqdm(resource_files, desc='Exporting KEGG to BEL'):
+
+        # Skip not KGML files
+        if not kgml_file.endswith('.xml'):
+            continue
+
+        bel_graph = kegg_to_bel(
+            path=os.path.join(resource_folder, kgml_file),
+            hgnc_manager=hgnc_manager,
+            chebi_manager=chebi_manager,
+            flatten=True if flatten else False,
+            cache=True
+        )
+
+        to_pickle(
+            bel_graph,
+            os.path.join(
+                export_folder if export_folder else resource_folder
+                , '{}.pickle'.format(kgml_file.strip('.xml'))
+            ))
