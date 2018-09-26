@@ -9,7 +9,7 @@ from pybel_tools.summary.edge_summary import count_relations
 from pathme.utils import parse_rdf
 from pathme.wikipathways.rdf_sparql import wikipathways_to_bel, _get_nodes, _get_interactions
 from pybel import BELGraph
-from .constants import WP22, WP706, WP1871, WP2799, WP2359
+from .constants import WP22, WP2359
 
 
 class TestWikipathways(unittest.TestCase):

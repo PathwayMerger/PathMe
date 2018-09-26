@@ -15,7 +15,7 @@ class TestUtils(unittest.TestCase):
     def test_get_wikipathways_files(self):
         files = get_files_in_folder(WP_TEST_RESOURCES)
 
-        self.assertEqual(len(files), 2)
+        self.assertEqual(len(files), 7)
         self.assertEqual(os.path.join(WP_TEST_RESOURCES, WP22), WP22)
 
     def test_merge_dict(self):
