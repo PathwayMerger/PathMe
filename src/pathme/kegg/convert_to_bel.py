@@ -615,6 +615,9 @@ def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager
     :param str resource_folder: path folder
     :param Optional[str] export_folder: export folder
     """
+    if export_folder is None:
+        export_folder = resource_folder
+
     for kgml_file in tqdm.tqdm(resource_files, desc='Exporting KEGG to BEL'):
 
         # Skip not KGML files
@@ -631,7 +634,5 @@ def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager
 
         to_pickle(
             bel_graph,
-            os.path.join(
-                export_folder if export_folder else resource_folder
-                , '{}.pickle'.format(kgml_file.strip('.xml'))
-            ))
+            os.path.join(export_folder, '{}.pickle'.format(kgml_file.strip('.xml'))),
+        )
