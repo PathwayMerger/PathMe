@@ -73,8 +73,12 @@ def to_bel(flatten, export_folder):
     ]
 
     kegg_to_pickles(
-        resource_files, KEGG_DIR, hgnc_manager, chebi_manager, flatten=flatten,
-        export_folder=export_folder if export_folder else KEGG_BEL
+        resource_files=resource_files,
+        resource_folder=KEGG_DIR,
+        hgnc_manager=hgnc_manager,
+        chebi_manager=chebi_manager,
+        flatten=flatten,
+        export_folder=export_folder,
     )
 
     log.info('KEGG exported in %.2f seconds', time.time() - t)
