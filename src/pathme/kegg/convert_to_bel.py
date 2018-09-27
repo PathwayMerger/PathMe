@@ -1,30 +1,27 @@
 # -*- coding: utf-8 -*-
 
 """This module contains the methods to convert a KEGG RDF network into a BELGraph."""
+
 import logging
 from collections import defaultdict
 from itertools import product
 
+from pybel import BELGraph, to_pickle
+from pybel.dsl.edges import activity
+from pybel.dsl.node_classes import CentralDogma
+from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, pmod, protein, reaction
+from pybel.struct.summary import count_functions, edge_summary
 import tqdm
 
 from pathme.constants import *
 from pathme.kegg.kegg_xml_parser import (
-    get_all_reactions,
-    get_all_relationships,
-    get_entity_nodes,
-    get_complex_components,
-    get_reaction_pathway_edges,
-    import_xml_etree
+    get_all_reactions, get_all_relationships, get_complex_components, get_entity_nodes, get_reaction_pathway_edges,
+    import_xml_etree,
 )
-from pybel import BELGraph, to_pickle
-from pybel.dsl.edges import activity
-from pybel.dsl.node_classes import CentralDogma
-from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, protein, pmod, reaction
-from pybel.struct.summary import count_functions, edge_summary
 
 __all__ = [
     'kegg_to_bel',
-    'kegg_to_pickles'
+    'kegg_to_pickles',
 ]
 
 log = logging.getLogger(__name__)
