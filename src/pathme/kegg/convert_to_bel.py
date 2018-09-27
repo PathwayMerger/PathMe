@@ -579,7 +579,7 @@ def get_bel_types(path, hgnc_manager, chebi_manager, flatten=None):
     """
     bel_stats = {}
 
-    bel_graph = kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=True if flatten else False, cache=False)
+    bel_graph = kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=True if flatten else False)
 
     bel_stats['nodes'] = bel_graph.number_of_nodes()
     bel_stats['edges'] = bel_graph.number_of_edges()
