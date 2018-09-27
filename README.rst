@@ -45,6 +45,21 @@ Once the raw files are downloaded, you can run the following to command to gener
 .. code-block:: python
 
     python3 -m pathme 'database' to_bel
+
+Advance parameters
+------------------
+
+KEGG Functionalities
+~~~~~~~~~~~~~~~~~~~~
+
+The KEGG module of PathMe is able to handle KGML differently depending on the goal. By default, KEGG groups
+together the complex of nodes (e.g., gene families) into one node as it is depicted in the KEGG cartoons and represented in the KGML files. However, this behavior can be modified by adding the parameter "--flatten=True" 
+in the exporting command. Example:
+
+.. code-block:: python
+
+    python3 -m pathme kegg to_bel --flatten=True
+
     
 References
 ----------
