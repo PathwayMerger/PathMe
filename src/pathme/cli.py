@@ -8,20 +8,18 @@ import time
 import click
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
+from pybel import from_pickle, union
+from tqdm import tqdm
 
 from pathme.constants import *
 from pathme.constants import DEFAULT_CACHE_CONNECTION
 from pathme.kegg.convert_to_bel import kegg_to_pickles
 from pathme.kegg.utils import download_kgml_files, get_kegg_pathway_ids
-from pathme.reactome.rdf_sparql import reactome_to_bel, get_reactome_statistics
+from pathme.reactome.rdf_sparql import get_reactome_statistics, reactome_to_bel
 from pathme.reactome.utils import untar_file
-from pathme.utils import make_downloader, statistics_to_df, get_files_in_folder
+from pathme.utils import get_files_in_folder, make_downloader, statistics_to_df
 from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pickles
-from pathme.wikipathways.utils import (
-    get_file_name_from_url,
-    get_wikipathways_files,
-    unzip_file
-)
+from pathme.wikipathways.utils import get_file_name_from_url, get_wikipathways_files, unzip_file
 
 log = logging.getLogger(__name__)
 
@@ -49,8 +47,9 @@ def download(connection):
 
 
 @kegg.command()
-@click.option('-f', '--flatten', is_flag=True)
-@click.option('-e', '--export-folder', help="Defaults to {}".format(KEGG_BEL))
+
+@click.option('-f', '--flatten', is_flag=False)
+@click.option('-e', '--export-folder', default=KEGG_BEL, show_default=True)
 def to_bel(flatten, export_folder):
     """Convert KEGG to BEL."""
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
@@ -73,11 +72,34 @@ def to_bel(flatten, export_folder):
     ]
 
     kegg_to_pickles(
-        resource_files, KEGG_FILES, hgnc_manager, chebi_manager, flatten=flatten,
-        export_folder=export_folder if export_folder else KEGG_BEL
+        resource_files=resource_files,
+        resource_folder=KEGG_DIR,
+        hgnc_manager=hgnc_manager,
+        chebi_manager=chebi_manager,
+        flatten=flatten,
+        export_folder=export_folder,
     )
 
     log.info('KEGG exported in %.2f seconds', time.time() - t)
+
+
+@kegg.command()
+@click.option('-e', '--export-folder', default=KEGG_BEL, show_default=True)
+def summarize(export_folder):
+    """Summarize the KEGG export."""
+    click.echo('loading graphs')
+    graphs = [
+        from_pickle(os.path.join(export_folder, fname))
+        for fname in tqdm(get_files_in_folder(export_folder))
+    ]
+
+    click.echo('joining graphs')
+    graph = union(graphs)
+
+    click.echo('generating summary')
+    summary_str = graph.summary_str()
+
+    click.echo(summary_str)
 
 
 """WikiPathways"""
