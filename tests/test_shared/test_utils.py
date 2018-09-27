@@ -6,7 +6,7 @@ import os
 import unittest
 
 from pathme.wikipathways.utils import get_files_in_folder, merge_two_dicts, get_file_name_from_url
-from .constants import WP_TEST_RESOURCES, WP22, WP2359
+from tests.constants import WP_TEST_RESOURCES, WP22, WP2359
 
 
 class TestUtils(unittest.TestCase):
