@@ -142,7 +142,7 @@ def to_bel(connection, verbose, only_canonical):
     t = time.time()
 
     # TODO: Allow for an optional parameter giving the folder of the files
-    resource_folder = os.path.join(WIKIPATHWAYS_DIR, 'wp', 'Human')
+    resource_folder = os.path.join(WIKIPATHWAYS_FILES, 'wp', 'Human')
 
     resource_files = get_wikipathways_files(resource_folder, connection, only_canonical)
 
