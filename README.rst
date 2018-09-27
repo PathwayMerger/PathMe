@@ -28,6 +28,8 @@ Installation
 How to use
 ----------
 
+Each database has two main commands: "download" and "to_bel":
+
 1. **Download content**
 
 PathMe first requires to download the raw files from the original pathway databases. This can be accomplished by running the command ('database' can be either kegg, reactome, or wikipathways):
