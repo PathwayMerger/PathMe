@@ -617,8 +617,13 @@ def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager
     """
     for kgml_file in tqdm.tqdm(resource_files, desc='Exporting KEGG to BEL'):
 
-        # Skip not KGML files
-        if not kgml_file.endswith('.xml'):
+        pickle_path = os.path.join(
+            export_folder if export_folder else KEGG_BEL
+            , '{}.pickle'.format(kgml_file.strip('.xml'))
+        )
+
+        # Skip not KGML files or file already exists
+        if not kgml_file.endswith('.xml') or os.path.exists(pickle_path):
             continue
 
         bel_graph = kegg_to_bel(
@@ -629,9 +634,4 @@ def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager
             cache=True
         )
 
-        to_pickle(
-            bel_graph,
-            os.path.join(
-                export_folder if export_folder else resource_folder
-                , '{}.pickle'.format(kgml_file.strip('.xml'))
-            ))
+        to_pickle(bel_graph, pickle_path)

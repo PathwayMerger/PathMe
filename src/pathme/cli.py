@@ -69,11 +69,11 @@ def to_bel(flatten, export_folder):
 
     resource_files = [
         file
-        for file in get_files_in_folder(KEGG_DIR)
+        for file in get_files_in_folder(KEGG_FILES)
     ]
 
     kegg_to_pickles(
-        resource_files, KEGG_DIR, hgnc_manager, chebi_manager, flatten=flatten,
+        resource_files, KEGG_FILES, hgnc_manager, chebi_manager, flatten=flatten,
         export_folder=export_folder if export_folder else KEGG_BEL
     )
 
