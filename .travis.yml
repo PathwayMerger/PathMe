@@ -13,6 +13,7 @@ matrix:
     - env: TOXENV=flake8
     - env: TOXENV=flake8-kegg
   allow_failures:
+    - env: TOXENV=py
     - env: TOXENV=flake8
 install:
 - pip install --upgrade pip
