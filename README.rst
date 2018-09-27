@@ -30,29 +30,19 @@ How to use
 
 1. **Download content**
 
-PathMe first requires to download the raw files from the original pathway databases.
+PathMe first requires to download the raw files from the original pathway databases. This can be accomplished by running the command ('database' can be either kegg, reactome, or wikipathways):
 
 .. code-block:: python
 
-    python3 -m pathme download
+    python3 -m pathme 'database' download
     
 2. **Generate BEL Graphs**
 
-.. code-block:: python
-
-    python3 -m pathme populate
-
-Alternatively, you can do any of these two steps for a particular database by the following command:
+Once the raw files are downloaded, you can run the following to command to generate BELGraphs that will be exported as Python pickles files for further analysis. Furthermore, the conversion to BEL can be tuned differently for each database by using specific commands. For example, KEGG parameters are shown when running "python3 -m pathme kegg to_bel --help".
 
 .. code-block:: python
 
-    python3 -m pathme database_name action
-
-Example:
-
-.. code-block:: python
-
-    python3 -m pathme kegg download
+    python3 -m pathme 'database' to_bel
     
 References
 ----------
