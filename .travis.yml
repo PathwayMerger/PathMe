@@ -6,10 +6,12 @@ python:
 matrix:
   include:
     - env: TOXENV=py
+    - env: TOXENV=py PATHME_TESTS=tests/test_kegg/
     - env: TOXENV=docs
     - env: TOXENV=manifest
     - env: TOXENV=rst-lint
     - env: TOXENV=flake8
+    - env: TOXENV=flake8-kegg
   allow_failures:
     - env: TOXENV=flake8
 install:
