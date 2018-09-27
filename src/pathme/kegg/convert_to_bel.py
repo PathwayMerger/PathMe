@@ -29,18 +29,16 @@ log = logging.getLogger(__name__)
 """Populate empty BEL graph with KEGG pathway entities and interactions"""
 
 
-def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False, cache=True):
+def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False):
     """Convert KGML file to a BELGraph.
 
     :param str path: path to KGML file
     :param bio2bel_hgnc.Manager hgnc_manager: HGNC manager
     :param bio2bel_chebi.Manager chebi_manager: ChEBI manager
     :param bool flatten: flat nodes
-    :param bool cache: cache graph into pathme folder
     :rtype: BELGraph
     """
-    # Load xml
-    xml_tree = import_xml_etree(path)
+    xml_tree = import_xml_etree(path)  # Load xml
     root = xml_tree.getroot()
 
     graph = BELGraph(
@@ -75,14 +73,6 @@ def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False, cache=True):
     # Add edges to graph
     add_edges(graph, relations_list, nodes)
     add_reaction_edges(graph, reactions_dict, nodes)
-
-    if cache:
-        to_pickle(
-            graph,
-            os.path.join(KEGG_BEL, '{}_{}.pickle'.format(
-                root.attrib['title'].strip().replace(' / ', '_'),
-                'flatten' if flatten else 'unflatten'))
-        )
 
     return graph
 
@@ -617,8 +607,16 @@ def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager
 
     for kgml_file in tqdm.tqdm(resource_files, desc='Exporting KEGG to BEL'):
 
-        # Skip not KGML files
-        if not kgml_file.endswith('.xml'):
+        # Name of file created will be: "hsaXXX_unflatten.pickle" or "hsaXXX_flatten.pickle"
+        pickle_path = os.path.join(
+            export_folder if export_folder else KEGG_BEL
+            , '{}_{}.pickle'.format(
+                kgml_file.strip('.xml'),
+                'flatten' if flatten else 'unflatten')  # By default graphs are unflatten
+        )
+
+        # Skip not KGML files or file already exists
+        if not kgml_file.endswith('.xml') or os.path.exists(pickle_path):
             continue
 
         bel_graph = kegg_to_bel(
@@ -626,10 +624,6 @@ def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager
             hgnc_manager=hgnc_manager,
             chebi_manager=chebi_manager,
             flatten=True if flatten else False,
-            cache=True
         )
 
-        to_pickle(
-            bel_graph,
-            os.path.join(export_folder, '{}.pickle'.format(kgml_file.strip('.xml'))),
-        )
+        to_pickle(bel_graph, pickle_path)

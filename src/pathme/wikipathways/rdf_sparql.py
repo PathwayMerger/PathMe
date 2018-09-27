@@ -230,6 +230,13 @@ def wikipathways_to_pickles(resource_files, resource_folder, hgnc_manager, expor
     :param Optional[str] export_folder: export folder
     """
     for rdf_file in tqdm.tqdm(resource_files, desc='Exporting WikiPathways to BEL'):
+
+        pickle_file = os.path.join(export_folder, '{}.pickle'.format(rdf_file.strip('.ttl')))
+
+        # Skip if BEL file already exists
+        if os.path.exists(pickle_file):
+            continue
+
         # Parse pathway rdf_file and log stats
         pathway_path = os.path.join(resource_folder, rdf_file)
 
@@ -238,10 +245,4 @@ def wikipathways_to_pickles(resource_files, resource_folder, hgnc_manager, expor
         debug_pathway_info(bel_graph, pathway_path)
 
         # Export BELGraph to pickle
-        to_pickle(
-            bel_graph,
-            os.path.join(
-                export_folder
-                , '{}.pickle'.format(rdf_file.strip('.ttl'))
-            )
-        )
+        to_pickle(pickle_file, bel_graph)

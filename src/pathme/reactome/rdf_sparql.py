@@ -3,6 +3,7 @@
 """This module contains the methods that run SPARQL queries to convert the Reactome Pathways to BEL."""
 
 import logging
+import os
 from collections import defaultdict
 from typing import Set, Dict, Union, Tuple, List, Any
 
@@ -11,8 +12,10 @@ import tqdm
 from rdflib import URIRef
 from rdflib.namespace import Namespace, RDFS, RDF, DCTERMS, DC, OWL, XSD, SKOS
 
+from pathme.constants import REACTOME_BEL
+from pathme.reactome.convert_to_bel import convert_to_bel
 from pathme.utils import query_result_to_dict, parse_rdf, get_pathway_statitics
-from .convert_to_bel import convert_to_bel
+from pybel import to_pickle
 
 log = logging.getLogger(__name__)
 
@@ -290,8 +293,8 @@ def get_reactome_statistics(resource_file, hgnc_manager):
     return global_statistics, all_pathway_statistics
 
 
-def rdf_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager):
-    """Convert WikiPathways RDF file to BEL.
+def reactome_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager):
+    """Convert a Reactome pathway to BEL.
 
     :param str filepath: path to the file
     :rtype: pybel.BELGraph
@@ -304,8 +307,8 @@ def rdf_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager):
     return convert_to_bel(nodes, interactions, pathway_metadata, hgnc_manager)
 
 
-def reactome_to_bel(resource_file, hgnc_manager):
-    """Load Reactome graphs.
+def reactome_to_bel(resource_file, hgnc_manager, export_folder=REACTOME_BEL):
+    """Create Reactome BEL graphs.
 
     :param str resource_file: rdf reactome file (there is only one)
     :param bio2bel_hgnc.Manager hgnc_manager: uniprot id to hgnc symbol dictionary
@@ -314,11 +317,17 @@ def reactome_to_bel(resource_file, hgnc_manager):
     log.info('Parsing Reactome RDF file')
     rdf_graph = parse_rdf(resource_file, format='xml')
 
-    reactome_pathways = dict()
-
     pathways_uris_to_names = rdf_graph.query(GET_ALL_PATHWAYS, initNs=PREFIXES)
 
     for pathway_uri, pathway_name in tqdm.tqdm(pathways_uris_to_names, desc='Creating Reactome BELGraphs'):
-        reactome_pathways[pathway_name] = rdf_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager)
 
-    return reactome_pathways
+        pickle_file = os.path.join(export_folder, '{}.pickle'.format(pathway_name))
+
+        # Skip if BEL file already exists
+        if os.path.exists(pickle_file):
+            continue
+
+        bel_graph = reactome_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager)
+
+        # Export BELGraph to pickle
+        to_pickle(pickle_file, bel_graph)

@@ -47,6 +47,7 @@ def download(connection):
 
 
 @kegg.command()
+
 @click.option('-f', '--flatten', is_flag=False)
 @click.option('-e', '--export-folder', default=KEGG_BEL, show_default=True)
 def to_bel(flatten, export_folder):
@@ -67,7 +68,7 @@ def to_bel(flatten, export_folder):
 
     resource_files = [
         file
-        for file in get_files_in_folder(KEGG_DIR)
+        for file in get_files_in_folder(KEGG_FILES)
     ]
 
     kegg_to_pickles(
@@ -163,7 +164,7 @@ def to_bel(connection, verbose, only_canonical):
     t = time.time()
 
     # TODO: Allow for an optional parameter giving the folder of the files
-    resource_folder = os.path.join(WIKIPATHWAYS_DIR, 'wp', 'Human')
+    resource_folder = os.path.join(WIKIPATHWAYS_FILES, 'wp', 'Human')
 
     resource_files = get_wikipathways_files(resource_folder, connection, only_canonical)
 

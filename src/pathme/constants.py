@@ -7,21 +7,18 @@ import os
 from bio2bel.utils import get_connection
 
 
-def get_data_dir(module_name):
-    """Ensures the appropriate data directory exists for the given module, then returns the file path.
+def get_data_dir():
+    """Ensures the appropriate PathMe data directory exists for the given module, then returns the file path.
 
-    :param str module_name: The name of the module. Ex: 'pathme'
     :return: The module's data directory
     :rtype: str
     """
-    module_name = module_name.lower()
-    data_dir = os.path.join(PATHME_DIR, module_name)
-    os.makedirs(data_dir, exist_ok=True)
-    return data_dir
+    os.makedirs(PATHME_DIR, exist_ok=True)
+    return PATHME_DIR
 
 
-def _ensure_cache_folders():
-    # Ensure data folders are created
+def _ensure_pathme_folders():
+    """Ensure data folders are created."""
     os.makedirs(KEGG_DIR, exist_ok=True)
     os.makedirs(REACTOME_DIR, exist_ok=True)
     os.makedirs(WIKIPATHWAYS_DIR, exist_ok=True)
@@ -31,10 +28,14 @@ def _ensure_cache_folders():
     os.makedirs(REACTOME_BEL, exist_ok=True)
     os.makedirs(WIKIPATHWAYS_BEL, exist_ok=True)
 
+    os.makedirs(KEGG_FILES, exist_ok=True)
+    os.makedirs(REACTOME_FILES, exist_ok=True)
+    os.makedirs(WIKIPATHWAYS_FILES, exist_ok=True)
+
 
 MODULE_NAME = 'pathme'
 PATHME_DIR = os.environ.get('PATHME_DIRECTORY', os.path.join(os.path.expanduser('~'), '.pathme'))
-DATA_DIR = get_data_dir(MODULE_NAME)
+DATA_DIR = get_data_dir()
 DEFAULT_CACHE_CONNECTION = get_connection(MODULE_NAME)
 
 KEGG = 'kegg'
@@ -49,9 +50,13 @@ KEGG_BEL = os.path.join(KEGG_DIR, 'bel')
 REACTOME_BEL = os.path.join(REACTOME_DIR, 'bel')
 WIKIPATHWAYS_BEL = os.path.join(WIKIPATHWAYS_DIR, 'bel')
 
+KEGG_FILES = os.path.join(KEGG_DIR, 'xml')
+REACTOME_FILES = os.path.join(REACTOME_DIR, 'rdf')
+WIKIPATHWAYS_FILES = os.path.join(WIKIPATHWAYS_DIR, 'rdf')
+
 KEGG_CACHE = os.path.join(DATA_DIR, KEGG, 'cache')
 
-_ensure_cache_folders()
+_ensure_pathme_folders()
 
 KEGG_ID = 'kegg_id'
 KEGG_NAME = 'kegg_name'
