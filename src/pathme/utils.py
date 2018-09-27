@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 """Common utils."""
+
 import logging
 import os
 import pickle
 from collections import defaultdict
-from typing import Dict, Union
-from typing import Optional
+from typing import Dict, List, Optional
 from urllib.request import urlretrieve
 
 import pandas as pd
@@ -21,15 +21,15 @@ log = logging.getLogger(__name__)
 UNKNOWN = 'unknown'
 
 
-def get_files_in_folder(path):
+def get_files_in_folder(path: str) -> List[str]:
     """Return the files in a given folder.
 
-    :param str path: folder path
-    :rtype: list[str]
+    :param path: folder path
     :return: file names in folder
     """
     return [
-        file for file in os.listdir(path)
+        file
+        for file in os.listdir(path)
         if os.path.isfile(os.path.join(path, file))
     ]
 
