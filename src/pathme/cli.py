@@ -39,7 +39,7 @@ def kegg():
 
 
 @kegg.command(help='Downloads KEGG files')
-@click.option('-c', '--connection', help="Defaults to {}".format(os.path.join(DATA_DIR, KEGG)))
+@click.option('-c', '--connection', help="Defaults to {}".format(os.path.join(KEGG_FILES, KEGG)))
 def download(connection):
     """Download KEGG KGML."""
     kegg_ids = get_kegg_pathway_ids(connection=connection)
