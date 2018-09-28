@@ -12,7 +12,7 @@ from bio2bel_kegg import Manager as KeggManager
 from pathme.kegg.convert_to_bel import get_bel_types
 from pathme.kegg.kegg_xml_parser import import_xml_etree, get_xml_types
 from pathme.wikipathways.utils import get_files_in_folder
-from ..constants import DATA_DIR, KEGG, KEGG_KGML_URL, KEGG_STATS_COLUMN_NAMES
+from ..constants import KEGG_FILES, KEGG, KEGG_KGML_URL, KEGG_STATS_COLUMN_NAMES
 
 __all__ = [
     'download_kgml_files',
@@ -47,7 +47,7 @@ def download_kgml_files(kegg_pathway_ids):
     """
     for kegg_id in tqdm.tqdm(kegg_pathway_ids, desc='Downloading KEGG files'):
         request = requests.get(KEGG_KGML_URL.format(kegg_id))
-        with open(os.path.join(DATA_DIR, KEGG, '{}.xml'.format(kegg_id)), 'w+') as file:
+        with open(os.path.join(KEGG_FILES, '{}.xml'.format(kegg_id)), 'w+') as file:
             file.write(request.text)
             file.close()
 
