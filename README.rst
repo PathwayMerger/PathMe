@@ -28,7 +28,7 @@ Installation
 How to use
 ----------
 
-Each database has two main commands: "download" and "to_bel":
+Each database has three main commands: "download", "to_bel", and "summarize":
 
 1. **Download content**
 
@@ -45,6 +45,14 @@ Once the raw files are downloaded, you can run the following to command to gener
 .. code-block:: python
 
     python3 -m pathme 'database' to_bel
+    
+2. **Summarize**
+
+Summarizes the result of the conversion to BEL.
+
+.. code-block:: python
+
+    python3 -m pathme 'database' summarize
 
 Advance parameters
 ------------------
