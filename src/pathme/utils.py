@@ -8,6 +8,8 @@ import pickle
 from collections import defaultdict
 from typing import Dict, List, Optional
 from urllib.request import urlretrieve
+import click
+from pybel import from_pickle, union
 
 import pandas as pd
 import pybel
@@ -316,3 +318,16 @@ def make_downloader(url, path, database, decompress_file):
     decompress_file(data, os.path.join(DATA_DIR, database))
 
 
+def summarize_helper(graphs):
+    """Print in console summary of graphs.
+
+    :param iter[graphs] graphs: BEL Graphs
+    """
+
+    click.echo('joining graphs')
+    graph = union(graphs)
+
+    click.echo('generating summary')
+    summary_str = graph.summary_str()
+
+    click.echo(summary_str)

@@ -8,7 +8,6 @@ import time
 import click
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
-from pybel import from_pickle, union
 from tqdm import tqdm
 
 from pathme.constants import *
@@ -19,7 +18,8 @@ from pathme.reactome.rdf_sparql import get_reactome_statistics, reactome_to_bel
 from pathme.reactome.utils import untar_file
 from pathme.utils import get_files_in_folder, make_downloader, statistics_to_df
 from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pickles
-from pathme.wikipathways.utils import get_file_name_from_url, get_wikipathways_files, unzip_file
+from pathme.wikipathways.utils import get_file_name_from_url, get_wikipathways_files, summarize_helper, unzip_file
+from pybel import from_pickle
 
 log = logging.getLogger(__name__)
 
@@ -47,7 +47,6 @@ def download(connection):
 
 
 @kegg.command()
-
 @click.option('-f', '--flatten', is_flag=False)
 @click.option('-e', '--export-folder', default=KEGG_BEL, show_default=True)
 def to_bel(flatten, export_folder):
@@ -87,19 +86,13 @@ def to_bel(flatten, export_folder):
 @click.option('-e', '--export-folder', default=KEGG_BEL, show_default=True)
 def summarize(export_folder):
     """Summarize the KEGG export."""
-    click.echo('loading graphs')
+    click.echo('loading KEGG graphs')
     graphs = [
         from_pickle(os.path.join(export_folder, fname))
         for fname in tqdm(get_files_in_folder(export_folder))
     ]
 
-    click.echo('joining graphs')
-    graph = union(graphs)
-
-    click.echo('generating summary')
-    summary_str = graph.summary_str()
-
-    click.echo(summary_str)
+    summarize_helper(graphs)
 
 
 """WikiPathways"""
@@ -119,6 +112,19 @@ def download():
     cached_file = os.path.join(WIKIPATHWAYS_DIR, get_file_name_from_url(RDF_WIKIPATHWAYS))
     make_downloader(RDF_WIKIPATHWAYS, cached_file, WIKIPATHWAYS, unzip_file)
     log.info('WikiPathways was downloaded')
+
+
+@wikipathways.command()
+@click.option('-e', '--export-folder', default=WIKIPATHWAYS_BEL, show_default=True)
+def summarize(export_folder):
+    """Summarize the WikiPathways export."""
+    click.echo('loading WikiPathways graphs')
+    graphs = [
+        from_pickle(os.path.join(export_folder, fname))
+        for fname in tqdm(get_files_in_folder(export_folder))
+    ]
+
+    summarize_helper(graphs)
 
 
 @wikipathways.command()
@@ -212,6 +218,19 @@ def to_bel(verbose):
     reactome_to_bel(resource_file, hgnc_manager)
 
     log.info('Reactome exported in %.2f seconds', time.time() - t)
+
+
+@reactome.command()
+@click.option('-e', '--export-folder', default=REACTOME_BEL, show_default=True)
+def summarize(export_folder):
+    """Summarize the Reactome export."""
+    click.echo('loading Reactome graphs')
+    graphs = [
+        from_pickle(os.path.join(export_folder, fname))
+        for fname in tqdm(get_files_in_folder(export_folder))
+    ]
+
+    summarize_helper(graphs)
 
 
 @reactome.command()
