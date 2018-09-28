@@ -16,9 +16,9 @@ from pathme.kegg.convert_to_bel import kegg_to_pickles
 from pathme.kegg.utils import download_kgml_files, get_kegg_pathway_ids
 from pathme.reactome.rdf_sparql import get_reactome_statistics, reactome_to_bel
 from pathme.reactome.utils import untar_file
-from pathme.utils import get_files_in_folder, make_downloader, statistics_to_df
+from pathme.utils import get_files_in_folder, make_downloader, statistics_to_df, summarize_helper
 from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pickles
-from pathme.wikipathways.utils import get_file_name_from_url, get_wikipathways_files, summarize_helper, unzip_file
+from pathme.wikipathways.utils import get_file_name_from_url, get_wikipathways_files, unzip_file
 from pybel import from_pickle
 
 log = logging.getLogger(__name__)
