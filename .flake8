@@ -9,6 +9,7 @@ ignore =
 	E501
 	I100  # Import statements are in the wrong order
 	I101  # Imported names are in the wrong order
+	F405 # Stars import
 exclude =
     .tox,
     .git,
