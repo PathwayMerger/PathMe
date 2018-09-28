@@ -109,9 +109,34 @@ def download():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     log.setLevel(logging.INFO)
 
-    cached_file = os.path.join(WIKIPATHWAYS_DIR, get_file_name_from_url(RDF_WIKIPATHWAYS))
+    cached_file = os.path.join(WIKIPATHWAYS_FILES, get_file_name_from_url(RDF_WIKIPATHWAYS))
     make_downloader(RDF_WIKIPATHWAYS, cached_file, WIKIPATHWAYS, unzip_file)
     log.info('WikiPathways was downloaded')
+
+
+@wikipathways.command()
+@click.option('-c', '--connection', help="Defaults to {}".format(DEFAULT_CACHE_CONNECTION))
+@click.option('-v', '--verbose', is_flag=True)
+@click.option('-x', '--only-canonical', default=True, help='Parse only canonical pathways')
+def to_bel(connection, verbose, only_canonical):
+    """Convert WikiPathways to BEL."""
+    logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+    if verbose:
+        log.setLevel(logging.DEBUG)
+
+    log.info('Initiating HGNC Manager')
+    hgnc_manager = HgncManager()
+
+    t = time.time()
+
+    # TODO: Allow for an optional parameter giving the folder of the files
+    resource_folder = os.path.join(WIKIPATHWAYS_FILES, 'wp', 'Human')
+
+    resource_files = get_wikipathways_files(resource_folder, connection, only_canonical)
+
+    wikipathways_to_pickles(resource_files, resource_folder, hgnc_manager)
+
+    log.info('WikiPathways exported in %.2f seconds', time.time() - t)
 
 
 @wikipathways.command()
@@ -154,31 +179,6 @@ def statistics(connection, verbose, only_canonical, export):
     df.to_csv(os.path.join(DATA_DIR, 'wikipathways_statistics.csv'))
 
 
-@wikipathways.command()
-@click.option('-c', '--connection', help="Defaults to {}".format(DEFAULT_CACHE_CONNECTION))
-@click.option('-v', '--verbose', is_flag=True)
-@click.option('-x', '--only-canonical', default=True, help='Parse only canonical pathways')
-def to_bel(connection, verbose, only_canonical):
-    """Convert WikiPathways to BEL."""
-    logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
-    if verbose:
-        log.setLevel(logging.DEBUG)
-
-    log.info('Initiating HGNC Manager')
-    hgnc_manager = HgncManager()
-
-    t = time.time()
-
-    # TODO: Allow for an optional parameter giving the folder of the files
-    resource_folder = os.path.join(WIKIPATHWAYS_FILES, 'wp', 'Human')
-
-    resource_files = get_wikipathways_files(resource_folder, connection, only_canonical)
-
-    wikipathways_to_pickles(resource_files, resource_folder, hgnc_manager)
-
-    log.info('WikiPathways exported in %.2f seconds', time.time() - t)
-
-
 """Reactome"""
 
 
@@ -193,7 +193,7 @@ def download():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     log.setLevel(logging.INFO)
 
-    cached_file = os.path.join(REACTOME_DIR, get_file_name_from_url(RDF_REACTOME))
+    cached_file = os.path.join(REACTOME_FILES, get_file_name_from_url(RDF_REACTOME))
     make_downloader(RDF_REACTOME, cached_file, REACTOME, untar_file)
     log.info('Reactome was downloaded')
 
@@ -211,7 +211,7 @@ def to_bel(verbose):
     log.info('Initiating HGNC Manager')
     hgnc_manager = HgncManager()
 
-    resource_file = os.path.join(REACTOME_DIR, 'Homo_sapiens.owl')
+    resource_file = os.path.join(REACTOME_FILES, 'Homo_sapiens.owl')
 
     # TODO: Fix
 
