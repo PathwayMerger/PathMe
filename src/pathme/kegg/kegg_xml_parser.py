@@ -46,6 +46,7 @@ def _post_process_api_query(node_meta_data, hgnc_manager, chebi_manager):
     :param bio2bel_hgnc.Manager hgnc_manager: HGNC Manager
     :param bio2bel_chebi.Manager chebi_manager: ChEBI Manager
     :return: Standard identifiers for the protein/chemical
+    :rtype: dict[str,str]
     """
     node_dict = {}
 
@@ -137,7 +138,9 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
     :param bio2bel_chebi.Manager chebi_manager: ChEBI Manager
     :return: genes with corresponding metadata (entry_id: [kegg_id, HGNC, UniProt])
     :return: compounds with corresponding metadata (entry_id: [compound_name, ChEBI])
-    :rtype: dict
+    :return: biological processes with corresponding metadata  (entry_id: [kegg_id, map_name])
+    :return: orthologs with corresponding metadata (entry_id: [kegg_id, kegg_type])
+    :rtype: dict[str,str]
     """
     entry_dict = defaultdict(list)
     compound_dict = defaultdict(list)
@@ -184,6 +187,7 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
 
                 ortholog_dict[entry_id].append(ortholog_info)
 
+        # TODO: other, enzyme
         elif kegg_type.startswith('brite'):
             pass
 
@@ -197,9 +201,9 @@ def get_complex_components(tree, genes_dict, flattened=False):
     :param xml.etree.ElementTree.ElementTree tree: XML tree
     :param dict genes_dict: dictionary of all genes in pathway
     :param bool flattened: True to flatten all complex participants
-    :return: dictionary of complex IDs and component IDs
-    :return: flattened dictionary of complex IDs and component metadata
-    :rtype: dict
+    :return: dictionary of complex IDs and component IDs (complex_id: [component_ids])
+    :return: flattened dictionary of complex IDs and component metadata (complex_ids: [metadata_dict])
+    :rtype: dict[str,list]
     """
     component_info = defaultdict(list)
     complex_ids = defaultdict(list)
@@ -248,7 +252,7 @@ def get_xml_types(tree):
 
     :param xml.etree.ElementTree.ElementTree tree: XML tree
     :return: count of all entity, relation and reaction types present in XML
-    :rtype: dict
+    :rtype: dict[str,int]
     """
     entity_types_dict = defaultdict(int)
     interaction_types_dict = defaultdict(int)
@@ -339,9 +343,9 @@ def get_all_reactions(tree, compounds_dict):
 
     :param xml.etree.ElementTree.ElementTree tree: XML tree
     :param dict compounds_dict: dictionary of KEGG compound information
-    :return: dictionary with substrate info
-    :return: dictionary with product info
-    :rtype: dict
+    :return: dictionary with substrate ids (reaction_id: [substrate_ids])
+    :return: dictionary with product ids (reaction_id: [product_ids])
+    :rtype: dict[str,list]
     """
     substrates_dict = defaultdict(list)
     products_dict = defaultdict(list)
@@ -373,8 +377,8 @@ def get_reaction_pathway_edges(xml_tree, substrates_dict, products_dict):
     :param xml.etree.ElementTree.ElementTree xml_tree: xml tree
     :param dict substrates_dict: dictionary with substrate info
     :param dict products_dict: dictionary with product info
-    :return: dictionary of reaction elements
-    :rtype: dict
+    :return: dictionary of reaction elements (reaction_id: [(substrate_id, product_id, reaction_type)])
+    :rtype: dict[str,list]
     """
     reactions_dict = defaultdict(list)
 
@@ -397,3 +401,4 @@ def get_reaction_pathway_edges(xml_tree, substrates_dict, products_dict):
                     reactions_dict[reaction_id].append((reaction_products, reaction_substrates, reaction_type))
 
     return reactions_dict
+

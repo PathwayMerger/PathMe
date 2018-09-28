@@ -41,7 +41,7 @@ def get_kegg_pathway_ids(connection=None):
 
 
 def download_kgml_files(kegg_pathway_ids):
-    """Downloads KEGG KGML files by querying the KEGG API.
+    """Download KEGG KGML files by querying the KEGG API.
 
     :param list kegg_pathway_ids: list of kegg ids
     """
@@ -59,7 +59,7 @@ def get_kegg_statistics(path, hgnc_manager, chebi_manager, flatten=None):
     :param bio2bel_hgnc.Manager hgnc_manager: HGNC manager
     :param bio2bel_chebi.Manager chebi_manager: ChEBI manager
     :param str path: path to folder containing XML files
-    :return: relation edge types in XML
+    :return: KEGG KGML file and BEL graph statistics
     :rtype: pandas.DataFrame
     """
     df = pd.DataFrame()
@@ -90,7 +90,7 @@ def get_kegg_statistics(path, hgnc_manager, chebi_manager, flatten=None):
             for key, value in xml_statistics_dict.items()
         }
 
-        # Add pathway stat rows to dataframe
+        # Add pathway statistic rows to DataFrame
         pathway_data = pd.DataFrame(
             all_kegg_statistics,
             index=pathway_names,

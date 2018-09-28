@@ -84,12 +84,12 @@ def xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=
     """Convert gene and compound entities in XML to BEL nodes.
 
     :param pybel.BELGraph graph: BEL Graph
-    :param dict genes_dict: KEGG genes
-    :param dict compounds_dict: KEGG compounds
-    :param dict maps_dict: KEGG pathway maps
+    :param dict[str,str] genes_dict: KEGG genes (entry_id: [kegg_id, HGNC, UniProt])
+    :param dict[str,str] compounds_dict: KEGG compounds (entry_id: [compound_name, ChEBI])
+    :param dict[str,str] maps_dict: KEGG pathway maps (entry_id: [kegg_id, map_name])
     :param bool flattened: True to flatten to list of similar genes grouped together
     :return: KEGG entities to BEL nodes
-    :rtype: dict
+    :rtype: dict[str,pybel.dsl.BaseEntity]
     """
     # Create a dictionary of flattened BEL nodes
     if flattened:
@@ -121,10 +121,10 @@ def xml_complexes_to_bel(graph, node_dict, complex_ids, flatten_complexes=None):
 
     :param pybel.BELGraph graph: BEL Graph
     :param dict[str,pybel.dsl.BaseEntity] node_dict: kegg_id to BEL node dictionary
-    :param dict[str,str] complex_ids: complex IDs to corresponding component IDs
-    :param Optional[dict] flatten_complexes: complex IDs and flattened list of all components
+    :param dict[str,list] complex_ids: complex IDs to corresponding component IDs
+    :param Optional[dict[str,list]] flatten_complexes: complex IDs and flattened list of all components
     :return: kegg_ids to BEL nodes
-    :rtype: dict
+    :rtype: dict[str,pybel.dsl.BaseEntity]
     """
     member_dict = defaultdict(list)
 
@@ -219,6 +219,7 @@ def flatten_gene_to_bel_node(graph, node):
             return protein_node
 
     proteins_list = []
+
     # if multiple protein nodes, return corresponding list of BEL nodes
     for node_dict in node:
 
@@ -609,8 +610,8 @@ def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager
 
         # Name of file created will be: "hsaXXX_unflatten.pickle" or "hsaXXX_flatten.pickle"
         pickle_path = os.path.join(
-            export_folder if export_folder else KEGG_BEL
-            , '{}_{}.pickle'.format(
+            export_folder if export_folder else KEGG_BEL,
+            '{}_{}.pickle'.format(
                 kgml_file.strip('.xml'),
                 'flatten' if flatten else 'unflatten')  # By default graphs are unflatten
         )
@@ -627,3 +628,4 @@ def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager
         )
 
         to_pickle(bel_graph, pickle_path)
+
