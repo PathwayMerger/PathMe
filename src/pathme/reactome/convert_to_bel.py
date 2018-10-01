@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""This module contains the methods to convert a WikiPathways RDF network into a BELGraph."""
+"""This module contains the methods to convert a Reactome RDF network into a BELGraph."""
 import logging
 from typing import Dict, Iterable, List, Tuple
 
@@ -36,7 +36,7 @@ def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Di
         version='1.0.0',
         description=pathway_info['comment'],
         pathway_id=identifier,
-        authors="Sarah Mubeen, Daniel Domingo-Fernández & Josep Marín-Llaó",
+        authors="Josep Marín-Llaó, Daniel Domingo-Fernández & Sarah Mubeen",
         contact='daniel.domingo.fernandez@scai.fraunhofer.de',
     )
 
