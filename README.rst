@@ -74,6 +74,8 @@ References
 
 KEGG
 ~~~~
+PathMe makes use of KEGG KGML files that are downloaded via the KEGG API for academic purposes (see `KEGG Terms and conditions <https://www.kegg.jp/kegg/rest/>`_.).
+
 - Kanehisa, Furumichi, M., Tanabe, M., Sato, Y., and Morishima, K.; KEGG: new perspectives on genomes,
   pathways, diseases and drugs. Nucleic Acids Res. 45, D353-D361 (2017).
 - Kanehisa, M., Sato, Y., Kawashima, M., Furumichi, M., and Tanabe, M.; KEGG as a reference resource
