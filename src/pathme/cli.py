@@ -43,6 +43,11 @@ def kegg():
 def download(connection):
     """Download KEGG KGML."""
     kegg_ids = get_kegg_pathway_ids(connection=connection)
+    log.info(
+        'Downloading KGML files, please make sure you have read KEGG licensing (see: https://www.kegg.jp/kegg/rest/).'
+        'These files cannot be distributed and the use must be academic only.'
+        'PathMe developers are not responsible of end use of this data.'
+    )
     download_kgml_files(kegg_ids)
 
 
