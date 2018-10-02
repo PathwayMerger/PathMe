@@ -8,19 +8,18 @@ import pickle
 from collections import defaultdict
 from typing import Dict, List, Optional
 from urllib.request import urlretrieve
-import click
-from pybel import from_pickle, union
 
+import click
 import pandas as pd
 import pybel
 import rdflib
+from pybel import union
 from pybel_tools import summary
+from pathme.constants import UNKNOWN
 
 from .constants import DATA_DIR
 
 log = logging.getLogger(__name__)
-
-UNKNOWN = 'unknown'
 
 
 def get_files_in_folder(path: str) -> List[str]:
@@ -118,12 +117,13 @@ def entry_result_to_dict(entry, **kwargs):
         directed_interaction = kwargs.get('directed_interaction')
 
         if directed_interaction[0] and directed_interaction[1] in attributes_dict.keys():
-            attributes_dict['participants'] = (attributes_dict.pop(directed_interaction[0]), attributes_dict.pop(directed_interaction[1]))
+            attributes_dict['participants'] = (
+                attributes_dict.pop(directed_interaction[0]), attributes_dict.pop(directed_interaction[1]))
 
     if 'attr_empty' in kwargs:
         attr_empty = kwargs.get('attr_empty')
         empty_dict = {
-            str(attr): 'UNKNOWN'
+            str(attr): UNKNOWN
             for attr in attr_empty
             if attr not in attributes_dict
         }
@@ -166,21 +166,21 @@ def query_result_to_dict(entries, **kwargs) -> Dict[str, Dict[str, Dict[str, str
                     value = entry_attributes[label]
                     if isinstance(value, set):
                         entries_dict[id_key][label].add(new_value)
-                    elif entries_dict[id_key][label] == 'UNKNOWN':
+                    elif entries_dict[id_key][label] == UNKNOWN:
                         entries_dict[id_key][label] = new_value
                     elif value != new_value:
                         entries_dict[id_key][label] = {value, new_value}
                 else:
                     entries_dict[id_key][label] = new_value
 
-    if len(entries_dict) == 1 and kwargs.get('id_dict')==False:
+    if len(entries_dict) == 1 and kwargs.get('id_dict') == False:
         return list(entries_dict.values())[0]
 
     elif not entries and 'attr_empty' in kwargs:
 
         attr_empty = kwargs.get('attr_empty')
         return {
-            str(attr): 'UNKNOWN'
+            str(attr): UNKNOWN
             for attr in attr_empty
         }
 
@@ -250,6 +250,7 @@ def get_pathway_statitics(nodes_types, edges_types, bel_graph, **kwargs):
         return global_statistics, pathway_statistics
 
     return pathway_statistics
+
 
 def statistics_to_df(all_pathways_statistics):
     """Build a data frame with graph statistics.

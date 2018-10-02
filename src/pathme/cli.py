@@ -8,6 +8,7 @@ import time
 import click
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
+from pybel import from_pickle
 from tqdm import tqdm
 
 from pathme.constants import *
@@ -19,7 +20,6 @@ from pathme.reactome.utils import untar_file
 from pathme.utils import get_files_in_folder, make_downloader, statistics_to_df, summarize_helper
 from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pickles
 from pathme.wikipathways.utils import get_file_name_from_url, get_wikipathways_files, unzip_file
-from pybel import from_pickle
 
 log = logging.getLogger(__name__)
 

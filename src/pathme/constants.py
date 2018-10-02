@@ -58,6 +58,8 @@ KEGG_CACHE = os.path.join(DATA_DIR, KEGG, 'cache')
 
 _ensure_pathme_folders()
 
+UNKNOWN = 'unknown'
+
 KEGG_ID = 'kegg_id'
 KEGG_NAME = 'kegg_name'
 KEGG_TYPE = 'kegg_type'

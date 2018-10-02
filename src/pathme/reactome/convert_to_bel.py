@@ -10,7 +10,7 @@ from pybel.dsl import (
     abundance, activity, BaseEntity, composite_abundance, complex_abundance, gene, rna, protein, reaction, bioprocess
 )
 
-from pathme.constants import UNIPROT, ENSEMBL
+from pathme.constants import UNIPROT, ENSEMBL, UNKNOWN
 from pathme.reactome.utils import get_hgnc_node_info
 from pathme.utils import parse_id_uri
 
@@ -25,7 +25,7 @@ def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Di
                     hgnc_manager) -> BELGraph:
     uri_id = pathway_info['uri_reactome_id']
 
-    if uri_id != 'unknown':
+    if uri_id != UNKNOWN:
         _, _, namespace, identifier = parse_id_uri(uri_id)
     else:
         identifier = uri_id
@@ -97,7 +97,7 @@ def node_to_bel(node: Dict, graph, hgnc_manager: HgncManager) -> BaseEntity:
             if isinstance(name, set):
                 name = list(name)[0]
         else:
-            name = 'unknown'
+            name = UNKNOWN
 
     if node_id:
         _, _, namespace, identifier = parse_id_uri(node_id)
