@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """This module contains functions to parse KGML files."""
+
 import itertools as itt
 import json
 import logging

@@ -38,7 +38,7 @@ def get_valid_gene_identifier(node_dict, hgnc_manager):
     :rtype: tuple[str,str,str]
     :return: namespace, name, identifier
     """
-    # Tries to get hgnc symbol
+    # Try to get hgnc symbol
     if 'hgnc_symbol' in node_dict:
 
         hgnc_symbol = node_dict['hgnc_symbol']
@@ -49,7 +49,7 @@ def get_valid_gene_identifier(node_dict, hgnc_manager):
 
         return HGNC, hgnc_symbol, hgnc_entry.identifier
 
-    # Tries to get UniProt id
+    # Try to get UniProt id
     elif 'uniprot' in node_dict:
         uniprot_id = node_dict['uniprot']
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(uniprot_id)
@@ -60,7 +60,7 @@ def get_valid_gene_identifier(node_dict, hgnc_manager):
 
         return HGNC, hgnc_entry.symbol, hgnc_entry.identifier
 
-    # Tries to get ENSEMBL id
+    # Try to get ENSEMBL id
     elif 'ensembl' in node_dict:
         ensembl_id = node_dict['ensembl']
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(ensembl_id)
@@ -137,7 +137,7 @@ def debug_pathway_info(bel_graph, pathway_path, **kwargs):
 
 
 def debug_global_statistics(global_statistics):
-    """Debug pathway statistics
+    """Debug pathway statistics.
 
     :param dict global_statistics: pathway statistics
     """

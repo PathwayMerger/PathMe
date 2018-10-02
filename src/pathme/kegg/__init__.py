@@ -4,4 +4,3 @@
 
 from .convert_to_bel import *
 from .utils import *
-

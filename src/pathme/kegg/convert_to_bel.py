@@ -6,12 +6,12 @@ import logging
 from collections import defaultdict
 from itertools import product
 
+import tqdm
 from pybel import BELGraph, to_pickle
 from pybel.dsl.edges import activity
 from pybel.dsl.node_classes import CentralDogma
 from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, pmod, protein, reaction
 from pybel.struct.summary import count_functions, edge_summary
-import tqdm
 
 from pathme.constants import *
 from pathme.kegg.kegg_xml_parser import (
@@ -116,8 +116,7 @@ def xml_entities_to_bel(graph, genes_dict, compounds_dict, maps_dict, flattened=
 
 
 def xml_complexes_to_bel(graph, node_dict, complex_ids, flatten_complexes=None):
-    """Convert complexes in XML to BEL nodes where each complex is made up of proteins
-    and/or composites (i.e. groups of related proteins).
+    """Convert complexes in XML to BEL nodes where each complex is made up of proteins and/or composites.
 
     :param pybel.BELGraph graph: BEL Graph
     :param dict[str,pybel.dsl.BaseEntity] node_dict: kegg_id to BEL node dictionary
@@ -628,4 +627,3 @@ def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager
         )
 
         to_pickle(bel_graph, pickle_path)
-

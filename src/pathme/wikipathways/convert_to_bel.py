@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 
 """This module contains the methods to convert a WikiPathways RDF network into a BELGraph."""
+
 import logging
 from typing import Dict, List, Tuple
 
 from bio2bel_hgnc import Manager
+from pybel import BELGraph
+from pybel.dsl import abundance, activity, BaseEntity, bioprocess, complex_abundance, gene, protein, reaction, rna
 
 from pathme.constants import HGNC
 from pathme.utils import parse_id_uri
 from pathme.wikipathways.utils import evaluate_wikipathways_metadata, get_valid_gene_identifier
-from pybel import BELGraph
-from pybel.dsl import abundance, activity, BaseEntity, bioprocess, complex_abundance, gene, protein, reaction, rna
 
 log = logging.getLogger(__name__)
 
