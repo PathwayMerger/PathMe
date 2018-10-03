@@ -17,7 +17,7 @@ def get_data_dir():
     return PATHME_DIR
 
 
-def _ensure_pathme_folders():
+def ensure_pathme_folders():
     """Ensure data folders are created."""
     os.makedirs(KEGG_DIR, exist_ok=True)
     os.makedirs(REACTOME_DIR, exist_ok=True)
@@ -56,7 +56,7 @@ WIKIPATHWAYS_FILES = os.path.join(WIKIPATHWAYS_DIR, 'rdf')
 
 KEGG_CACHE = os.path.join(DATA_DIR, KEGG, 'cache')
 
-_ensure_pathme_folders()
+ensure_pathme_folders()
 
 UNKNOWN = 'unknown'
 
