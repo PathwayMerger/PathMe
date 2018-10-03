@@ -10,6 +10,10 @@ ignore =
 	I100  # Import statements are in the wrong order
 	I101  # Imported names are in the wrong order
 	F405 # Stars import
+	F403 # imports not used in init
+	F401 # imports not used in init
+	C901 # too complex methods
+
 exclude =
     .tox,
     .git,
