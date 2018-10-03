@@ -17,7 +17,6 @@ class TestWikipathways(unittest.TestCase):
 
     def test_get_nodes(self):
         """Test get nodes from RDF pathways files."""
-
         wp22_rdf_graph = parse_rdf(WP22)
         wp706_rdf_graph = parse_rdf(WP22)
         wp1871_rdf_graph = parse_rdf(WP22)
@@ -35,7 +34,6 @@ class TestWikipathways(unittest.TestCase):
 
     def test_get_interactions(self):
         """Test get nodes from RDF pathways files."""
-
         wp22_rdf_graph = parse_rdf(WP22)
         wp706_rdf_graph = parse_rdf(WP22)
         wp1871_rdf_graph = parse_rdf(WP22)
