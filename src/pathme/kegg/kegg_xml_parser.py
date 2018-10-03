@@ -196,8 +196,7 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
 
 
 def get_complex_components(tree, genes_dict, flattened=False):
-    """Get IDs of complex components to construct complexes of protein composites (i.e. similar proteins)
-    or get dictionary of flattened lists of all proteins involved in complexes.
+    """Get complex components to either construct complex or flatten relationships.
 
     :param xml.etree.ElementTree.ElementTree tree: XML tree
     :param dict genes_dict: dictionary of all genes in pathway
@@ -206,6 +205,8 @@ def get_complex_components(tree, genes_dict, flattened=False):
     :return: flattened dictionary of complex IDs and component metadata (complex_ids: [metadata_dict])
     :rtype: dict[str,list]
     """
+    # Get IDs of complex components to construct complexes of protein composites (i.e. similar proteins).
+    # or get dictionary of flattened lists of all proteins involved in complexes.
     component_info = defaultdict(list)
     complex_ids = defaultdict(list)
     complexes = defaultdict(list)
@@ -402,4 +403,3 @@ def get_reaction_pathway_edges(xml_tree, substrates_dict, products_dict):
                     reactions_dict[reaction_id].append((reaction_products, reaction_substrates, reaction_type))
 
     return reactions_dict
-
