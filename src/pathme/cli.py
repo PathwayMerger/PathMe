@@ -43,13 +43,15 @@ def kegg():
 def download(connection):
     """Download KEGG KGML."""
     kegg_ids = get_kegg_pathway_ids(connection=connection)
-    log.info(
-        'You are about to download KGML files from KEGG.\n'
-        'Please make sure you have read KEGG license (see: https://www.kegg.jp/kegg/rest/).'
-        ' These files cannot be distributed and their use must be exclusively academic.\n'
-        'We (PathMe developers) are not responsible for end use of this data.\n'
-    )
-    download_kgml_files(kegg_ids)
+
+    if click.confirm(
+            'You are about to download KGML files from KEGG.\n'
+            'Please make sure you have read KEGG license (see: https://www.kegg.jp/kegg/rest/).'
+            ' These files cannot be distributed and their use must be exclusively academic.\n'
+            'We (PathMe developers) are not responsible for end use of this data.\n'
+    ):
+        click.echo('You have read and accepted the conditions stated above.\n')
+        download_kgml_files(kegg_ids)
 
 
 @kegg.command()
