@@ -100,7 +100,10 @@ def summarize(export_folder):
         for fname in tqdm(get_files_in_folder(export_folder))
     ]
 
-    summarize_helper(graphs)
+    if graphs:
+        summarize_helper(graphs)
+    else:
+        click.echo("Please export KEGG to BEL first. Run 'python3 -m pathme kegg to_bel' ")
 
 
 """WikiPathways"""
@@ -157,7 +160,10 @@ def summarize(export_folder):
         for fname in tqdm(get_files_in_folder(export_folder))
     ]
 
-    summarize_helper(graphs)
+    if graphs:
+        summarize_helper(graphs)
+    else:
+        click.echo("Please export WikiPathways to BEL first. Run 'python3 -m pathme wikipathways to_bel' ")
 
 
 @wikipathways.command()
@@ -238,7 +244,10 @@ def summarize(export_folder):
         for fname in tqdm(get_files_in_folder(export_folder))
     ]
 
-    summarize_helper(graphs)
+    if graphs:
+        summarize_helper(graphs)
+    else:
+        click.echo("Please export Reactome to BEL first. Run 'python3 -m pathme reactome to_bel' ")
 
 
 @reactome.command()
