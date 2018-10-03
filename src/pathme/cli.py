@@ -121,7 +121,7 @@ def download():
     log.setLevel(logging.INFO)
 
     cached_file = os.path.join(WIKIPATHWAYS_FILES, get_file_name_from_url(RDF_WIKIPATHWAYS))
-    make_downloader(RDF_WIKIPATHWAYS, cached_file, WIKIPATHWAYS, unzip_file)
+    make_downloader(RDF_WIKIPATHWAYS, cached_file, WIKIPATHWAYS_FILES, unzip_file)
     log.info('WikiPathways was downloaded')
 
 
@@ -208,7 +208,7 @@ def download():
     log.setLevel(logging.INFO)
 
     cached_file = os.path.join(REACTOME_FILES, get_file_name_from_url(RDF_REACTOME))
-    make_downloader(RDF_REACTOME, cached_file, REACTOME, untar_file)
+    make_downloader(RDF_REACTOME, cached_file, REACTOME_FILES, untar_file)
     log.info('Reactome was downloaded')
 
 

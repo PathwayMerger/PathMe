@@ -288,11 +288,11 @@ def statistics_to_df(all_pathways_statistics):
 """Downloader"""
 
 
-def make_downloader(url, path, database, decompress_file):
+def make_downloader(url, path, export_path, decompress_file):
     """Make a function that downloads the data for you, or uses a cached version at the given path.
 
     :param str url: The URL of some data
-    :param str database: database name / folder to be created in resources
+    :param str export_path: folder where decompressed file will be exported
     :param method decompress_file: method to decompress file
     :return: A function that downloads the data and returns the path of the data
     :rtype: (bool -> str)
@@ -316,7 +316,7 @@ def make_downloader(url, path, database, decompress_file):
     data = download_data()
 
     log.info('unzipping file %s, da')
-    decompress_file(data, os.path.join(DATA_DIR, database))
+    decompress_file(data, export_path)
 
 
 def summarize_helper(graphs):
