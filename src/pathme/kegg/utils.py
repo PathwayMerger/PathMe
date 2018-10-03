@@ -7,7 +7,7 @@ import os
 import pandas as pd
 import requests
 import tqdm
-from bio2bel_kegg import Manager as KeggManager
+from bio2bel_kegg.manager import Manager as KeggManager
 
 from pathme.kegg.convert_to_bel import get_bel_types
 from pathme.kegg.kegg_xml_parser import import_xml_etree, get_xml_types
