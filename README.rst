@@ -1,10 +1,10 @@
-PathMe |build|
-==============
+PathMe |build| |coverage| |docs| |zenodo|
+=========================================
 
 The primary goal of this package is to convert KEGG, Reactome, and WikiPathways (see References below) to Biological Expression Language (BEL). PathMe is the continuation of the ComPath web application aimed at exploring, analyzing, and curating pathway knowledge in a more simplistic gene-centric view. This different approach involves converting all the pathways to BEL as a pivotal integration schema and evaluating consensus and gaps in pathway knowledge. Additionally, ComPath Reloaded is complemented with PathMe, a web application that enables the exploration of all the pathways from these resources using the mappings curated from ComPath.
 
-Installation
-------------
+Installation |pypi_version| |python_versions| |pypi_license|
+------------------------------------------------------------
 1. ``pathme`` can be installed with the following commmands:
 
 .. code-block:: sh
@@ -95,7 +95,32 @@ WikiPathways
   (2016) doi:10.1093/nar/gkv1024
 - Kelder, T., et al. WikiPathways: building research communities on biological pathways. Nucleic Acids Res. 2012
   Jan;40(Database issue):D1301-7
-
+  
+  
 .. |build| image:: https://travis-ci.org/ComPath/PathMe.svg?branch=master
     :target: https://travis-ci.org/ComPath/PathMe
     :alt: Build Status
+
+.. |coverage| image:: https://codecov.io/gh/ComPath/PathMe/coverage.svg?branch=master
+    :target: https://codecov.io/gh/ComPath/PathMe?branch=master
+    :alt: Coverage Status
+
+.. |docs| image:: http://readthedocs.org/projects/pathme/badge/?version=latest
+    :target: https://pathme.readthedocs.io/en/latest/
+    :alt: Documentation Status
+
+.. |climate| image:: https://codeclimate.com/github/compath/pathme/badges/gpa.svg
+    :target: https://codeclimate.com/github/compath/pathme
+    :alt: Code Climate
+
+.. |python_versions| image:: https://img.shields.io/pypi/pyversions/pathme.svg
+    :alt: Stable Supported Python Versions
+
+.. |pypi_version| image:: https://img.shields.io/pypi/v/pathme.svg
+    :alt: Current version on PyPI
+
+.. |pypi_license| image:: https://img.shields.io/pypi/l/pathme.svg
+    :alt: Apache-2.0
+
+.. |zenodo| image:: https://zenodo.org/badge/fixme.svg
+    :target: https://zenodo.org/badge/latestdoi/fixme
