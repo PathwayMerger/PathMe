@@ -34,6 +34,18 @@ def get_files_in_folder(path: str) -> List[str]:
         if os.path.isfile(os.path.join(path, file))
     ]
 
+def check_multiple(element, element_name) :
+    if isinstance(element, set) or isinstance(element, list):
+        log.warning('Multiple {}: {}'.format(element_name, element))
+        # TODO: print the wikipathways bps that return a set because they are probably wrong.
+        if len(element) != 0:
+            return list(element)[0]
+        else:
+            log.warning('Empty list/set %s', element)
+
+    else:
+        return element
+
 
 def parse_id_uri(uri):
     """Get the components of a given uri (with identifier at the last position).
