@@ -80,7 +80,7 @@ def to_bel(flatten, export_folder):
 
     kegg_to_pickles(
         resource_files=resource_files,
-        resource_folder=KEGG_DIR,
+        resource_folder=KEGG_FILES,
         hgnc_manager=hgnc_manager,
         chebi_manager=chebi_manager,
         flatten=flatten,
