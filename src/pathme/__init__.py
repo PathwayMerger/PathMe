@@ -70,11 +70,11 @@ log = logging.getLogger(__name__)
 __version__ = '0.0.2-dev'
 
 __title__ = 'pathme'
-__description__ = "A systematic comparison across pathway databases"
-__url__ = 'https://gitlab.scai.fraunhofer.de/sarah.mubeen/PathMe'
+__description__ = "Harmonizing pathway databases using Biological Expression Language (BEL)"
+__url__ = 'https://github.com/ComPath/PathMe'
 
-__author__ = 'Sarah Mubeen, Daniel Domingo-Fernández & Josep Marín-Llaó'
+__author__ = 'Daniel Domingo-Fernández, Sarah Mubeen, and Josep Marín-Llaó'
 __email__ = 'daniel.domingo.fernandez@scai.fraunhofer.de'
 
 __license__ = 'MIT License'
-__copyright__ = 'Copyright (c) 2018 Sarah Mubeen, Daniel Domingo-Fernández & Josep Marín-Llaó'
+__copyright__ = 'Copyright (c) 2018 Daniel Domingo-Fernández, Sarah Mubeen, and Josep Marín-Llaó'
