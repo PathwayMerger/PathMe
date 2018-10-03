@@ -123,4 +123,4 @@ WikiPathways
     :alt: Apache-2.0
 
 .. |zenodo| image:: https://zenodo.org/badge/146161418.svg
-    :target: https://zenodo.org/badge/146161418/fixme
+    :target: https://zenodo.org/badge/latestdoi/146161418
