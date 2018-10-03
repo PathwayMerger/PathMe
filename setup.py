@@ -44,6 +44,13 @@ ENTRY_POINTS = {
         'pathme = pathme.cli:main',
     ]
 }
+EXTRAS_REQUIRE = {
+    'docs': [
+        'sphinx',
+        'sphinx-rtd-theme',
+        'sphinx-click',
+    ],
+}
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
