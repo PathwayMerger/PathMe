@@ -31,6 +31,7 @@ def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interacti
         authors="Sarah Mubeen, Daniel Domingo-Fernández & Josep Marín-Llaó",
         contact='daniel.domingo.fernandez@scai.fraunhofer.de',
     )
+    print(pathway_info['pathway_id'])
 
     nodes = nodes_to_bel(nodes, hgnc_manager)
     nodes.update(complexes_to_bel(complexes, nodes, graph))
@@ -57,39 +58,52 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
 
     if 'identifier' in node.keys():
         identifier = node['identifier']
-
     else:
         identifier = uri_id
 
+    if isinstance(identifier, set):
+        print('Multiple identifier {}'.format(node['identifier']))
+        # TODO: print the wikipathways bps that return a set because they are probably wrong.
+        identifier = list(identifier)[0]
+
+
+    if 'identifiers' in node.keys():
+        node_ids_dict = node['identifiers']
+    else:
+        node_ids_dict = node
+
     _, _, namespace, _ = parse_id_uri(uri_id)
 
-    if isinstance(node['name'], set):
-        print('{}'.format(node['name']))
+    name = node['name']
+
+    if isinstance(name, set):
+        print('Multiple name {}'.format(node['name']))
         # TODO: print the wikipathways bps that return a set because they are probably wrong.
-        name = list(node['name'])[0]
+        name = list(name)[0]
+
 
     if 'Protein' in node_types:
-        namespace, name, identifier = get_valid_gene_identifier(node, hgnc_manager)
+        namespace, name, identifier = get_valid_gene_identifier(node_ids_dict, hgnc_manager)
         return protein(namespace=namespace, name=name, identifier=identifier)
 
     elif 'Rna' in node_types:
-        namespace, name, identifier = get_valid_gene_identifier(node, hgnc_manager)
+        namespace, name, identifier = get_valid_gene_identifier(node_ids_dict, hgnc_manager)
         return rna(namespace=namespace, name=name, identifier=identifier)
 
     elif 'GeneProduct' in node_types:
-        namespace, name, identifier = get_valid_gene_identifier(node, hgnc_manager)
+        namespace, name, identifier = get_valid_gene_identifier(node_ids_dict, hgnc_manager)
         return gene(namespace=HGNC, name=name, identifier=identifier)
 
     elif 'Metabolite' in node_types:
         # FIX node[name]
-        return abundance(namespace=namespace, name=node['name'], identifier=identifier)
+        return abundance(namespace=namespace, name=name, identifier=identifier)
 
     elif 'Pathway' in node_types:
-        return bioprocess(namespace=namespace, name=node['name'], identifier=identifier)
+        return bioprocess(namespace=namespace, name=name, identifier=identifier)
 
 
     elif 'DataNode' in node_types:
-        return abundance(namespace=namespace, name=node['name'], identifier=identifier)
+        return abundance(namespace=namespace, name=name, identifier=identifier)
 
     else:
         log.warning('Unknown %s', node_types)
@@ -108,6 +122,7 @@ def complex_to_bel(complex, nodes, graph: BELGraph):
     members = {
         nodes[member_id]
         for member_id in complex['participants']
+        if member_id in nodes.keys()
     }
 
     _, _, _, identifier = parse_id_uri(complex['uri_id'])
@@ -147,9 +162,15 @@ def add_edges(graph: BELGraph, participants, nodes, att: Dict):
 
     else:
         for source, target in participants:
-            u = nodes[source]
-            v = nodes[target]
-            add_simple_edge(graph, u, v, edge_types, uri_id)
+            if source in nodes.keys():
+                u = nodes[source]
+
+                if target in nodes.keys():
+                    v = nodes[target]
+                    add_simple_edge(graph, u, v, edge_types, uri_id)
+
+                else:
+                    log.warning('No valid target id %s', target)
 
 
 def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):

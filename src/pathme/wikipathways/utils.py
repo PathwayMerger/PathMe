@@ -30,29 +30,58 @@ def evaluate_wikipathways_metadata(metadata):
     return metadata
 
 
-def get_valid_gene_identifier(node_dict, hgnc_manager):
+def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
     """Return protein/gene identifier for a given RDF node.
 
-    :param dict node_dict: node dictionary
+    :param dict node_ids_dict: node dictionary
     :param bio2bel_hgnc.Manager hgnc_manager: hgnc manager
     :rtype: tuple[str,str,str]
     :return: namespace, name, identifier
     """
-    # Try to get hgnc symbol
-    if 'hgnc_symbol' in node_dict:
 
-        hgnc_symbol = node_dict['hgnc_symbol']
+    # Try to get hgnc symbol
+
+    if 'bdb_hgncsymbol' in node_ids_dict:
+
+        hgnc_symbol = node_ids_dict['bdb_hgncsymbol']
         hgnc_entry = hgnc_manager.get_gene_by_hgnc_symbol(hgnc_symbol)
+
+        if isinstance(hgnc_entry, list):
+            log.warning('Manager returning list %s', hgnc_entry)
+            if hgnc_entry != []:
+                hgnc_entry = hgnc_entry[0]
 
         if not hgnc_entry:
             log.warning('No valid HGNC Symbol %s', hgnc_symbol)
+            return 'HGNC_SYMBOL', hgnc_symbol, hgnc_symbol
 
         return HGNC, hgnc_symbol, hgnc_entry.identifier
 
+    # Try to get ENTREZ id
+    elif 'bdb_ncbigene' in node_ids_dict:
+        entrez_id = node_ids_dict['bdb_ncbigene']
+        hgnc_entry = hgnc_manager.get_gene_by_entrez_id(entrez_id)
+
+        if isinstance(hgnc_entry, list):
+            log.warning('Manager returning list %s', hgnc_entry)
+            if hgnc_entry != []:
+                hgnc_entry = hgnc_entry[0]
+
+        if not hgnc_entry:
+            log.warning('No valid ENTREZ %s', entrez_id)
+            return 'ENTREZ', entrez_id, entrez_id
+
+        return HGNC, hgnc_entry.symbol, hgnc_entry.identifier
+
     # Try to get UniProt id
-    elif 'uniprot' in node_dict:
-        uniprot_id = node_dict['uniprot']
+    elif 'bdb_uniprot' in node_ids_dict:
+        uniprot_id = node_ids_dict['bdb_uniprot']
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(uniprot_id)
+
+        if isinstance(hgnc_entry, list):
+            log.warning('Manager returning list %s', hgnc_entry)
+            if hgnc_entry != []:
+                hgnc_entry = hgnc_entry[0]
 
         if not hgnc_entry:
             log.warning('No valid Uniprot %s', uniprot_id)
@@ -61,9 +90,14 @@ def get_valid_gene_identifier(node_dict, hgnc_manager):
         return HGNC, hgnc_entry.symbol, hgnc_entry.identifier
 
     # Try to get ENSEMBL id
-    elif 'ensembl' in node_dict:
-        ensembl_id = node_dict['ensembl']
+    elif 'bdb_ncbigene' in node_ids_dict:
+        ensembl_id = node_ids_dict['bdb_ncbigene']
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(ensembl_id)
+
+        if isinstance(hgnc_entry, list):
+            log.warning('Manager returning list %s', hgnc_entry)
+            if hgnc_entry != []:
+                hgnc_entry = hgnc_entry[0]
 
         if not hgnc_entry:
             log.warning('No valid ENSEMBL %s', ensembl_id)
@@ -71,14 +105,15 @@ def get_valid_gene_identifier(node_dict, hgnc_manager):
 
         return HGNC, hgnc_entry.symbol, hgnc_entry.identifier
 
-    elif 'ec-code' in node_dict:
-        enzyme = node_dict['ec-code']
+
+    elif 'ec-code' in node_ids_dict['uri_id']:
+        enzyme = node_ids_dict['name']
         # TODO: Fix and get enzyme
         # hgnc_entry = hgnc_manager.get_enzymes(enzyme)
 
         return HGNC, 'PASS', 'PASAS'
 
-    raise Exception('Unknown identifier for node %s', node_dict)
+    raise Exception('Unknown identifier for node %s', node_ids_dict)
 
 
 def merge_two_dicts(dict1, dict2):

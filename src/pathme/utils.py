@@ -110,7 +110,7 @@ def entry_result_to_dict(entry, **kwargs):
     attributes_dict = {
         str(label): str(entry[label])
         for label in entry.labels
-        if label and entry[label] is not None
+        if label is not None and entry[label] is not None
     }
 
     if 'directed_interaction' in kwargs:
@@ -131,6 +131,19 @@ def entry_result_to_dict(entry, **kwargs):
 
     return attributes_dict
 
+def entries_dict_ids_argument(entries_dict):
+    entries_dict_ids = defaultdict(dict)
+    for entry_id, entry_att in entries_dict.items():
+        entry_identifiers = {}
+
+        for label, value in entry_att.items():
+            if 'bdb' in label:
+                entry_identifiers[label] = value
+            else:
+                entries_dict_ids[entry_id][label] = value
+        entries_dict_ids[entry_id]['identifiers'] = entry_identifiers
+
+    return entries_dict
 
 def query_result_to_dict(entries, **kwargs) -> Dict[str, Dict[str, Dict[str, str]]]:
     """Export to a dictionary a SPARQL query result data structure.
@@ -144,10 +157,11 @@ def query_result_to_dict(entries, **kwargs) -> Dict[str, Dict[str, Dict[str, str
     for rdf_entry in entries:
         dict_rdf_entry = entry_result_to_dict(rdf_entry, **kwargs)
 
-        if 'identifier' in rdf_entry.labels:
+        if 'identifier' in rdf_entry.labels and rdf_entry.identifier is not None:
+            print (str(rdf_entry.identifier))
             id_key = str(rdf_entry.identifier)
 
-        elif 'uri_id' in rdf_entry.labels:
+        elif 'uri_id' in rdf_entry.labels and rdf_entry.uri_id is not None:
             id_key = rdf_entry.uri_id
 
         else:
@@ -184,7 +198,11 @@ def query_result_to_dict(entries, **kwargs) -> Dict[str, Dict[str, Dict[str, str
             for attr in attr_empty
         }
 
-    return entries_dict
+    if kwargs.get('ids_argument') == True:
+        return entries_dict_ids_argument(entries_dict)
+
+    else:
+        return entries_dict
 
 
 """Statistics functions"""
