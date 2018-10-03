@@ -441,8 +441,3 @@ class TestWikiPathways(unittest.TestCase):
 
         self.assertEqual('interactions', interaction_type)
         self.assertEqual('nodes', node_type)
-
-    def test_graph(self):
-        pass
-        # Call parse method and check number of nodes/edges
-        # Confirm that the nodes are the same, and the edges are correct too
