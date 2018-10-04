@@ -106,8 +106,8 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
         return _validate_query(hgnc_manager, hgnc_entry, uniprot_id, UNIPROT)
 
     # Try to get ENSEMBL id
-    elif 'bdb_ncbigene' in node_ids_dict:
-        ensembl_id = node_ids_dict['bdb_ncbigene']
+    elif 'bdb_ensembl' in node_ids_dict:
+        ensembl_id = node_ids_dict['bdb_ensembl']
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(ensembl_id)
 
         return _validate_query(hgnc_manager, hgnc_entry, ensembl_id, ENSEMBL)
