@@ -10,7 +10,7 @@ from typing import Dict, List, Tuple
 import networkx as nx
 from bio2bel_wikipathways import Manager as WikiPathwaysManager
 
-from ..constants import DATA_DIR, HGNC, ENSEMBL, ENTREZ, UNIPROT, WIKIPATHWAYS
+from ..constants import DATA_DIR, HGNC, ENSEMBL, ENTREZ, EXPASY, UNIPROT, WIKIPATHWAYS
 from ..utils import get_files_in_folder
 
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
@@ -30,14 +30,35 @@ def evaluate_wikipathways_metadata(metadata):
     return metadata
 
 
-def _validate_query(query_result, original_identifier, original_namespace):
+def _get_update_alias_symbol(hgnc_manager, original_identifier, original_namespace):
+    """Try to get current alias symbol.
+
+    :param bio2bel_hgnc.Manager hgnc_manager: hgnc manager
+    :param str original_identifier:
+    :param str original_namespace:
+    :rtype: tuple
+    """
+    query_result = hgnc_manager.get_hgnc_from_alias_symbol(original_identifier)
+
+    if not query_result:
+        log.warning('No found HGNC Symbol for id %s in (%s)', original_identifier, original_namespace)
+        return original_namespace, original_identifier, original_identifier
+
+    return HGNC, query_result.symbol, query_result.identifier
+
+
+def _validate_query(hgnc_manager, query_result, original_identifier, original_namespace):
     """Process and validate HGNC query.
 
+    :param bio2bel_hgnc.Manager hgnc_manager: hgnc manager
     :param query_result:
     :param str original_identifier:
     :param str original_namespace:
     :rtype: tuple
     """
+    # If invalid entry from HGNC, try to find updated symbol
+    if not query_result and original_namespace == HGNC:
+        return _get_update_alias_symbol(hgnc_manager, original_identifier, HGNC)
 
     # Invalid entry, proceed with invalid identifier
     if not query_result:
@@ -67,40 +88,42 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
         hgnc_symbol = node_ids_dict['bdb_hgncsymbol']
         hgnc_entry = hgnc_manager.get_gene_by_hgnc_symbol(hgnc_symbol)
 
-        return _validate_query(hgnc_entry, hgnc_symbol, HGNC)
+        return _validate_query(hgnc_manager, hgnc_entry, hgnc_symbol, HGNC)
 
     # Try to get ENTREZ id
     elif 'bdb_ncbigene' in node_ids_dict:
         entrez_id = node_ids_dict['bdb_ncbigene']
         hgnc_entry = hgnc_manager.get_gene_by_entrez_id(entrez_id)
 
-        return _validate_query(hgnc_entry, entrez_id, ENTREZ)
+        return _validate_query(hgnc_manager, hgnc_entry, entrez_id, ENTREZ)
 
     # Try to get UniProt id
     elif 'bdb_uniprot' in node_ids_dict:
         uniprot_id = node_ids_dict['bdb_uniprot']
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(uniprot_id)
 
-        return _validate_query(hgnc_entry, uniprot_id, UNIPROT)
+        return _validate_query(hgnc_manager, hgnc_entry, uniprot_id, UNIPROT)
 
     # Try to get ENSEMBL id
     elif 'bdb_ncbigene' in node_ids_dict:
         ensembl_id = node_ids_dict['bdb_ncbigene']
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(ensembl_id)
 
-        return _validate_query(hgnc_entry, ensembl_id, ENSEMBL)
+        return _validate_query(hgnc_manager, hgnc_entry, ensembl_id, ENSEMBL)
 
     elif 'ec-code' in node_ids_dict['uri_id']:
-        enzyme = node_ids_dict['name']
-        # TODO: Fix and get enzyme
-        # hgnc_entry = hgnc_manager.get_enzymes(enzyme)
+        ec_number = node_ids_dict['name']
+        return EXPASY, ec_number, ec_number
 
-        return HGNC, 'PASS', 'PASAS'
-
+    # Only wikipathways identifier is given
     elif 'bdb_wikidata' in node_ids_dict:
 
-        # Check for HGNC with name
-        pass
+        # Find out whether the name is a valid HGNC symbol
+        hgnc_entry = hgnc_manager.get_gene_by_hgnc_symbol(node_ids_dict['name'])
+
+        # Correct entry, use HGNC identifier
+        if hgnc_entry:
+            return HGNC, hgnc_entry.symbol, hgnc_entry.identifier
 
     raise Exception('Unknown identifier for node %s', node_ids_dict)
 
@@ -141,7 +164,7 @@ def debug_pathway_info(bel_graph, pathway_path, **kwargs):
     """Debug information about the pathway graph representation.
 
     :param pybel.BELGraph bel_graph: bel graph
-    :param pathway_path str: path of the pathway
+    :param str pathway_path: path of the pathway
     """
     log.debug('Pathway id: {}'.format(os.path.basename(pathway_path)))
 
