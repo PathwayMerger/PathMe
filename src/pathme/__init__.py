@@ -2,14 +2,13 @@
 
 """PathMe.
 
-PathMe facilitates a systematic comparison across three of the major pathway databases.
-
-The primary goal of this package is to convert KEGG, Reactome, and WikiPathways to Biological Expression Language (BEL).
-PathMe is the followw-up of the ComPath web application which is aimed at exploring, analyzing, and curating pathway
-knowledge in a more simplistic, gene-centric view. This approach involves converting all pathways to BEL as a pivotal
-integration schema and evaluating consensus and gaps in pathway knowledge. Additionally, PathMe is complemented with
-a web application (`PathMe Viewer <https://github.com/ComPath/PathMe-Viewer>`_) that enables the exploration of all the
-pathways from these three resources.
+The goal of this package is to conduct a systematic comparison across three of the major pathway databases. PathMe does
+that by converting KEGG, Reactome, and WikiPathways to Biological Expression Language (BEL).
+Once the three databases are harmonized into BEL, we can evaluate the consensus and gaps in pathway knowledge.
+For that, PathMe is complemented with a web application (`PathMe Viewer <https://github.com/ComPath/PathMe-Viewer>`_)
+that enables the exploration of all the pathways from these three resources. PathMe is the follow-up of the ComPath web
+application which is aimed at exploring, analyzing, and curating pathway knowledge in a more simplistic, gene-centric
+view.
 
 Installation
 ------------
