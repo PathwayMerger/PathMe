@@ -158,7 +158,6 @@ def query_result_to_dict(entries, **kwargs) -> Dict[str, Dict[str, Dict[str, str
         dict_rdf_entry = entry_result_to_dict(rdf_entry, **kwargs)
 
         if 'identifier' in rdf_entry.labels and rdf_entry.identifier is not None:
-            print (str(rdf_entry.identifier))
             id_key = str(rdf_entry.identifier)
 
         elif 'uri_id' in rdf_entry.labels and rdf_entry.uri_id is not None:

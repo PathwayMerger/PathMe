@@ -6,12 +6,12 @@ import logging
 from typing import Dict, List, Tuple
 
 from bio2bel_hgnc import Manager
-from pybel import BELGraph
-from pybel.dsl import abundance, activity, BaseEntity, bioprocess, complex_abundance, gene, protein, reaction, rna
 
 from pathme.constants import HGNC
 from pathme.utils import parse_id_uri
 from pathme.wikipathways.utils import evaluate_wikipathways_metadata, get_valid_gene_identifier
+from pybel import BELGraph
+from pybel.dsl import abundance, activity, BaseEntity, bioprocess, complex_abundance, gene, protein, reaction, rna
 
 log = logging.getLogger(__name__)
 
@@ -31,7 +31,6 @@ def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interacti
         authors="Sarah Mubeen, Daniel Domingo-Fernández & Josep Marín-Llaó",
         contact='daniel.domingo.fernandez@scai.fraunhofer.de',
     )
-    print(pathway_info['pathway_id'])
 
     nodes = nodes_to_bel(nodes, hgnc_manager)
     nodes.update(complexes_to_bel(complexes, nodes, graph))
@@ -66,7 +65,6 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
         # TODO: print the wikipathways bps that return a set because they are probably wrong.
         identifier = list(identifier)[0]
 
-
     if 'identifiers' in node.keys():
         node_ids_dict = node['identifiers']
     else:
@@ -80,7 +78,6 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
         print('Multiple name {}'.format(node['name']))
         # TODO: print the wikipathways bps that return a set because they are probably wrong.
         name = list(name)[0]
-
 
     if 'Protein' in node_types:
         namespace, name, identifier = get_valid_gene_identifier(node_ids_dict, hgnc_manager)
@@ -174,6 +171,14 @@ def add_edges(graph: BELGraph, participants, nodes, att: Dict):
 
 
 def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
+    """Add simple edge to graph.
+
+    :param graph: BEL Graph
+    :param u: source
+    :param v: target
+    :param edge_types: edge type dict
+    :param uri_id: citation URI
+    """
     if 'Stimulation' in edge_types:
         graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity())
 

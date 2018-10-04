@@ -360,7 +360,7 @@ def parse_pathway(pathway_path):
     :param str pathway_path: pathway identifier
     :rtype: networkx.MultiDiGraph
     """
-    graph = parse_rdf(pathway_path)
+    graph = parse_rdf(pathway_path, format='turtle')
 
     json_wp_pathway = convert_json(graph)
     pathway_network = parse_entries(json_wp_pathway)
