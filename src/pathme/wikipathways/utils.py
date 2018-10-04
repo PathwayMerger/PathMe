@@ -30,6 +30,29 @@ def evaluate_wikipathways_metadata(metadata):
     return metadata
 
 
+def _validate_query(query_result, original_identifier, original_namespace):
+    """Process and validate HGNC query.
+
+    :param query_result:
+    :param str original_identifier:
+    :param str original_namespace:
+    :rtype: tuple
+    """
+
+    # Invalid entry, proceed with invalid identifier
+    if not query_result:
+        log.warning('No found HGNC Symbol for id %s in (%s)', original_identifier, original_namespace)
+        return original_namespace, original_identifier, original_identifier
+
+    # Multiple entries are returned, use the first one
+    if isinstance(query_result, list):
+        log.warning('Manager returning list %s', query_result)
+        query_result = query_result[0]
+
+    # Correct entry, use HGNC identifier
+    return HGNC, query_result.symbol, query_result.identifier
+
+
 def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
     """Return protein/gene identifier for a given RDF node.
 
@@ -38,81 +61,34 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
     :rtype: tuple[str,str,str]
     :return: namespace, name, identifier
     """
-
     # Try to get hgnc symbol
     if 'bdb_hgncsymbol' in node_ids_dict:
 
         hgnc_symbol = node_ids_dict['bdb_hgncsymbol']
         hgnc_entry = hgnc_manager.get_gene_by_hgnc_symbol(hgnc_symbol)
 
-        # Multiple entries are returned, use the first one
-        if isinstance(hgnc_entry, list):
-            log.warning('Manager returning list %s', hgnc_entry)
-            hgnc_entry = hgnc_entry[0]
-
-        # Invalid entry, proceed with invalid HGNC
-        if not hgnc_entry:
-            log.warning('No valid HGNC Symbol %s', hgnc_symbol)
-            return HGNC, hgnc_symbol, hgnc_symbol
-
-        # Correct entry, use HGNC identifier
-        return HGNC, hgnc_symbol, hgnc_entry.identifier
+        return _validate_query(hgnc_entry, hgnc_symbol, HGNC)
 
     # Try to get ENTREZ id
     elif 'bdb_ncbigene' in node_ids_dict:
         entrez_id = node_ids_dict['bdb_ncbigene']
         hgnc_entry = hgnc_manager.get_gene_by_entrez_id(entrez_id)
 
-        # Multiple entries are returned, use the first one
-        if isinstance(hgnc_entry, list):
-            log.warning('Manager returning list %s', hgnc_entry)
-            hgnc_entry = hgnc_entry[0]
-
-        # Invalid entry, proceed with ENTREZ
-        if not hgnc_entry:
-            log.warning('No valid ENTREZ %s', entrez_id)
-            return ENTREZ, entrez_id, entrez_id
-
-        # Correct entry, use HGNC identifier
-        return HGNC, hgnc_entry.symbol, hgnc_entry.identifier
+        return _validate_query(hgnc_entry, entrez_id, ENTREZ)
 
     # Try to get UniProt id
     elif 'bdb_uniprot' in node_ids_dict:
         uniprot_id = node_ids_dict['bdb_uniprot']
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(uniprot_id)
 
-        # Multiple entries are returned, use the first one
-        if isinstance(hgnc_entry, list):
-            log.warning('Manager returning list %s', hgnc_entry)
-            hgnc_entry = hgnc_entry[0]
-
-        # Invalid entry, proceed with ENTREZ
-        if not hgnc_entry:
-            log.warning('No valid Uniprot %s', uniprot_id)
-            return UNIPROT, uniprot_id, uniprot_id
-
-        # Correct entry, use HGNC identifier
-        return HGNC, hgnc_entry.symbol, hgnc_entry.identifier
+        return _validate_query(hgnc_entry, uniprot_id, UNIPROT)
 
     # Try to get ENSEMBL id
     elif 'bdb_ncbigene' in node_ids_dict:
         ensembl_id = node_ids_dict['bdb_ncbigene']
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(ensembl_id)
 
-        # Multiple entries are returned, use the first one
-        if isinstance(hgnc_entry, list):
-            log.warning('Manager returning list %s', hgnc_entry)
-            if hgnc_entry != []:
-                hgnc_entry = hgnc_entry[0]
-
-        # Invalid entry, proceed with ENSEMBL
-        if not hgnc_entry:
-            log.warning('No valid ENSEMBL %s', ensembl_id)
-            return ENSEMBL, ensembl_id, ensembl_id
-
-        # Correct entry, use HGNC identifier
-        return HGNC, hgnc_entry.symbol, hgnc_entry.identifier
-
+        return _validate_query(hgnc_entry, ensembl_id, ENSEMBL)
 
     elif 'ec-code' in node_ids_dict['uri_id']:
         enzyme = node_ids_dict['name']
@@ -120,6 +96,11 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
         # hgnc_entry = hgnc_manager.get_enzymes(enzyme)
 
         return HGNC, 'PASS', 'PASAS'
+
+    elif 'bdb_wikidata' in node_ids_dict:
+
+        # Check for HGNC with name
+        pass
 
     raise Exception('Unknown identifier for node %s', node_ids_dict)
 

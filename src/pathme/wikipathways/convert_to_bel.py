@@ -72,9 +72,6 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
     else:
         node_ids_dict = node
 
-    # Parse URI to get namespace
-    _, _, namespace, _ = parse_id_uri(uri_id)
-
     name = node['name']
 
     # TODO: Deal with multiple names. Print for now to identify possible errors
@@ -95,13 +92,18 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
         return gene(namespace=HGNC, name=name, identifier=identifier)
 
     elif 'Metabolite' in node_types:
-        # FIX node[name]
+        # Parse URI to get namespace
+        _, _, namespace, _ = parse_id_uri(uri_id)
         return abundance(namespace=namespace, name=name, identifier=identifier)
 
     elif 'Pathway' in node_types:
+        # Parse URI to get namespace
+        _, _, namespace, _ = parse_id_uri(uri_id)
         return bioprocess(namespace=namespace, name=name, identifier=identifier)
 
     elif 'DataNode' in node_types:
+        # Parse URI to get namespace
+        _, _, namespace, _ = parse_id_uri(uri_id)
         return abundance(namespace=namespace, name=name, identifier=identifier)
 
     else:
