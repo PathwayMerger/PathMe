@@ -10,7 +10,7 @@ from typing import Dict, List, Tuple
 import networkx as nx
 from bio2bel_wikipathways import Manager as WikiPathwaysManager
 
-from ..constants import DATA_DIR, HGNC, WIKIPATHWAYS
+from ..constants import DATA_DIR, HGNC, ENSEMBL, ENTREZ, UNIPROT, WIKIPATHWAYS
 from ..utils import get_files_in_folder
 
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
@@ -40,21 +40,22 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
     """
 
     # Try to get hgnc symbol
-
     if 'bdb_hgncsymbol' in node_ids_dict:
 
         hgnc_symbol = node_ids_dict['bdb_hgncsymbol']
         hgnc_entry = hgnc_manager.get_gene_by_hgnc_symbol(hgnc_symbol)
 
+        # Multiple entries are returned, use the first one
         if isinstance(hgnc_entry, list):
             log.warning('Manager returning list %s', hgnc_entry)
-            if hgnc_entry != []:
-                hgnc_entry = hgnc_entry[0]
+            hgnc_entry = hgnc_entry[0]
 
+        # Invalid entry, proceed with invalid HGNC
         if not hgnc_entry:
             log.warning('No valid HGNC Symbol %s', hgnc_symbol)
-            return 'HGNC_SYMBOL', hgnc_symbol, hgnc_symbol
+            return HGNC, hgnc_symbol, hgnc_symbol
 
+        # Correct entry, use HGNC identifier
         return HGNC, hgnc_symbol, hgnc_entry.identifier
 
     # Try to get ENTREZ id
@@ -62,15 +63,17 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
         entrez_id = node_ids_dict['bdb_ncbigene']
         hgnc_entry = hgnc_manager.get_gene_by_entrez_id(entrez_id)
 
+        # Multiple entries are returned, use the first one
         if isinstance(hgnc_entry, list):
             log.warning('Manager returning list %s', hgnc_entry)
-            if hgnc_entry != []:
-                hgnc_entry = hgnc_entry[0]
+            hgnc_entry = hgnc_entry[0]
 
+        # Invalid entry, proceed with ENTREZ
         if not hgnc_entry:
             log.warning('No valid ENTREZ %s', entrez_id)
-            return 'ENTREZ', entrez_id, entrez_id
+            return ENTREZ, entrez_id, entrez_id
 
+        # Correct entry, use HGNC identifier
         return HGNC, hgnc_entry.symbol, hgnc_entry.identifier
 
     # Try to get UniProt id
@@ -78,15 +81,17 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
         uniprot_id = node_ids_dict['bdb_uniprot']
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(uniprot_id)
 
+        # Multiple entries are returned, use the first one
         if isinstance(hgnc_entry, list):
             log.warning('Manager returning list %s', hgnc_entry)
-            if hgnc_entry != []:
-                hgnc_entry = hgnc_entry[0]
+            hgnc_entry = hgnc_entry[0]
 
+        # Invalid entry, proceed with ENTREZ
         if not hgnc_entry:
             log.warning('No valid Uniprot %s', uniprot_id)
-            return 'UNIPROT', uniprot_id, uniprot_id
+            return UNIPROT, uniprot_id, uniprot_id
 
+        # Correct entry, use HGNC identifier
         return HGNC, hgnc_entry.symbol, hgnc_entry.identifier
 
     # Try to get ENSEMBL id
@@ -94,15 +99,18 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
         ensembl_id = node_ids_dict['bdb_ncbigene']
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(ensembl_id)
 
+        # Multiple entries are returned, use the first one
         if isinstance(hgnc_entry, list):
             log.warning('Manager returning list %s', hgnc_entry)
             if hgnc_entry != []:
                 hgnc_entry = hgnc_entry[0]
 
+        # Invalid entry, proceed with ENSEMBL
         if not hgnc_entry:
             log.warning('No valid ENSEMBL %s', ensembl_id)
-            return 'ENSEMBL', ensembl_id, ensembl_id
+            return ENSEMBL, ensembl_id, ensembl_id
 
+        # Correct entry, use HGNC identifier
         return HGNC, hgnc_entry.symbol, hgnc_entry.identifier
 
 
