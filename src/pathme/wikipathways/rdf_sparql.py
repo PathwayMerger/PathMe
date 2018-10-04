@@ -83,7 +83,7 @@ GET_ALL_COMPLEXES_SPARQL = """
        ?uri_id rdf:type ?uri_type .
        ?uri_id wp:participants ?participants_entry .
        optional {?participants_entry dcterms:identifier ?participants_id .}
-       optional {?participants_entry dcterms:bdbEntrezGene ?ncbigene_participants .}
+       optional {?participants_entry wp:bdbEntrezGene ?ncbigene_participants .}
     }
     """
 
@@ -100,8 +100,8 @@ GET_ALL_DIRECTED_INTERACTIONS_SPARQL = """
        ?uri_id wp:target ?target_entry .
        optional {?source_entry dcterms:identifier ?dc_source .}
        optional {?target_entry dcterms:identifier ?dc_target .}
-       optional {?source_entry dcterms:bdbEntrezGene ?ncbigene_source .}
-       optional {?target_entry dcterms:bdbEntrezGene ?ncbigene_target .}
+       optional {?source_entry wp:bdbEntrezGene ?ncbigene_source .}
+       optional {?target_entry wp:bdbEntrezGene ?ncbigene_target .}
     }
     """
 

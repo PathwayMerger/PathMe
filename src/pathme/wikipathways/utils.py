@@ -113,12 +113,12 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
         return _validate_query(hgnc_manager, hgnc_entry, ensembl_id, ENSEMBL)
 
     elif 'ec-code' in node_ids_dict['uri_id']:
-        ec_number = node_ids_dict['name']
+        ec_number = check_multiple(node_ids_dict['name'], 'ec-code')
         return EXPASY, ec_number, ec_number
 
     # Only wikipathways identifier is given
     elif 'bdb_wikidata' in node_ids_dict:
-        name = node_ids_dict['name']
+        name = check_multiple(node_ids_dict['name'], 'wikidata')
 
         # Find out whether the name is a valid HGNC symbol
         hgnc_entry = hgnc_manager.get_gene_by_hgnc_symbol(name)
@@ -129,6 +129,15 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
 
         log.warning('Adding WikiPathways node %s (%s)', name, WIKIPATHWAYS)
         return WIKIPATHWAYS, name, name
+
+    elif 'wikipedia' in node_ids_dict['uri_id']:
+        wiki_name = check_multiple(node_ids_dict['identifier'], 'wikipedia_id')
+        wiki_id = check_multiple(node_ids_dict['name'], 'wikipedia_name')
+        return 'WIKIPEDIA', wiki_name, wiki_id
+
+    elif 'identifier' and 'namespace' in node_ids_dict:
+        node_id_dict = {'bdb_'+node_ids_dict['namespace']: node_ids_dict['identifier']}
+        return get_valid_gene_identifier(node_id_dict, hgnc_manager)
 
     raise Exception('Unknown identifier for node %s', node_ids_dict)
 
