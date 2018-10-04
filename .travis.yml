@@ -3,18 +3,34 @@ cache: pip
 language: python
 python:
 - 3.6
-matrix:
+stages:
+  - lint
+  - docs
+  - test
+jobs:
   include:
-    - env: TOXENV=py
-    - env: TOXENV=py PATHME_TESTS=tests/test_kegg/
-    - env: TOXENV=docs
-    - env: TOXENV=manifest
-    - env: TOXENV=rst-lint
+    # lint stage
+    - stage: lint
+      env: TOXENV=manifest
     - env: TOXENV=flake8
     - env: TOXENV=flake8-kegg
+    - env: TOXENV=xenon
+    - env: TOXENV=vulture
+    - env: TOXENV=pyroma
+    # docs stage
+    - stage: docs
+      env: TOXENV=doc8
+    - env: TOXENV=readme
+    - env: TOXENV=docs
+    # test stage
+    - stage: test
+      env: TOXENV=py
+    - env: TOXENV=py PATHME_TESTS=tests/test_kegg/
+matrix:
   allow_failures:
-    - env: TOXENV=py
-    - env: TOXENV=flake8
+      - env: TOXENV=flake8
+      - env: TOXENV=xenon
+      - env: TOXENV=vulture
 install:
 - pip install --upgrade pip
 - pip install tox

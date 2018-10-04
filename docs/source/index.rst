@@ -15,6 +15,4 @@ PathMe
 
 Index
 =====
-
 * :ref:`genindex`
-

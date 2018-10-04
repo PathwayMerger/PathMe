@@ -1,11 +1,15 @@
 PathMe |build| |coverage| |docs| |zenodo|
 =========================================
-
-The primary goal of this package is to convert KEGG, Reactome, and WikiPathways (see References below) to Biological Expression Language (BEL). PathMe is the continuation of the ComPath web application aimed at exploring, analyzing, and curating pathway knowledge in a more simplistic gene-centric view. This different approach involves converting all the pathways to BEL as a pivotal integration schema and evaluating consensus and gaps in pathway knowledge. Additionally, ComPath Reloaded is complemented with PathMe, a web application that enables the exploration of all the pathways from these resources using the mappings curated from ComPath.
+The primary goal of this package is to convert KEGG, Reactome, and WikiPathways (see References below) to Biological
+Expression Language (BEL). PathMe is the continuation of the ComPath web application aimed at exploring, analyzing,
+and curating pathway knowledge in a more simplistic gene-centric view. This different approach involves converting
+all the pathways to BEL as a pivotal integration schema and evaluating consensus and gaps in pathway knowledge.
+Additionally, ComPath Reloaded is complemented with PathMe, a web application that enables the exploration of all
+the pathways from these resources using the mappings curated from ComPath.
 
 Installation |pypi_version| |python_versions| |pypi_license|
 ------------------------------------------------------------
-1. ``pathme`` can be installed with the following commmands:
+1. ``pathme`` can be installed with the following commands:
 
 .. code-block:: sh
 
@@ -24,7 +28,7 @@ Installation |pypi_version| |python_versions| |pypi_license|
 .. code-block:: sh
 
     python3 -m pip install -e .
-    
+
 How to use
 ----------
 
@@ -32,20 +36,24 @@ Each database has three main commands: "download", "to_bel", and "summarize":
 
 1. **Download content**
 
-PathMe first requires to download the raw files from the original pathway databases. This can be accomplished by running the command ('database' can be either kegg, reactome, or wikipathways):
+PathMe first requires to download the raw files from the original pathway databases. This can be accomplished by
+running the command ('database' can be either KEGG, Reactome, or WikiPathways):
 
 .. code-block:: python
 
     python3 -m pathme 'database' download
-    
+
 2. **Generate BEL Graphs**
 
-Once the raw files are downloaded, you can run the following to command to generate BELGraphs that will be exported as Python pickles files for further analysis. Furthermore, the conversion to BEL can be tuned differently for each database by using specific commands. For example, KEGG parameters are shown when running "python3 -m pathme kegg to_bel --help".
+Once the raw files are downloaded, you can run the following to command to generate BELGraphs that will be exported
+as Python pickles files for further analysis. Furthermore, the conversion to BEL can be tuned differently for each
+database by using specific commands. For example, KEGG parameters are shown when running
+`python3 -m pathme kegg to_bel --help`.
 
 .. code-block:: python
 
     python3 -m pathme 'database' to_bel
-    
+
 2. **Summarize**
 
 Summarizes the result of the conversion to BEL.
@@ -61,20 +69,22 @@ KEGG Functionalities
 ~~~~~~~~~~~~~~~~~~~~
 
 The KEGG module of PathMe is able to handle KGML differently depending on the goal. By default, KEGG groups
-together the complex of nodes (e.g., gene families) into one node as it is depicted in the KEGG cartoons and represented in the KGML files. However, this behavior can be modified by adding the parameter "--flatten=True" 
+together the complex of nodes (e.g., gene families) into one node as it is depicted in the KEGG cartoons and
+represented in the KGML files. However, this behavior can be modified by adding the parameter `--flatten=True`
 in the exporting command. Example:
 
 .. code-block:: python
 
     python3 -m pathme kegg to_bel --flatten=True
 
-    
+
 References
 ----------
 
 KEGG
 ~~~~
-PathMe makes use of KEGG KGML files that are downloaded via the KEGG API for academic purposes (see `KEGG Terms and conditions <https://www.kegg.jp/kegg/rest/>`_.).
+PathMe makes use of KEGG KGML files that are downloaded via the KEGG API for academic purposes (see `KEGG Terms and
+conditions <https://www.kegg.jp/kegg/rest/>`_.).
 
 - Kanehisa, Furumichi, M., Tanabe, M., Sato, Y., and Morishima, K.; KEGG: new perspectives on genomes,
   pathways, diseases and drugs. Nucleic Acids Res. 45, D353-D361 (2017).
@@ -84,8 +94,10 @@ PathMe makes use of KEGG KGML files that are downloaded via the KEGG API for aca
 
 Reactome
 ~~~~~~~~
-- Fabregat, Antonio et al. “The Reactome Pathway Knowledgebase.” Nucleic Acids Research 44.Database issue (2016): D481–D487. PMC. Web. 6 Oct. 2017.
-- Croft, David et al. “The Reactome Pathway Knowledgebase.” Nucleic Acids Research 42.Database issue (2014): D472–D477. PMC. Web. 6 Oct. 2017.
+- Fabregat, Antonio et al. “The Reactome Pathway Knowledgebase.” Nucleic Acids Research 44.Database issue (2016):
+  D481–D487. PMC. Web. 6 Oct. 2017.
+- Croft, David et al. “The Reactome Pathway Knowledgebase.” Nucleic Acids Research 42.Database issue (2014):
+  D472–D477. PMC. Web. 6 Oct. 2017.
 
 WikiPathways
 ~~~~~~~~~~~~
@@ -95,8 +107,8 @@ WikiPathways
   (2016) doi:10.1093/nar/gkv1024
 - Kelder, T., et al. WikiPathways: building research communities on biological pathways. Nucleic Acids Res. 2012
   Jan;40(Database issue):D1301-7
-  
-  
+
+
 .. |build| image:: https://travis-ci.org/ComPath/PathMe.svg?branch=master
     :target: https://travis-ci.org/ComPath/PathMe
     :alt: Build Status
