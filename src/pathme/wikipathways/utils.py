@@ -65,9 +65,10 @@ def _validate_query(hgnc_manager, query_result, original_identifier, original_na
         log.warning('No found HGNC Symbol for id %s in (%s)', original_identifier, original_namespace)
         return original_namespace, original_identifier, original_identifier
 
-    # Multiple entries are returned, use the first one
+    # Multiple entries are returned, for UniProt identifiers
     if isinstance(query_result, list):
-        log.warning('Manager returning list %s', query_result)
+        if len(query_result) > 1:
+            log.warning('UniProt identifier with multiple HGNC:s %s', query_result)
         query_result = query_result[0]
 
     # Correct entry, use HGNC identifier
@@ -117,13 +118,17 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
 
     # Only wikipathways identifier is given
     elif 'bdb_wikidata' in node_ids_dict:
+        name = node_ids_dict['name']
 
         # Find out whether the name is a valid HGNC symbol
-        hgnc_entry = hgnc_manager.get_gene_by_hgnc_symbol(node_ids_dict['name'])
+        hgnc_entry = hgnc_manager.get_gene_by_hgnc_symbol(name)
 
         # Correct entry, use HGNC identifier
         if hgnc_entry:
             return HGNC, hgnc_entry.symbol, hgnc_entry.identifier
+
+        log.warning('Adding WikiPathways node %s (%s)', name, WIKIPATHWAYS)
+        return WIKIPATHWAYS, name, name
 
     raise Exception('Unknown identifier for node %s', node_ids_dict)
 
