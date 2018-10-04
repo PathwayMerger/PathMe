@@ -72,6 +72,7 @@ UNIPROT = 'UniProt'
 CHEBI = 'ChEBI'
 CHEBI_NAME = 'ChEBI name'
 PUBCHEM = 'PubChem'
+WIKIPEDIA = 'WIKIPEDIA'
 
 KEGG_MODIFICATIONS = {
     'phosphorylation': 'Ph',

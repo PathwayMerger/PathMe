@@ -10,7 +10,7 @@ from typing import Dict, List, Tuple
 import networkx as nx
 from bio2bel_wikipathways import Manager as WikiPathwaysManager
 
-from ..constants import DATA_DIR, HGNC, ENSEMBL, ENTREZ, EXPASY, UNIPROT, WIKIPATHWAYS
+from ..constants import DATA_DIR, ENSEMBL, ENTREZ, EXPASY, HGNC, KEGG, UNIPROT, WIKIPATHWAYS, WIKIPEDIA
 from ..utils import get_files_in_folder, check_multiple
 
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
@@ -130,19 +130,20 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
         log.warning('Adding WikiPathways node %s (%s)', name, WIKIPATHWAYS)
         return WIKIPATHWAYS, name, name
 
-    elif 'wikipedia' in node_ids_dict['uri_id']:
+    elif WIKIPEDIA.lower() in node_ids_dict['uri_id']:
         wiki_name = check_multiple(node_ids_dict['identifier'], 'wikipedia_id')
         wiki_id = check_multiple(node_ids_dict['name'], 'wikipedia_name')
 
         log.warning('Adding Wikipedia node %s (%s)', wiki_name, WIKIPATHWAYS)
 
-        return 'WIKIPEDIA', wiki_name, wiki_id
+        return WIKIPEDIA, wiki_name, wiki_id
 
-    elif 'kegg' in node_ids_dict['identifier']:
-        id = check_multiple(node_ids_dict['identifier'], 'wikipedia_id')
-        log.warning('Adding KEGG node %s ', id)
+    elif KEGG.lower() in node_ids_dict['identifier']:
+        #TODO: why wikipedia_id? i thought it was a kegg id here
+        kegg_id = check_multiple(node_ids_dict['identifier'], 'wikipedia_id')
+        log.warning('Adding KEGG node %s ', kegg_id)
 
-        return 'KEGG', id, id
+        return KEGG, kegg_id, kegg_id
 
     raise Exception('Unknown identifier for node %s', node_ids_dict)
 

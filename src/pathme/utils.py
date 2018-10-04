@@ -2,11 +2,11 @@
 
 """Common utils."""
 
+import collections
 import logging
 import os
 import pickle
-from collections import defaultdict
-from typing import Dict, List, Optional
+from typing import AnyStr, Dict, Iterable, List, Optional
 from urllib.request import urlretrieve
 
 import click
@@ -15,9 +15,8 @@ import pybel
 import rdflib
 from pybel import union
 from pybel_tools import summary
-from pathme.constants import UNKNOWN
 
-from .constants import DATA_DIR
+from pathme.constants import UNKNOWN
 
 log = logging.getLogger(__name__)
 
@@ -34,8 +33,9 @@ def get_files_in_folder(path: str) -> List[str]:
         if os.path.isfile(os.path.join(path, file))
     ]
 
-def check_multiple(element, element_name) :
-    if isinstance(element, set) or isinstance(element, list):
+
+def check_multiple(element: Iterable, element_name: AnyStr):
+    if isinstance(element, Iterable):
         log.warning('Multiple {}: {}'.format(element_name, element))
         # TODO: print the wikipathways bps that return a set because they are probably wrong.
         if len(element) != 0:
@@ -143,8 +143,9 @@ def entry_result_to_dict(entry, **kwargs):
 
     return attributes_dict
 
+
 def entries_dict_ids_argument(entries_dict):
-    entries_dict_ids = defaultdict(dict)
+    entries_dict_ids = collections.defaultdict(dict)
     for entry_id, entry_att in entries_dict.items():
         entry_identifiers = {}
 
@@ -156,6 +157,7 @@ def entries_dict_ids_argument(entries_dict):
         entries_dict_ids[entry_id]['identifiers'] = entry_identifiers
 
     return entries_dict
+
 
 def query_result_to_dict(entries, **kwargs) -> Dict[str, Dict[str, Dict[str, str]]]:
     """Export to a dictionary a SPARQL query result data structure.
@@ -225,7 +227,7 @@ def get_entry_statitics(types_list, primary_type=None, **kwargs):
     :param str rdf_graph: primary entries type identifier (ex: DataNode or Interaction)
     :param str primary_type: primary entries type identifier (ex: DataNode or Interaction)
     """
-    type_statistics = defaultdict(int)
+    type_statistics = collections.defaultdict(int)
 
     for entry_types in types_list:
         if isinstance(entry_types, set):
@@ -287,11 +289,11 @@ def statistics_to_df(all_pathways_statistics):
     :param dict all_pathways_statistics: pathway statistics
     :rtype: pandas.DataFrame
     """
-    pathways_statistics = defaultdict(list)
+    pathways_statistics = collections.defaultdict(list)
     rows = []
 
     column_types = set()
-    column_primary_types_dict = defaultdict(set)
+    column_primary_types_dict = collections.defaultdict(set)
 
     # Get pathway type statistics
     for pathway_name, statistics_primary_type_dict in all_pathways_statistics.items():
