@@ -8,7 +8,7 @@ from typing import Dict, List, Tuple
 from bio2bel_hgnc import Manager
 
 from pathme.constants import HGNC
-from pathme.utils import parse_id_uri
+from pathme.utils import parse_id_uri, check_multiple
 from pathme.wikipathways.utils import evaluate_wikipathways_metadata, get_valid_gene_identifier
 from pybel import BELGraph
 from pybel.dsl import abundance, activity, BaseEntity, bioprocess, complex_abundance, gene, protein, reaction, rna
@@ -31,8 +31,6 @@ def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interacti
         authors="Sarah Mubeen, Daniel Domingo-Fernández & Josep Marín-Llaó",
         contact='daniel.domingo.fernandez@scai.fraunhofer.de',
     )
-
-    log.warning('Parsing %s', pathway_info['title'])
 
     nodes = nodes_to_bel(nodes, hgnc_manager)
     nodes.update(complexes_to_bel(complexes, nodes, graph))
@@ -63,23 +61,18 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
     else:
         identifier = uri_id
 
-    if isinstance(identifier, set):
-        log.warning('Multiple identifier {}'.format(node['identifier']))
-        # TODO: print the wikipathways bps that return a set because they are probably wrong.
-        identifier = list(identifier)[0]
+    identifier = check_multiple(identifier, 'identifier')
+
+    uri_id = check_multiple(uri_id, 'uri_id')
+    _, _, namespace, _ = parse_id_uri(uri_id)
+
+    name = check_multiple(node['name'], 'name')
 
     # Get dictinoary of multiple identifiers
     if 'identifiers' in node:
         node_ids_dict = node['identifiers']
     else:
         node_ids_dict = node
-
-    name = node['name']
-
-    # TODO: Deal with multiple names. Print for now to identify possible errors
-    if isinstance(name, set):
-        log.warning('Multiple name {}'.format(node['name']))
-        name = list(name)[0]
 
     if 'Protein' in node_types:
         namespace, name, identifier = get_valid_gene_identifier(node_ids_dict, hgnc_manager)
@@ -135,6 +128,16 @@ def complex_to_bel(complex, nodes, graph: BELGraph):
 
     return complex_bel_node
 
+def get_node(node, nodes):
+    if node not in nodes:
+        if '/Interaction/' in str(node):
+            _, _, namespace, identifier = parse_id_uri(node)
+            return abundance(namespace=namespace, name=identifier, identifier=identifier)
+        else:
+            log.warning('No valid id for node %s', node)
+            return None
+    else:
+        return nodes[node]
 
 def add_edges(graph: BELGraph, participants, nodes, att: Dict):
     """Add edges to BELGraph."""
@@ -142,40 +145,29 @@ def add_edges(graph: BELGraph, participants, nodes, att: Dict):
     edge_types = att['interaction_types']
     _, _, namespace, interaction_id = parse_id_uri(uri_id)
 
-    # Add reaction if the edge type is a Conversion
     if 'Conversion' in edge_types:
         reactants = set()
         products = set()
 
         for source, target in participants:
-            reactants.add(source)
-            products.add(target)
+            source = get_node(source, nodes)
+            if source:
+                reactants.add(source)
 
-        reactants = {
-            nodes[source_id]
-            for source_id in reactants
-        }
-
-        products = {
-            nodes[product_id]
-            for product_id in products
-        }
+            target = get_node(target, nodes)
+            if target:
+                products.add(target)
 
         reaction_node = reaction(reactants=reactants, products=products)
         graph.add_node_from_data(reaction_node)
 
-    # Else it is a simple edge, process it
     else:
         for source, target in participants:
-            if source in nodes:
-                u = nodes[source]
+            u = get_node(source, nodes)
+            v = get_node(target, nodes)
 
-                if target in nodes:
-                    v = nodes[target]
-                    add_simple_edge(graph, u, v, edge_types, uri_id)
-
-                else:
-                    log.warning('No valid target id %s', target)
+            if u and v:
+                add_simple_edge(graph, u, v, edge_types, uri_id)
 
 
 def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
@@ -203,7 +195,8 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
         graph.add_association(u, v, citation=uri_id, evidence='', annotations={'EdgeTypes': edge_types})
 
     elif 'Interaction' in edge_types:
-        pass
+        log.warning('No interaction subtype for %s', str(uri_id))
 
     else:
-        pass
+        log.warning('No handled edge type %s', str(uri_id))
+

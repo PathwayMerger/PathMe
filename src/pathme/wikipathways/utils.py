@@ -11,7 +11,7 @@ import networkx as nx
 from bio2bel_wikipathways import Manager as WikiPathwaysManager
 
 from ..constants import DATA_DIR, HGNC, ENSEMBL, ENTREZ, EXPASY, UNIPROT, WIKIPATHWAYS
-from ..utils import get_files_in_folder
+from ..utils import get_files_in_folder, check_multiple
 
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
 
