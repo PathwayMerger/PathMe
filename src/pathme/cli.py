@@ -8,7 +8,6 @@ import time
 import click
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
-from pybel import from_pickle
 from tqdm import tqdm
 
 from pathme.constants import *
@@ -20,6 +19,7 @@ from pathme.reactome.utils import untar_file
 from pathme.utils import get_files_in_folder, make_downloader, statistics_to_df, summarize_helper
 from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pickles
 from pathme.wikipathways.utils import get_file_name_from_url, get_wikipathways_files, unzip_file
+from pybel import from_pickle
 
 log = logging.getLogger(__name__)
 
@@ -127,12 +127,13 @@ def download():
 
 @wikipathways.command()
 @click.option('-c', '--connection', help="Defaults to {}".format(DEFAULT_CACHE_CONNECTION))
-@click.option('-v', '--verbose', is_flag=True)
+@click.option('-d', '--debug', is_flag=True, default=False, help='Debug mode')
 @click.option('-x', '--only-canonical', default=True, help='Parse only canonical pathways')
-def to_bel(connection, verbose, only_canonical):
+def to_bel(connection, debug, only_canonical):
     """Convert WikiPathways to BEL."""
     logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
-    if verbose:
+
+    if debug:
         log.setLevel(logging.DEBUG)
 
     log.info('Initiating HGNC Manager')

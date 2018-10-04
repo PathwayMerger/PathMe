@@ -32,6 +32,8 @@ def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interacti
         contact='daniel.domingo.fernandez@scai.fraunhofer.de',
     )
 
+    log.warning('Parsing %s', pathway_info['title'])
+
     nodes = nodes_to_bel(nodes, hgnc_manager)
     nodes.update(complexes_to_bel(complexes, nodes, graph))
 
@@ -62,7 +64,7 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
         identifier = uri_id
 
     if isinstance(identifier, set):
-        print('Multiple identifier {}'.format(node['identifier']))
+        log.warning('Multiple identifier {}'.format(node['identifier']))
         # TODO: print the wikipathways bps that return a set because they are probably wrong.
         identifier = list(identifier)[0]
 
@@ -76,7 +78,7 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
 
     # TODO: Deal with multiple names. Print for now to identify possible errors
     if isinstance(name, set):
-        print('Multiple name {}'.format(node['name']))
+        log.warning('Multiple name {}'.format(node['name']))
         name = list(name)[0]
 
     if 'Protein' in node_types:
@@ -140,6 +142,7 @@ def add_edges(graph: BELGraph, participants, nodes, att: Dict):
     edge_types = att['interaction_types']
     _, _, namespace, interaction_id = parse_id_uri(uri_id)
 
+    # Add reaction if the edge type is a Conversion
     if 'Conversion' in edge_types:
         reactants = set()
         products = set()
@@ -161,6 +164,7 @@ def add_edges(graph: BELGraph, participants, nodes, att: Dict):
         reaction_node = reaction(reactants=reactants, products=products)
         graph.add_node_from_data(reaction_node)
 
+    # Else it is a simple edge, process it
     else:
         for source, target in participants:
             if source in nodes:

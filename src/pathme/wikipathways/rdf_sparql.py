@@ -223,7 +223,7 @@ def get_wp_statistics(resource_files, resource_folder, hgnc_manager) -> Tuple[
 
 
 def rdf_wikipathways_to_bel(rdf_graph, hgnc_manager) -> BELGraph:
-    """Convert RDF graph to BELGraph
+    """Convert RDF graph to BELGraph.
 
     :param rdf_graph: RDF graph
     :param bio2bel_hgnc.Manager: HGNC manager
