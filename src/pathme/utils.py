@@ -6,7 +6,7 @@ import collections
 import logging
 import os
 import pickle
-from typing import AnyStr, Dict, Iterable, List, Optional
+from typing import Dict, Iterable, List, Optional
 from urllib.request import urlretrieve
 
 import click
@@ -34,17 +34,22 @@ def get_files_in_folder(path: str) -> List[str]:
     ]
 
 
-def check_multiple(element: Iterable, element_name: AnyStr):
+def check_multiple(element, element_name):
+    """Check whether element is iterable.
+
+    :param element: variable to check
+    :param element_name: name to print
+    :return:
+    """
     if isinstance(element, Iterable):
         log.warning('Multiple {}: {}'.format(element_name, element))
         # TODO: print the wikipathways bps that return a set because they are probably wrong.
         if len(element) != 0:
             return list(element)[0]
-        else:
-            log.warning('Empty list/set %s', element)
 
-    else:
-        return element
+        log.warning('Empty list/set %s', element)
+
+    return element
 
 
 def parse_id_uri(uri):
