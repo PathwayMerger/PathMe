@@ -55,7 +55,8 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
     node_types = node['node_types']
     uri_id = node['uri_id']
 
-    if 'identifier' in node.keys():
+    # Get identifier from if exists else use uri_id as identifier
+    if 'identifier' in node:
         identifier = node['identifier']
     else:
         identifier = uri_id
@@ -65,18 +66,20 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
         # TODO: print the wikipathways bps that return a set because they are probably wrong.
         identifier = list(identifier)[0]
 
-    if 'identifiers' in node.keys():
+    # Get dictinoary of multiple identifiers
+    if 'identifiers' in node:
         node_ids_dict = node['identifiers']
     else:
         node_ids_dict = node
 
+    # Parse URI to get namespace
     _, _, namespace, _ = parse_id_uri(uri_id)
 
     name = node['name']
 
+    # TODO: Deal with multiple names. Print for now to identify possible errors
     if isinstance(name, set):
         print('Multiple name {}'.format(node['name']))
-        # TODO: print the wikipathways bps that return a set because they are probably wrong.
         name = list(name)[0]
 
     if 'Protein' in node_types:
@@ -98,7 +101,6 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
     elif 'Pathway' in node_types:
         return bioprocess(namespace=namespace, name=name, identifier=identifier)
 
-
     elif 'DataNode' in node_types:
         return abundance(namespace=namespace, name=name, identifier=identifier)
 
@@ -119,7 +121,7 @@ def complex_to_bel(complex, nodes, graph: BELGraph):
     members = {
         nodes[member_id]
         for member_id in complex['participants']
-        if member_id in nodes.keys()
+        if member_id in nodes
     }
 
     _, _, _, identifier = parse_id_uri(complex['uri_id'])
@@ -159,10 +161,10 @@ def add_edges(graph: BELGraph, participants, nodes, att: Dict):
 
     else:
         for source, target in participants:
-            if source in nodes.keys():
+            if source in nodes:
                 u = nodes[source]
 
-                if target in nodes.keys():
+                if target in nodes:
                     v = nodes[target]
                     add_simple_edge(graph, u, v, edge_types, uri_id)
 
