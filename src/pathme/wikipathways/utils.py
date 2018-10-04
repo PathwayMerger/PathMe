@@ -133,11 +133,16 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
     elif 'wikipedia' in node_ids_dict['uri_id']:
         wiki_name = check_multiple(node_ids_dict['identifier'], 'wikipedia_id')
         wiki_id = check_multiple(node_ids_dict['name'], 'wikipedia_name')
+
+        log.warning('Adding Wikipedia node %s (%s)', wiki_name, WIKIPATHWAYS)
+
         return 'WIKIPEDIA', wiki_name, wiki_id
 
-    elif 'identifier' and 'namespace' in node_ids_dict:
-        node_id_dict = {'bdb_'+node_ids_dict['namespace']: node_ids_dict['identifier']}
-        return get_valid_gene_identifier(node_id_dict, hgnc_manager)
+    elif 'kegg' in node_ids_dict['identifier']:
+        id = check_multiple(node_ids_dict['identifier'], 'wikipedia_id')
+        log.warning('Adding KEGG node %s ', id)
+
+        return 'KEGG', id, id
 
     raise Exception('Unknown identifier for node %s', node_ids_dict)
 
