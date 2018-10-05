@@ -160,6 +160,13 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
 
         return PFAM, pfam_name, pfam_id
 
+    elif 'mirbase.mature' in node_ids_dict['uri_id']:
+        mirbase_id = check_multiple(node_ids_dict['identifier'], 'mirbase_id')
+        mirbase_name = check_multiple(node_ids_dict['name'], 'mirbase_name')
+        log.warning('Adding MIRBASE node %s ', mirbase_id)
+
+        return PFAM, mirbase_name, mirbase_id
+
     raise Exception('Unknown identifier for node %s', node_ids_dict)
 
 
