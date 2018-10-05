@@ -10,7 +10,7 @@ from typing import Dict, List, Tuple
 import networkx as nx
 from bio2bel_wikipathways import Manager as WikiPathwaysManager
 
-from ..constants import DATA_DIR, ENSEMBL, ENTREZ, EXPASY, HGNC, KEGG, UNIPROT, WIKIPATHWAYS, WIKIPEDIA, INTERPRO
+from ..constants import DATA_DIR, ENSEMBL, ENTREZ, EXPASY, HGNC, KEGG, UNIPROT, WIKIPATHWAYS, WIKIPEDIA, INTERPRO, PFAM
 from ..utils import get_files_in_folder, check_multiple
 
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
@@ -152,6 +152,13 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
         log.warning('Adding INTERPRO node %s ', interpro_id)
 
         return INTERPRO, interpro_name, interpro_id
+
+    elif PFAM.lower() in node_ids_dict['uri_id']:
+        pfam_id = check_multiple(node_ids_dict['identifier'], 'pfam_id')
+        pfam_name = check_multiple(node_ids_dict['name'], 'pfam_name')
+        log.warning('Adding PFAM node %s ', pfam_id)
+
+        return PFAM, pfam_name, pfam_id
 
     raise Exception('Unknown identifier for node %s', node_ids_dict)
 

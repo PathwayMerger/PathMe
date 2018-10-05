@@ -40,6 +40,8 @@ DEFAULT_CACHE_CONNECTION = get_connection(MODULE_NAME)
 
 KEGG = 'kegg'
 INTERPRO = 'interpro'
+PFAM = 'pfam'
+
 REACTOME = 'reactome'
 WIKIPATHWAYS = 'wikipathways'
 
