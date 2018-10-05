@@ -41,13 +41,13 @@ def check_multiple(element, element_name):
     :param element_name: name to print
     :return:
     """
-    if isinstance(element, Iterable):
+    if isinstance(element, set) or isinstance(element, list):
         log.warning('Multiple {}: {}'.format(element_name, element))
         # TODO: print the wikipathways bps that return a set because they are probably wrong.
         if len(element) != 0:
             return list(element)[0]
-
-        log.warning('Empty list/set %s', element)
+        else:
+            log.warning('Empty list/set %s', element)
 
     return element
 

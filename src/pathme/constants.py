@@ -39,6 +39,7 @@ DATA_DIR = get_data_dir()
 DEFAULT_CACHE_CONNECTION = get_connection(MODULE_NAME)
 
 KEGG = 'kegg'
+INTERPRO = 'interpro'
 REACTOME = 'reactome'
 WIKIPATHWAYS = 'wikipathways'
 

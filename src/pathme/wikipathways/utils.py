@@ -10,7 +10,7 @@ from typing import Dict, List, Tuple
 import networkx as nx
 from bio2bel_wikipathways import Manager as WikiPathwaysManager
 
-from ..constants import DATA_DIR, ENSEMBL, ENTREZ, EXPASY, HGNC, KEGG, UNIPROT, WIKIPATHWAYS, WIKIPEDIA
+from ..constants import DATA_DIR, ENSEMBL, ENTREZ, EXPASY, HGNC, KEGG, UNIPROT, WIKIPATHWAYS, WIKIPEDIA, INTERPRO
 from ..utils import get_files_in_folder, check_multiple
 
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
@@ -86,28 +86,28 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
     # Try to get hgnc symbol
     if 'bdb_hgncsymbol' in node_ids_dict:
 
-        hgnc_symbol = node_ids_dict['bdb_hgncsymbol']
+        hgnc_symbol = check_multiple(node_ids_dict['bdb_hgncsymbol'], 'bdb_hgncsymbol')
         hgnc_entry = hgnc_manager.get_gene_by_hgnc_symbol(hgnc_symbol)
 
         return _validate_query(hgnc_manager, hgnc_entry, hgnc_symbol, HGNC)
 
     # Try to get ENTREZ id
     elif 'bdb_ncbigene' in node_ids_dict:
-        entrez_id = node_ids_dict['bdb_ncbigene']
+        entrez_id = check_multiple(node_ids_dict['bdb_ncbigene'], 'bdb_ncbigene')
         hgnc_entry = hgnc_manager.get_gene_by_entrez_id(entrez_id)
 
         return _validate_query(hgnc_manager, hgnc_entry, entrez_id, ENTREZ)
 
     # Try to get UniProt id
     elif 'bdb_uniprot' in node_ids_dict:
-        uniprot_id = node_ids_dict['bdb_uniprot']
+        uniprot_id = check_multiple(node_ids_dict['bdb_uniprot'], 'bdb_uniprot')
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(uniprot_id)
 
         return _validate_query(hgnc_manager, hgnc_entry, uniprot_id, UNIPROT)
 
     # Try to get ENSEMBL id
     elif 'bdb_ensembl' in node_ids_dict:
-        ensembl_id = node_ids_dict['bdb_ensembl']
+        ensembl_id = check_multiple(node_ids_dict['bdb_ensembl'], 'bdb_ensembl')
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(ensembl_id)
 
         return _validate_query(hgnc_manager, hgnc_entry, ensembl_id, ENSEMBL)
@@ -138,12 +138,20 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
 
         return WIKIPEDIA, wiki_name, wiki_id
 
-    elif KEGG.lower() in node_ids_dict['identifier']:
-        #TODO: why wikipedia_id? i thought it was a kegg id here
-        kegg_id = check_multiple(node_ids_dict['identifier'], 'wikipedia_id')
+    elif KEGG.lower() in node_ids_dict['uri_id']:
+        kegg_id = check_multiple(node_ids_dict['identifier'], 'kegg_id')
+        kegg_name = check_multiple(node_ids_dict['name'], 'kegg_name')
+
         log.warning('Adding KEGG node %s ', kegg_id)
 
-        return KEGG, kegg_id, kegg_id
+        return KEGG, kegg_name, kegg_id
+
+    elif INTERPRO.lower() in node_ids_dict['uri_id']:
+        interpro_id = check_multiple(node_ids_dict['identifier'], 'interpro_id')
+        interpro_name = check_multiple(node_ids_dict['name'], 'interpro_name')
+        log.warning('Adding INTERPRO node %s ', interpro_id)
+
+        return INTERPRO, interpro_name, interpro_id
 
     raise Exception('Unknown identifier for node %s', node_ids_dict)
 
