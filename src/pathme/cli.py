@@ -214,6 +214,8 @@ def download():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     log.setLevel(logging.INFO)
 
+    log.info('Downloading Reactome RDF file')
+
     cached_file = os.path.join(REACTOME_FILES, get_file_name_from_url(RDF_REACTOME))
     make_downloader(RDF_REACTOME, cached_file, REACTOME_FILES, untar_file)
     log.info('Reactome was downloaded')
