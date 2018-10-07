@@ -92,8 +92,12 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
         return _validate_query(hgnc_manager, hgnc_entry, hgnc_symbol, HGNC)
 
     # Try to get ENTREZ id
-    elif 'bdb_ncbigene' in node_ids_dict:
-        entrez_id = check_multiple(node_ids_dict['bdb_ncbigene'], 'bdb_ncbigene')
+    elif 'bdb_ncbigene' in node_ids_dict or 'ncbiprotein' in node_ids_dict['uri_id']:
+        if 'bdb_ncbigene' in node_ids_dict:
+            entrez_id = check_multiple(node_ids_dict['bdb_ncbigene'], 'bdb_ncbigene')
+        elif 'ncbiprotein' in node_ids_dict['uri_id']:
+            entrez_id = check_multiple(node_ids_dict['identifier'], 'ncbiprotein')
+
         hgnc_entry = hgnc_manager.get_gene_by_entrez_id(entrez_id)
 
         return _validate_query(hgnc_manager, hgnc_entry, entrez_id, ENTREZ)
@@ -106,8 +110,13 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
         return _validate_query(hgnc_manager, hgnc_entry, uniprot_id, UNIPROT)
 
     # Try to get ENSEMBL id
-    elif 'bdb_ensembl' in node_ids_dict:
-        ensembl_id = check_multiple(node_ids_dict['bdb_ensembl'], 'bdb_ensembl')
+    elif 'bdb_ensembl' in node_ids_dict or 'ena.embl' in node_ids_dict['uri_id']:
+        if 'bdb_ensembl' in node_ids_dict:
+            ensembl_id = check_multiple(node_ids_dict['bdb_ensembl'], 'bdb_ensembl')
+
+        elif 'ena.embl' in node_ids_dict['uri_id']:
+            ensembl_id = check_multiple(node_ids_dict['identifier'], 'bdb_ensembl')
+
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(ensembl_id)
 
         return _validate_query(hgnc_manager, hgnc_entry, ensembl_id, ENSEMBL)
@@ -166,6 +175,13 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
         log.warning('Adding MIRBASE node %s ', mirbase_id)
 
         return PFAM, mirbase_name, mirbase_id
+
+    elif 'chembl.compound' in node_ids_dict['uri_id']:
+        chembl_id = check_multiple(node_ids_dict['identifier'], 'chembl_id')
+        chembl_name = check_multiple(node_ids_dict['name'], 'chembl_name')
+        log.warning('Adding MIRBASE node %s ', chembl_id)
+
+        return PFAM, chembl_name, chembl_id
 
     raise Exception('Unknown identifier for node %s', node_ids_dict)
 

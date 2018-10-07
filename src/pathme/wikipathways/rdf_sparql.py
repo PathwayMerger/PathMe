@@ -191,6 +191,7 @@ def get_wp_statistics(resource_files, resource_folder, hgnc_manager) -> Tuple[
     all_pathways_statistics = {}
 
     for rdf_file in tqdm.tqdm(resource_files, desc='Parsing WikiPathways'):
+        print(rdf_file)
         # Parse pathway rdf_file
         pathway_path = os.path.join(resource_folder, rdf_file)
         rdf_graph = parse_rdf(pathway_path, format='turtle')
