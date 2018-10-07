@@ -16,7 +16,7 @@ from pathme.kegg.convert_to_bel import kegg_to_pickles
 from pathme.kegg.utils import download_kgml_files, get_kegg_pathway_ids
 from pathme.reactome.rdf_sparql import get_reactome_statistics, reactome_to_bel
 from pathme.reactome.utils import untar_file
-from pathme.utils import get_files_in_folder, make_downloader, statistics_to_df, summarize_helper
+from pathme.utils import CallCounted, get_files_in_folder, make_downloader, statistics_to_df, summarize_helper
 from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pickles
 from pathme.wikipathways.utils import get_file_name_from_url, get_wikipathways_files, unzip_file
 from pybel import from_pickle
@@ -136,6 +136,8 @@ def to_bel(connection, debug, only_canonical):
     if debug:
         log.setLevel(logging.DEBUG)
 
+    logging.warning = CallCounted(logging.warning)
+
     log.info('Initiating HGNC Manager')
     hgnc_manager = HgncManager()
 
@@ -148,7 +150,11 @@ def to_bel(connection, debug, only_canonical):
 
     wikipathways_to_pickles(resource_files, resource_folder, hgnc_manager)
 
-    log.info('WikiPathways exported in %.2f seconds', time.time() - t)
+    log.info(
+        'WikiPathways exported in %.2f seconds. A total of {} warnings regarding entities that could not be converted '
+        'to standard identifiers were found.',
+        time.time() - t, logging.warning.counter
+    )
 
 
 @wikipathways.command()
