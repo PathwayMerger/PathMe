@@ -136,7 +136,7 @@ def to_bel(connection, debug, only_canonical):
     if debug:
         log.setLevel(logging.DEBUG)
 
-    logging.warning = CallCounted(logging.warning)
+    logging.debug = CallCounted(logging.debug)
 
     log.info('Initiating HGNC Manager')
     hgnc_manager = HgncManager()
@@ -153,7 +153,7 @@ def to_bel(connection, debug, only_canonical):
     log.info(
         'WikiPathways exported in %.2f seconds. A total of {} warnings regarding entities that could not be converted '
         'to standard identifiers were found.',
-        time.time() - t, logging.warning.counter
+        time.time() - t, logging.debug.counter
     )
 
 

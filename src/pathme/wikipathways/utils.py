@@ -41,7 +41,7 @@ def _get_update_alias_symbol(hgnc_manager, original_identifier, original_namespa
     query_result = hgnc_manager.get_hgnc_from_alias_symbol(original_identifier)
 
     if not query_result:
-        log.warning('No found HGNC Symbol for id %s in (%s)', original_identifier, original_namespace)
+        log.debug('No found HGNC Symbol for id %s in (%s)', original_identifier, original_namespace)
         return original_namespace, original_identifier, original_identifier
 
     return HGNC, query_result.symbol, query_result.identifier
@@ -62,13 +62,13 @@ def _validate_query(hgnc_manager, query_result, original_identifier, original_na
 
     # Invalid entry, proceed with invalid identifier
     if not query_result:
-        log.warning('No found HGNC Symbol for id %s in (%s)', original_identifier, original_namespace)
+        log.debug('No found HGNC Symbol for id %s in (%s)', original_identifier, original_namespace)
         return original_namespace, original_identifier, original_identifier
 
     # Multiple entries are returned, for UniProt identifiers
     if isinstance(query_result, list):
         if len(query_result) > 1:
-            log.warning('UniProt identifier with multiple HGNC:s %s', query_result)
+            log.debug('UniProt identifier with multiple HGNC:s %s', query_result)
         query_result = query_result[0]
 
     # Correct entry, use HGNC identifier
@@ -136,14 +136,14 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
         if hgnc_entry:
             return HGNC, hgnc_entry.symbol, hgnc_entry.identifier
 
-        log.warning('Adding WikiPathways node %s (%s)', name, WIKIPATHWAYS)
+        log.debug('Adding WikiPathways node %s (%s)', name, WIKIPATHWAYS)
         return WIKIPATHWAYS, name, name
 
     elif WIKIPEDIA.lower() in node_ids_dict['uri_id']:
         wiki_name = check_multiple(node_ids_dict['identifier'], 'wikipedia_id')
         wiki_id = check_multiple(node_ids_dict['name'], 'wikipedia_name')
 
-        log.warning('Adding Wikipedia node %s (%s)', wiki_name, WIKIPATHWAYS)
+        log.debug('Adding Wikipedia node %s (%s)', wiki_name, WIKIPATHWAYS)
 
         return WIKIPEDIA, wiki_name, wiki_id
 
@@ -151,35 +151,35 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
         kegg_id = check_multiple(node_ids_dict['identifier'], 'kegg_id')
         kegg_name = check_multiple(node_ids_dict['name'], 'kegg_name')
 
-        log.warning('Adding KEGG node %s ', kegg_id)
+        log.debug('Adding KEGG node %s ', kegg_id)
 
         return KEGG, kegg_name, kegg_id
 
     elif INTERPRO.lower() in node_ids_dict['uri_id']:
         interpro_id = check_multiple(node_ids_dict['identifier'], 'interpro_id')
         interpro_name = check_multiple(node_ids_dict['name'], 'interpro_name')
-        log.warning('Adding INTERPRO node %s ', interpro_id)
+        log.debug('Adding INTERPRO node %s ', interpro_id)
 
         return INTERPRO, interpro_name, interpro_id
 
     elif PFAM.lower() in node_ids_dict['uri_id']:
         pfam_id = check_multiple(node_ids_dict['identifier'], 'pfam_id')
         pfam_name = check_multiple(node_ids_dict['name'], 'pfam_name')
-        log.warning('Adding PFAM node %s ', pfam_id)
+        log.debug('Adding PFAM node %s ', pfam_id)
 
         return PFAM, pfam_name, pfam_id
 
     elif 'mirbase.mature' in node_ids_dict['uri_id']:
         mirbase_id = check_multiple(node_ids_dict['identifier'], 'mirbase_id')
         mirbase_name = check_multiple(node_ids_dict['name'], 'mirbase_name')
-        log.warning('Adding MIRBASE node %s ', mirbase_id)
+        log.debug('Adding MIRBASE node %s ', mirbase_id)
 
         return PFAM, mirbase_name, mirbase_id
 
     elif 'chembl.compound' in node_ids_dict['uri_id']:
         chembl_id = check_multiple(node_ids_dict['identifier'], 'chembl_id')
         chembl_name = check_multiple(node_ids_dict['name'], 'chembl_name')
-        log.warning('Adding MIRBASE node %s ', chembl_id)
+        log.debug('Adding MIRBASE node %s ', chembl_id)
 
         return PFAM, chembl_name, chembl_id
 

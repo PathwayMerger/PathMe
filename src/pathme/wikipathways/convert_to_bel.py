@@ -104,7 +104,7 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
         return abundance(namespace=namespace, name=name, identifier=identifier)
 
     else:
-        log.warning('Unknown %s', node_types)
+        log.debug('Unknown %s', node_types)
 
 
 def complexes_to_bel(complexes: Dict[str, Dict], nodes: Dict[str, BaseEntity], graph: BELGraph) -> Dict[
@@ -136,7 +136,7 @@ def get_node(node, nodes):
             _, _, namespace, identifier = parse_id_uri(node)
             return abundance(namespace=namespace, name=identifier, identifier=identifier)
         else:
-            log.warning('No valid id for node %s', node)
+            log.debug('No valid id for node %s', node)
             return None
     else:
         return nodes[node]
@@ -197,8 +197,8 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
         graph.add_association(u, v, citation=uri_id, evidence='', annotations={'EdgeTypes': edge_types})
 
     elif 'Interaction' in edge_types:
-        log.warning('No interaction subtype for %s', str(uri_id))
+        log.debug('No interaction subtype for %s', str(uri_id))
 
     else:
-        log.warning('No handled edge type %s', str(uri_id))
+        log.debug('No handled edge type %s', str(uri_id))
 
