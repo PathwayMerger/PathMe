@@ -325,7 +325,7 @@ def reactome_to_bel(resource_file, hgnc_manager, export_folder=REACTOME_BEL):
 
     for pathway_uri, pathway_name in tqdm.tqdm(pathways_uris_to_names, desc='Creating Reactome BELGraphs'):
 
-        pickle_file = os.path.join(export_folder, '{}.pickle'.format(pathway_name))
+        pickle_file = os.path.join(export_folder, '{}.pickle'.format(pathway_name.replace('/', '-').replace('.', '-')))
 
         # Skip if BEL file already exists
         if os.path.exists(pickle_file):
@@ -334,4 +334,4 @@ def reactome_to_bel(resource_file, hgnc_manager, export_folder=REACTOME_BEL):
         bel_graph = reactome_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager)
 
         # Export BELGraph to pickle
-        to_pickle(pickle_file, bel_graph)
+        to_pickle(bel_graph, pickle_file)
