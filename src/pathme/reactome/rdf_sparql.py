@@ -9,13 +9,13 @@ from typing import Set, Dict, Union, Tuple, List, Any
 
 import rdflib
 import tqdm
+from pybel import to_pickle
 from rdflib import URIRef
 from rdflib.namespace import Namespace, RDFS, RDF, DCTERMS, DC, OWL, XSD, SKOS
 
 from pathme.constants import REACTOME_BEL
 from pathme.reactome.convert_to_bel import convert_to_bel
 from pathme.utils import query_result_to_dict, parse_rdf, get_pathway_statitics
-from pybel import to_pickle
 
 log = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ WHERE
     {
         ?uri_id rdf:type biopax3:Pathway .
         ?uri_id biopax3:displayName ?name .
-}
+    }
 """
 
 #: SPARQL query string to get all components of a pathway (predicate biopax3:pathwayComponent).
@@ -81,30 +81,20 @@ WHERE
 
 #: SPARQL query to get all the possible metadate (optional statements) of an entity (Protein, Dna, Pathway...).
 GET_ENTITY_METADATA = """
-SELECT DISTINCT 
-    (STRAFTER(STR(?entity), '#') AS ?identifier) 
-    (STR(?entity) AS ?uri_reactome_id) 
-    ?uri_id 
-    ?name 
-    ?identifier 
-    ?cell_locat 
-    ?display_name 
-    ?complex_components 
-    ?comment 
-    (STRAFTER(STR(?uri_type), str(biopax3:)) AS ?entity_type) 
+SELECT DISTINCT (STRAFTER(STR(?entity), '#') AS ?identifier) (STR(?entity) AS ?uri_reactome_id) ?uri_id ?name ?identifier ?cell_locat ?display_name ?complex_components ?comment (STRAFTER (STR(?uri_type), str(biopax3:)) AS ?entity_type) 
 WHERE
-{        
-    ?entity rdf:type ?uri_type .
-    ?entity biopax3:comment ?comment .
-    
-    optional {?entity biopax3:entityReference ?uri_id .}
-    optional {?entity biopax3:name ?name .}
-    optional {?entity biopax3:displayName ?display_name .}
-
-    optional {?entity biopax3:cellularLocation ?cell_locat .}
-    optional {?entity biopax3:organism ?organism .}
-    optional {?entity biopax3:component ?complex_components .}
-}
+    {        
+        ?entity rdf:type ?uri_type .
+        ?entity biopax3:comment ?comment .
+        
+        optional {?entity biopax3:entityReference ?uri_id .}
+        optional {?entity biopax3:name ?name .}
+        optional {?entity biopax3:displayName ?display_name .}
+        
+        optional {?entity biopax3:cellularLocation ?cell_locat .}
+        optional {?entity biopax3:organism ?organism .}
+        optional {?entity biopax3:component ?complex_components .}
+    }
 """
 
 """Queries managers"""
@@ -208,7 +198,7 @@ def _get_reaction_participants(component_uri: str, component, rdf_graph: rdflib.
         nodes[product_id] = product_metadata
 
         if interaction.identifier not in interactions:
-            interactions[interaction.identifier] = {'metadata':component}
+            interactions[interaction.identifier] = {'metadata': component}
 
         if 'participants' not in interactions[interaction.identifier]:
             interactions[interaction.identifier]['participants'] = (reactant_id, product_id)
