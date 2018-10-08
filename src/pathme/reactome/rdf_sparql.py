@@ -315,7 +315,11 @@ def reactome_to_bel(resource_file, hgnc_manager, export_folder=REACTOME_BEL):
 
     for pathway_uri, pathway_name in tqdm.tqdm(pathways_uris_to_names, desc='Creating Reactome BELGraphs'):
 
-        pickle_file = os.path.join(export_folder, '{}.pickle'.format(pathway_name.replace('/', '-').replace('.', '-')))
+        # Take the identifier of the pathway which is placed at the end of the URL and also strip the number
+        # next to it. (probably version of pathway)
+        file_name = pathway_uri.split('/')[-1].split('.')[0]
+
+        pickle_file = os.path.join(export_folder, '{}.pickle'.format(file_name))
 
         # Skip if BEL file already exists
         if os.path.exists(pickle_file):
