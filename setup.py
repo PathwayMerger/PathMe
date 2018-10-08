@@ -28,7 +28,7 @@ INSTALL_REQUIRES = [
     'pandas',
     'tqdm',
     'numpy',
-    'rdflib',
+    'rdflib==4.2.2',
     'bio2bel',
     'bio2bel_hgnc>=0.1.1',
     'bio2bel_chebi',
