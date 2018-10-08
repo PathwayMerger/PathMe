@@ -273,15 +273,15 @@ def statistics(connection, verbose, only_canonical, export):
     log.info('Initiating HGNC Manager')
     hgnc_manager = HgncManager()
 
-    resource_file = os.path.join(REACTOME_DIR, 'Homo_sapiens.owl')
+    resource_file = os.path.join(REACTOME_FILES, 'Homo_sapiens.owl')
 
     global_statistics, all_pathways_statistics = get_reactome_statistics(resource_file, hgnc_manager)
 
     if export:
         df = statistics_to_df(all_pathways_statistics)
 
-        df.to_excel(os.path.join(DATA_DIR, 'wikipathways_statistics.xlsx'))
-        df.to_csv(os.path.join(DATA_DIR, 'wikipathways_statistics.csv'))
+        df.to_excel(os.path.join(DATA_DIR, 'reactome_statistics.xlsx'))
+        df.to_csv(os.path.join(DATA_DIR, 'reactome_statistics.csv'))
 
 
 if __name__ == '__main__':
