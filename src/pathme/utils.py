@@ -187,8 +187,6 @@ def query_result_to_dict(entries, **kwargs) -> Dict[str, Dict[str, Dict[str, str
     entries_dict = {}
 
     for rdf_entry in entries:
-        dict_rdf_entry = entry_result_to_dict(rdf_entry, **kwargs)
-
         if 'identifier' in rdf_entry.labels and rdf_entry.identifier is not None:
             id_key = str(rdf_entry.identifier)
 
@@ -196,7 +194,9 @@ def query_result_to_dict(entries, **kwargs) -> Dict[str, Dict[str, Dict[str, str
             id_key = rdf_entry.uri_id
 
         else:
-            raise Exception
+            raise Exception(f'invalid data: {rdf_entry}')
+
+        dict_rdf_entry = entry_result_to_dict(rdf_entry, **kwargs)
 
         if id_key not in entries_dict:
             entries_dict[id_key] = dict_rdf_entry
