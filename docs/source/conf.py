@@ -18,8 +18,8 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 master_doc = 'index'
 project = 'PathMe'
-copyright = '2018, Sarah Mubeen, Josep Marin Llao, and Daniel Domingo-Fernández'
-author = 'Sarah Mubeen, Josep Marin Llao, and Daniel Domingo-Fernández'
+copyright = '2018, Daniel Domingo-Fernández, Sarah Mubeen, and Josep Marin Llao'
+author = 'Daniel Domingo-Fernández, Sarah Mubeen, and Josep Marin Llao'
 
 release = '0.0.2-dev'
 
