@@ -313,7 +313,10 @@ def get_wikipathways_files(path, connection=None, only_canonical=True):
         }
 
         if not wikipathways_identifiers:
-            log.warning('Your WikiPathays Bio2BEL Database is empty!')
+            log.warning(
+                'Your WikiPathays Bio2BEL Database is empty! '
+                '(please run: python3 -m bio2bel_wikipathways populate)'
+            )
 
         resource_files = [
             file
