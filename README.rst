@@ -32,7 +32,7 @@ Installation |pypi_version| |python_versions| |pypi_license|
 How to use
 ----------
 
-Each database has three main commands: "download", "to_bel", and "summarize":
+Each database has three main commands: "download", "bel", and "summarize":
 
 1. **Download content**
 
@@ -48,11 +48,11 @@ running the command ('database' can be either KEGG, Reactome, or WikiPathways):
 Once the raw files are downloaded, you can run the following to command to generate BELGraphs that will be exported
 as Python pickles files for further analysis. Furthermore, the conversion to BEL can be tuned differently for each
 database by using specific commands. For example, KEGG parameters are shown when running
-`python3 -m pathme kegg to_bel --help`.
+`python3 -m pathme kegg bel --help`.
 
 .. code-block:: python
 
-    python3 -m pathme 'database' to_bel
+    python3 -m pathme 'database' bel
 
 2. **Summarize**
 
@@ -75,7 +75,7 @@ in the exporting command. Example:
 
 .. code-block:: python
 
-    python3 -m pathme kegg to_bel --flatten=True
+    python3 -m pathme kegg bel --flatten=True
 
 
 References

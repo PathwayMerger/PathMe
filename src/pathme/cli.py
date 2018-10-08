@@ -57,7 +57,7 @@ def download(connection):
 @kegg.command()
 @click.option('-f', '--flatten', is_flag=False)
 @click.option('-e', '--export-folder', default=KEGG_BEL, show_default=True)
-def to_bel(flatten, export_folder):
+def bel(flatten, export_folder):
     """Convert KEGG to BEL."""
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     log.setLevel(logging.INFO)
@@ -129,7 +129,7 @@ def download():
 @click.option('-c', '--connection', help="Defaults to {}".format(DEFAULT_CACHE_CONNECTION))
 @click.option('-d', '--debug', is_flag=True, default=False, help='Debug mode')
 @click.option('-x', '--only-canonical', default=True, help='Parse only canonical pathways')
-def to_bel(connection, debug, only_canonical):
+def bel(connection, debug, only_canonical):
     """Convert WikiPathways to BEL."""
     logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
 
@@ -223,7 +223,7 @@ def download():
 
 @reactome.command()
 @click.option('-v', '--verbose', is_flag=True)
-def to_bel(verbose):
+def bel(verbose):
     """Convert Reactome to BEL."""
     logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     if verbose:
@@ -235,8 +235,6 @@ def to_bel(verbose):
     hgnc_manager = HgncManager()
 
     resource_file = os.path.join(REACTOME_FILES, 'Homo_sapiens.owl')
-
-    # TODO: Fix
 
     reactome_to_bel(resource_file, hgnc_manager)
 
