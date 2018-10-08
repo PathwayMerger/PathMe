@@ -141,6 +141,7 @@ def _get_pathway_metadata(pathway_uri: str, rdf_graph: rdflib.Graph) -> Dict[str
             initBindings={'entity': pathway_uri}
         ),
         attr_empty=['display_name', 'identifier', 'uri_reactome_id', 'comment'],
+        id_dict=False
     )
 
 
@@ -156,9 +157,9 @@ def _get_entity_metadata(entity: rdflib.URIRef, rdf_graph: rdflib.Graph) -> Dict
         initNs=PREFIXES,
         initBindings={'entity': entity}
     ),
-        attr_empty=['entity_type']
+        attr_empty=['entity_type'],
+        id_dict=False
     )
-
     # Complexes might contain multiple components entities so we iterate over the complex components to fetch that information
     if entity_metadata['entity_type'] == 'Complex':
 
@@ -206,7 +207,10 @@ def _get_reaction_participants(component_uri: str, component, rdf_graph: rdflib.
         nodes[reactant_id] = reactant_metadata
         nodes[product_id] = product_metadata
 
-        if 'participants' not in interactions[interaction.identifier].keys():
+        if interaction.identifier not in interactions:
+            interactions[interaction.identifier] = {'metadata':component}
+
+        if 'participants' not in interactions[interaction.identifier]:
             interactions[interaction.identifier]['participants'] = (reactant_id, product_id)
 
         else:
@@ -220,7 +224,7 @@ def _get_reaction_participants(component_uri: str, component, rdf_graph: rdflib.
                 interactions[interaction.identifier]['participants']['reactants'].add(reactant_id)
                 interactions[interaction.identifier]['participants']['products'].add(product_id)
 
-        interactions[interaction.identifier]['metadata']['interaction_type'] = str(interaction_type)
+        interactions[interaction.identifier]['metadata']['interaction_type'] = str(interaction.interaction_type)
 
     return nodes, interactions
 
@@ -242,7 +246,7 @@ def _get_pathway_components(pathway_uri: rdflib.URIRef, rdf_graph: rdflib.Graph)
         initBindings={'pathway': pathway_uri}
     )
 
-    pathway_components = query_result_to_dict(spaqrl_pathway_components, id_dict=True)
+    pathway_components = query_result_to_dict(spaqrl_pathway_components)
 
     for component_uri, component in pathway_components.items():
 
@@ -284,13 +288,13 @@ def get_reactome_statistics(resource_file, hgnc_manager):
             edge['metadata']['interaction_type'] for edge in edges
         ]
 
-        bel_graph = reactome_to_bel(nodes, edges, pathway_metadata, hgnc_manager)
+        bel_graph = convert_to_bel(nodes, edges, pathway_metadata, hgnc_manager)
 
         global_statistics, pathway_statistics = get_pathway_statitics(
             nodes_types, edges_types, bel_graph, global_statistics=global_statistics
         )
 
-    return global_statistics, all_pathway_statistics
+    return global_statistics
 
 
 def reactome_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager):

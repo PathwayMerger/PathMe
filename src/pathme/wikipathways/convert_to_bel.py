@@ -32,8 +32,6 @@ def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interacti
         contact='daniel.domingo.fernandez@scai.fraunhofer.de',
     )
 
-    print(pathway_info['pathway_id'])
-
     nodes = nodes_to_bel(nodes, hgnc_manager)
     nodes.update(complexes_to_bel(complexes, nodes, graph))
 
