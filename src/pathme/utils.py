@@ -6,17 +6,18 @@ import collections
 import logging
 import os
 import pickle
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, List, Optional
+from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
 import click
 import pandas as pd
-import pybel
 import rdflib
-from pybel import union
 from pybel_tools import summary
 
+import pybel
 from pathme.constants import UNKNOWN
+from pybel import union
 
 log = logging.getLogger(__name__)
 
@@ -74,16 +75,16 @@ def parse_id_uri(uri):
     :returns: identifier (ex: .../c562c/)
     :rtype: tuple[str,str,str,str]
     """
-    # Split the uri str by '/'.
-    splitted_uri = uri.split('/')
+    parsed_url = urlparse(uri)
+    uri_suffix = parsed_url.path.split('/')
 
-    # Get the uri components into different variables.
-    prefix = '/'.join(splitted_uri[0:3])
-    prefix_namespaces = '/'.join(splitted_uri[3:-2])
-    namespace = splitted_uri[-2]
-    identifier = splitted_uri[-1]
-
-    return prefix, prefix_namespaces, namespace, identifier
+    # Returns
+    # Domain (rdf.wikipathways.org),
+    # Prefix namespace (pathway/WP2118_r97625/WP),
+    # namespace (Interaction),
+    # identifier (id61b0d9c7) in the given example ->
+    # (http://rdf.wikipathways.org/Pathway/WP2118_r97625/WP/Interaction/id61b0d9c7)
+    return parsed_url.netloc, '/'.join(uri_suffix[0:-2]), uri_suffix[-2], uri_suffix[-1]
 
 
 def parse_namespace_uri(uri):
