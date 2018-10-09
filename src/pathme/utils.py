@@ -362,12 +362,10 @@ def get_bel_types(path):
     return bel_stats
 
 
-def get_bel_stats(resource_folder, hgnc_manager):
+def get_bel_stats(resource_folder):
     """Get all BEL node and edge type statistics.
 
     :param str resource_folder: path to BEL pickles folder
-    :param bio2bel_hgnc.Manager hgnc_manager: HGNC manager
-
     :return: count of all nodes and edges in all BEL graphs from one resource
     :rtype: dict
     """
