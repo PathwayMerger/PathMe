@@ -138,7 +138,7 @@ KEGG_STATS_COLUMN_NAMES = {
     'brite': 'XML Brite Hierarchy'
 }
 
-WIKIPATHWAYS_STATS_COLUMN_NAMES = {
+BEL_STATS_COLUMN_NAMES = {
     'nodes': 'BEL Nodes',
     'edges': 'BEL Edges',
     'Protein': 'BEL Proteins',
