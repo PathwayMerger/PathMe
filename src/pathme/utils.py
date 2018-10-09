@@ -13,10 +13,13 @@ from urllib.request import urlretrieve
 import click
 import pandas as pd
 import rdflib
+
+from pybel import from_pickle
 from pybel_tools import summary
+from pybel.struct.summary import count_functions, edge_summary
 
 import pybel
-from pathme.constants import UNKNOWN
+from pathme.constants import UNKNOWN, BEL_STATS_COLUMN_NAMES
 from pybel import union
 
 log = logging.getLogger(__name__)
@@ -330,6 +333,68 @@ def statistics_to_df(all_pathways_statistics):
                     pathways_statistics['"' + column_type + '" ' + statistic_primary_type].append('')
 
     df = pd.DataFrame(data=pathways_statistics, index=rows)
+
+    return df
+
+
+def get_bel_types(path):
+    """Get BEL node and edge type statistics.
+
+    :param str path: path to pickle
+    :return: count of all nodes and edges in a BEL graph
+    :rtype: dict
+    """
+    bel_stats = {}
+
+    bel_graph = from_pickle(path)
+
+    bel_stats['nodes'] = bel_graph.number_of_nodes()
+    bel_stats['edges'] = bel_graph.number_of_edges()
+
+    # Get count of all BEL function types
+    bel_functions_dict = count_functions(bel_graph)
+    bel_stats.update(bel_functions_dict)
+
+    # Get count of all BEL edge types
+    bel_edges_dict = edge_summary.count_relations(bel_graph)
+    bel_stats.update(bel_edges_dict)
+
+    return bel_stats
+
+
+def get_bel_stats(resource_folder, hgnc_manager):
+    """Get all BEL node and edge type statistics.
+
+    :param str resource_folder: path to BEL pickles folder
+    :param bio2bel_hgnc.Manager hgnc_manager: HGNC manager
+
+    :return: count of all nodes and edges in all BEL graphs from one resource
+    :rtype: dict
+    """
+    df = pd.DataFrame()
+
+    pickles = get_files_in_folder(resource_folder)
+
+    for file in pickles:
+        pathway_names = []
+        pathway_names.append(file.strip('.pickle'))
+
+        bel_statistics_dict = get_bel_types(os.path.join(resource_folder, file))
+
+        all_kegg_statistics = {
+            BEL_STATS_COLUMN_NAMES[key]: value
+            for key, value in bel_statistics_dict.items()
+        }
+
+        # Add pathway statistic rows to DataFrame
+        pathway_data = pd.DataFrame(
+            all_kegg_statistics,
+            index=pathway_names,
+            columns=BEL_STATS_COLUMN_NAMES.values(),
+            dtype=int
+        )
+
+        df = df.append(pathway_data)
 
     return df
 
