@@ -137,3 +137,24 @@ KEGG_STATS_COLUMN_NAMES = {
     'state change': 'XML State Change Relations',
     'brite': 'XML Brite Hierarchy'
 }
+
+WIKIPATHWAYS_STATS_COLUMN_NAMES = {
+    'nodes': 'BEL Nodes',
+    'edges': 'BEL Edges',
+    'Protein': 'BEL Proteins',
+    'Gene': 'BEL Genes',
+    'Composite': 'BEL Composites',
+    'RNA': 'BEL RNA Entities',
+    'Complex': 'BEL Complexes',
+    'Abundance': 'BEL Compounds',
+    'BiologicalProcess': 'BEL Biological Processes',
+    'Reaction': 'BEL Reactions',
+    'increases': 'BEL Increase Relations',
+    'decreases': 'BEL Decrease Relations',
+    'association': 'BEL Association Relations',
+    'hasComponent': 'BEL Component Edges',
+    'hasVariant': 'BEL Variant Edges',
+    'hasReactant': 'BEL Reactants Edges',
+    'hasProduct': 'BEL Products Edges',
+    'translatedTo': 'BEL Translation Edges'
+}
