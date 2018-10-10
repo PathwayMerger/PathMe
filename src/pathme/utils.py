@@ -441,7 +441,6 @@ def summarize_helper(graphs):
 
     :param iter[graphs] graphs: BEL Graphs
     """
-
     click.echo('joining graphs')
     graph = union(graphs)
 
