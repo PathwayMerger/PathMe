@@ -199,11 +199,11 @@ def add_edges(graph: BELGraph, participants, nodes, att: Dict):
 def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
     if 'ACTIVATION' in edge_types:
         # TODO anadir pubmed y descripcion
-        graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity())
+        graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity(), annotations={})
 
     elif 'INHIBITION' in edge_types:
         # TODO anadir pubmed y descripcion
-        graph.add_decreases(u, v, citation=uri_id, evidence='', object_modifier=activity())
+        graph.add_decreases(u, v, citation=uri_id, evidence='', object_modifier=activity(), annotations={})
 
     else:
         log.warning('edge type %s', edge_types)

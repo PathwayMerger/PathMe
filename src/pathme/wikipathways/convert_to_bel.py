@@ -6,7 +6,6 @@ import logging
 from typing import Dict, List, Tuple
 
 from bio2bel_hgnc import Manager
-
 from pathme.constants import HGNC
 from pathme.utils import parse_id_uri, check_multiple
 from pathme.wikipathways.utils import evaluate_wikipathways_metadata, get_valid_gene_identifier
@@ -128,6 +127,7 @@ def complex_to_bel(complex, nodes, graph: BELGraph):
 
     return complex_bel_node
 
+
 def get_node(node, nodes):
     if node not in nodes:
         if '/Interaction/' in str(node):
@@ -138,6 +138,7 @@ def get_node(node, nodes):
             return None
     else:
         return nodes[node]
+
 
 def add_edges(graph: BELGraph, participants, nodes, att: Dict):
     """Add edges to BELGraph."""
@@ -180,13 +181,13 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
     :param uri_id: citation URI
     """
     if 'Stimulation' in edge_types:
-        graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity())
+        graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity(), annotations={})
 
     elif 'Inhibition' in edge_types:
-        graph.add_decreases(u, v, citation=uri_id, evidence='', object_modifier=activity())
+        graph.add_decreases(u, v, citation=uri_id, evidence='', object_modifier=activity(), annotations={})
 
     elif 'Catalysis' in edge_types:
-        graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity())
+        graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity(), annotations={})
 
     elif 'TranscriptionTranslation' in edge_types:
         graph.add_translation(u, v)
@@ -199,4 +200,3 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
 
     else:
         log.debug('No handled edge type %s', str(uri_id))
-
