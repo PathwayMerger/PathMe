@@ -103,7 +103,7 @@ def summarize(export_folder):
     if graphs:
         summarize_helper(graphs)
     else:
-        click.echo("Please export KEGG to BEL first. Run 'python3 -m pathme kegg to_bel' ")
+        click.echo("Please export KEGG to BEL first. Run 'python3 -m pathme kegg bel' ")
 
 
 """WikiPathways"""
@@ -170,7 +170,7 @@ def summarize(export_folder):
     if graphs:
         summarize_helper(graphs)
     else:
-        click.echo("Please export WikiPathways to BEL first. Run 'python3 -m pathme wikipathways to_bel' ")
+        click.echo("Please export WikiPathways to BEL first. Run 'python3 -m pathme wikipathways bel' ")
 
 
 @wikipathways.command()
@@ -256,7 +256,7 @@ def summarize(export_folder):
     if graphs:
         summarize_helper(graphs)
     else:
-        click.echo("Please export Reactome to BEL first. Run 'python3 -m pathme reactome to_bel' ")
+        click.echo("Please export Reactome to BEL first. Run 'python3 -m pathme reactome bel' ")
 
 
 @reactome.command()
