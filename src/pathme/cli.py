@@ -227,6 +227,8 @@ def bel(verbose):
     """Convert Reactome to BEL."""
     logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     if verbose:
+        log.setLevel(logging.DEBUG)
+    else:
         log.setLevel(logging.INFO)
 
     t = time.time()
