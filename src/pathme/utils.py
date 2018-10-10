@@ -13,14 +13,13 @@ from urllib.request import urlretrieve
 import click
 import pandas as pd
 import rdflib
-
-from pybel import from_pickle
 from pybel_tools import summary
-from pybel.struct.summary import count_functions, edge_summary
 
 import pybel
 from pathme.constants import UNKNOWN, BEL_STATS_COLUMN_NAMES
+from pybel import from_pickle
 from pybel import union
+from pybel.struct.summary import count_functions, edge_summary
 
 log = logging.getLogger(__name__)
 
@@ -123,6 +122,12 @@ def parse_rdf(path: str, format: Optional[str] = None) -> rdflib.Graph:
     if os.path.exists(pickle_path):
         with open(pickle_path, 'rb') as file:
             return pickle.load(file)
+
+    if not os.path.exists(path):
+        raise FileNotFoundError(
+            'You have still not downloaded the database file.'
+            'Please run "python3 -m pathme "database" download"'
+        )
 
     graph = rdflib.Graph()
     graph.parse(path, format=format)
