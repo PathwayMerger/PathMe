@@ -521,44 +521,44 @@ def add_simple_edge(graph, u, v, relation_type):
         # If the object is a gene, miRNA, RNA, or protein, add protein modification
         if isinstance(v, CentralDogma):
             v = v.with_variants(pmod(KEGG_MODIFICATIONS[relation_type]))
-        graph.add_increases(u, v, citation='', evidence='', subject_modifier=activity())
+        graph.add_increases(u, v, citation='', evidence='', subject_modifier=activity(), annotations={})
 
     # Subject activity decreases protein modification (i.e. dephosphorylation) of object
     elif relation_type == 'dephosphorylation':
         # If the object is a gene, miRNA, RNA, or protein, add protein modification
         if isinstance(v, CentralDogma):
             v = v.with_variants(pmod('Ph'))
-        graph.add_decreases(u, v, citation=KEGG_CITATION, evidence='', subject_modifier=activity())
+        graph.add_decreases(u, v, citation=KEGG_CITATION, evidence='', subject_modifier=activity(), annotations={})
 
     # Subject increases activity of object
     elif relation_type == 'activation':
-        graph.add_increases(u, v, citation=KEGG_CITATION, evidence='', object_modifier=activity())
+        graph.add_increases(u, v, citation=KEGG_CITATION, evidence='', object_modifier=activity(), annotations={})
 
     # Catalytic activity of subject increases transformation of reactant(s) to product(s)
     elif relation_type in {'reversible', 'irreversible'}:
-        graph.add_increases(u, v, citation=KEGG_CITATION, evidence='', subject_modifier=activity('cat'))
+        graph.add_increases(u, v, citation=KEGG_CITATION, evidence='', subject_modifier=activity('cat'), annotations={})
 
     # Subject decreases activity of object
     elif relation_type == 'inhibition':
-        graph.add_decreases(u, v, citation=KEGG_CITATION, evidence='', object_modifier=activity())
+        graph.add_decreases(u, v, citation=KEGG_CITATION, evidence='', object_modifier=activity(), annotations={})
 
     # Indirect effect and binding/association are noted to be equivalent relation types
     elif relation_type in {'indirect effect', 'binding/association'}:
-        graph.add_association(u, v, citation=KEGG_CITATION, evidence='')
+        graph.add_association(u, v, citation=KEGG_CITATION, evidence='', annotations={})
 
     # Subject increases expression of object
     elif relation_type == 'expression':
         # Expression object is converted to RNA abundance
         if isinstance(v, CentralDogma):
             v = v.get_rna()
-        graph.add_increases(u, v, citation=KEGG_CITATION, evidence='')
+        graph.add_increases(u, v, citation=KEGG_CITATION, evidence='', annotations={})
 
     # Subject decreases expression of object
     elif relation_type == 'repression':
         # Repression object is converted to RNA abundance
         if isinstance(v, CentralDogma):
             v = v.get_rna()
-        graph.add_decreases(u, v, citation=KEGG_CITATION, evidence='')
+        graph.add_decreases(u, v, citation=KEGG_CITATION, evidence='', annotations={})
 
     elif relation_type in {'dissociation', 'hidden compound', 'missing interaction', 'state change'}:
         pass
