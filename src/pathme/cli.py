@@ -55,7 +55,7 @@ def download(connection):
 
 
 @kegg.command()
-@click.option('-f', '--flatten', is_flag=False)
+@click.option('-f', '--flatten', is_flag=True)
 @click.option('-e', '--export-folder', default=KEGG_BEL, show_default=True)
 def bel(flatten, export_folder):
     """Convert KEGG to BEL."""
