@@ -414,14 +414,14 @@ def get_genes_from_pickles(resource_folder, pickles, manager):
     """
     pathway_genes_dict = {}
 
-    for file in pickles:
-        graph = from_pickle(os.path.join(resource_folder, file))
+    for file_name in pickles:
+        graph = from_pickle(os.path.join(resource_folder, file_name))
 
         # Get gene set for pathway
         gene_set = get_genes_in_graph(graph)
-        file = file.strip('.pickle')
-        file = manager.get_pathway_by_id(file)
-        pathway_genes_dict[str(file)] = gene_set
+        file_name = file_name.strip('.pickle')
+        file_name = manager.get_pathway_by_id(file_name)
+        pathway_genes_dict[str(file_name)] = gene_set
 
     return pathway_genes_dict
 
@@ -470,9 +470,6 @@ def jaccard_similarity(database_gene_set, bel_genes_set):
 
         elif jaccard_index == 0.0:
             count_no_similarity += 1
-
-    print('{} gene sets in the database and BEL graphs have a similarity of 100%.'.format(count))
-    print('{} gene sets in the database and BEL graphs have a similarity of 0%.'.format(count_no_similarity))
 
     return jaccard_similarities
 
