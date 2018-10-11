@@ -426,6 +426,31 @@ def get_genes_from_pickles(resource_folder, pickles, manager):
     return pathway_genes_dict
 
 
+def get_kegg_genes_from_pickles(resource_folder, pickles, manager):
+    """Get BEL graph gene set for all KEGG pathways.
+
+    :param list pickles: list of BEL graph pickles
+    :return: BEL graph gene sets for each KEGG pathway
+    :rtype: dict[str,set]
+    """
+    pathway_genes_dict = {}
+
+    for file_name in pickles:
+
+        # Flattened graphs considered for gene sets
+        if file_name.endswith('_flatten.pickle'):
+            graph = from_pickle(os.path.join(resource_folder, file_name))
+
+            # Get gene set for pathway
+            gene_set = get_genes_in_graph(graph)
+            file_name = file_name.strip('_flatten.pickle')
+            file_name = 'path:' + file_name
+            file_name = manager.get_pathway_by_id(file_name)
+
+            pathway_genes_dict[str(file_name)] = gene_set
+
+    return pathway_genes_dict
+
 def get_genes_in_graph(graph):
     """Get BEL graph gene set for a pathway.
 
