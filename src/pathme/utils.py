@@ -3,6 +3,7 @@
 """Common utils."""
 
 import collections
+import itertools as itt
 import logging
 import os
 import pickle
@@ -13,13 +14,14 @@ from urllib.request import urlretrieve
 import click
 import pandas as pd
 import rdflib
-from pybel_tools import summary
+
+from pathme.constants import UNKNOWN, BEL_STATS_COLUMN_NAMES
 
 import pybel
-from pathme.constants import UNKNOWN, BEL_STATS_COLUMN_NAMES
 from pybel import from_pickle
 from pybel import union
 from pybel.struct.summary import count_functions, edge_summary
+from pybel_tools import summary
 
 log = logging.getLogger(__name__)
 
@@ -384,14 +386,14 @@ def get_bel_stats(resource_folder):
 
         bel_statistics_dict = get_bel_types(os.path.join(resource_folder, file))
 
-        all_kegg_statistics = {
+        all_bel_statistics = {
             BEL_STATS_COLUMN_NAMES[key]: value
             for key, value in bel_statistics_dict.items()
         }
 
         # Add pathway statistic rows to DataFrame
         pathway_data = pd.DataFrame(
-            all_kegg_statistics,
+            all_bel_statistics,
             index=pathway_names,
             columns=BEL_STATS_COLUMN_NAMES.values(),
             dtype=int
@@ -400,6 +402,79 @@ def get_bel_stats(resource_folder):
         df = df.append(pathway_data)
 
     return df
+
+
+def get_genes_from_pickles(resource_folder, pickles, manager):
+
+    """Get BEL graph gene set for all pathways in resource.
+
+    :param list pickles: list of BEL graph pickles
+    :return: BEL graph gene sets for each pathway in resrouce
+    :rtype: dict[str,set]
+    """
+    pathway_genes_dict = {}
+
+    for file in pickles:
+        graph = from_pickle(os.path.join(resource_folder, file))
+
+        # Get gene set for pathway
+        gene_set = get_genes_in_graph(graph)
+        file = file.strip('.pickle')
+        file = manager.get_pathway_by_id(file)
+        pathway_genes_dict[str(file)] = gene_set
+
+    return pathway_genes_dict
+
+
+def get_genes_in_graph(graph):
+    """Get BEL graph gene set for a pathway.
+
+    :param pybel.BELGraph graph: BEL Graph
+    :return: BEL graph gene set
+    :rtype: set
+    """
+    gene_set = set()
+
+    for node, data in graph.nodes(data=True):
+        if node.function in {'Protein', 'RNA', 'Gene'} and node.namespace == 'HGNC':
+            gene_set.add(node.name)
+
+    return gene_set
+
+
+def jaccard_similarity(database_gene_set, bel_genes_set):
+    """Get Jaccard similarity for gene sets in database and BEL graphs.
+
+    :param dict database_gene_set: gene sets for each pathway in database
+    :param dict bel_genes_set: gene sets for each BEL graph
+    :return: similarity index
+    :rtype: int
+    """
+    jaccard_similarities = []
+    count = 0
+    count_no_similarity = 0
+
+    for (database_key, database_value), (bel_key, bel_value) in itt.product(database_gene_set.items(),
+                                                                            bel_genes_set.items()):
+
+        if database_key != bel_key:
+            continue
+
+        intersection = len(set.intersection(database_value, bel_value))
+        union = len(database_value.union(bel_value))
+        jaccard_index = intersection / union
+        jaccard_similarities.append(jaccard_index)
+
+        if jaccard_index == 1.0:
+            count += 1
+
+        elif jaccard_index == 0.0:
+            count_no_similarity += 1
+
+    print('{} gene sets in the database and BEL graphs have a similarity of 100%.'.format(count))
+    print('{} gene sets in the database and BEL graphs have a similarity of 0%.'.format(count_no_similarity))
+
+    return jaccard_similarities
 
 
 """Downloader"""
