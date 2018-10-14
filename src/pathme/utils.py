@@ -7,7 +7,7 @@ import itertools as itt
 import logging
 import os
 import pickle
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
@@ -404,17 +404,18 @@ def get_bel_stats(resource_folder):
     return df
 
 
-def get_genes_from_pickles(resource_folder, pickles, manager):
-
+def get_genes_from_pickles(resource_folder: str, files: List[str], manager) -> Dict[str,set]:
     """Get BEL graph gene set for all pathways in resource.
 
-    :param list pickles: list of BEL graph pickles
-    :return: BEL graph gene sets for each pathway in resrouce
+    :param str resource_folder: path to resource folder
+    :param list files: list of BEL graph pickles
+    :param bio2bel Manager manager: Manager
+    :return: BEL graph gene sets for each pathway in resource
     :rtype: dict[str,set]
     """
     pathway_genes_dict = {}
 
-    for file_name in pickles:
+    for file_name in files:
         graph = from_pickle(os.path.join(resource_folder, file_name))
 
         # Get gene set for pathway
@@ -426,16 +427,18 @@ def get_genes_from_pickles(resource_folder, pickles, manager):
     return pathway_genes_dict
 
 
-def get_kegg_genes_from_pickles(resource_folder, pickles, manager):
+def get_kegg_genes_from_pickles(resource_folder, files: List[str], manager) ->  Dict[str,Set]:
     """Get BEL graph gene set for all KEGG pathways.
 
-    :param list pickles: list of BEL graph pickles
+    :param str resource_folder: path to resource folder
+    :param list files: list of BEL graph pickles
+    :param bio2bel Manager manager: Manager
     :return: BEL graph gene sets for each KEGG pathway
     :rtype: dict[str,set]
     """
     pathway_genes_dict = {}
 
-    for file_name in pickles:
+    for file_name in files:
 
         # Flattened graphs considered for gene sets
         if file_name.endswith('_flatten.pickle'):
@@ -451,7 +454,8 @@ def get_kegg_genes_from_pickles(resource_folder, pickles, manager):
 
     return pathway_genes_dict
 
-def get_genes_in_graph(graph):
+
+def get_genes_in_graph(graph: pybel.BELGraph) -> Set[str]:
     """Get BEL graph gene set for a pathway.
 
     :param pybel.BELGraph graph: BEL Graph
@@ -495,6 +499,12 @@ def jaccard_similarity(database_gene_set, bel_genes_set):
 
         elif jaccard_index == 0.0:
             count_no_similarity += 1
+
+    print('Jaccard index for gene sets in database vs gene sets in BEL:')
+    print('{} of {} gene sets in the database and BEL graphs have a similarity of 100%.'.format(count, len(
+        jaccard_similarities)))
+    print('{} of {} gene sets in the database and BEL graphs have a similarity of 0%.'.format(count_no_similarity, len(
+        jaccard_similarities)))
 
     return jaccard_similarities
 
