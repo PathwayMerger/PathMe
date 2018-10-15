@@ -399,7 +399,7 @@ def get_bel_stats(resource_folder):
             dtype=int
         )
 
-        df = df.append(pathway_data)
+        df = df.append(pathway_data.fillna(0).astype(int))
 
     return df
 
