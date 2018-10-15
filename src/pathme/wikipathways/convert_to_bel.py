@@ -189,14 +189,14 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
     elif 'Catalysis' in edge_types:
         graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity(), annotations={})
 
-    elif 'TranscriptionTranslation' in edge_types:
-        graph.add_translation(u, v)
-
     elif 'DirectedInteraction' in edge_types:
         graph.add_association(u, v, citation=uri_id, evidence='', annotations={'EdgeTypes': edge_types})
 
     elif 'Interaction' in edge_types:
         log.debug('No interaction subtype for %s', str(uri_id))
+
+    elif 'TranscriptionTranslation' in edge_types:
+        graph.add_translation(u, v)
 
     else:
         log.debug('No handled edge type %s', str(uri_id))
