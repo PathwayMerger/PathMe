@@ -98,7 +98,7 @@ def get_kegg_statistics(path, hgnc_manager, chebi_manager, flatten=None):
             dtype=int
 
         )
-        df = df.append(pathway_data)
+        df = df.append(pathway_data.fillna(0).astype(int))
 
     df.to_csv(export_file_name, sep='\t')
     return df
