@@ -19,7 +19,7 @@ __all__ = [
 ]
 
 
-def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]],
+def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interactions: Dict[str, Dict],
                    pathway_info, hgnc_manager: Manager) -> BELGraph:
     """Convert  RDF graph info to BEL."""
     graph = BELGraph(
@@ -34,9 +34,9 @@ def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interacti
     nodes = nodes_to_bel(nodes, hgnc_manager)
     nodes.update(complexes_to_bel(complexes, nodes, graph))
 
-    for interaction in interactions:
-        participants = interaction.pop('participants')
-        add_edges(graph, participants, nodes, interaction)
+    for interaction_key, interaction in interactions.items():
+        participants = interaction['participants']
+        add_edges(graph, participants, nodes, interactions, interaction)
 
     return graph
 
@@ -127,45 +127,48 @@ def complex_to_bel(complex, nodes, graph: BELGraph):
 
     return complex_bel_node
 
+def get_reaction_node(participants, nodes, interactions):
+    reactants = set()
+    products = set()
 
-def get_node(node, nodes):
+    for source, target in participants:
+        source = get_node(source, nodes, interactions)
+        if source:
+            reactants.add(source)
+
+        target = get_node(target, nodes, interactions)
+        if target:
+            products.add(target)
+
+    return reaction(reactants=reactants, products=products)
+
+def get_node(node, nodes, interactions):
     if node not in nodes:
         if '/Interaction/' in str(node):
-            _, _, namespace, identifier = parse_id_uri(node)
-            return abundance(namespace=namespace, name=identifier, identifier=identifier)
-        else:
-            log.debug('No valid id for node %s', node)
-            return None
+            _, _, _, identifier = parse_id_uri(node)
+
+            if identifier in interactions:
+                return get_reaction_node(interactions[identifier]['participants'], nodes, interactions)
+
+        log.debug('No valid id for node %s', node)
+        return None
     else:
         return nodes[node]
 
 
-def add_edges(graph: BELGraph, participants, nodes, att: Dict):
+def add_edges(graph: BELGraph, participants, nodes, interactions: Dict, att: Dict):
     """Add edges to BELGraph."""
     uri_id = att['uri_id']
     edge_types = att['interaction_types']
     _, _, namespace, interaction_id = parse_id_uri(uri_id)
 
     if 'Conversion' in edge_types:
-        reactants = set()
-        products = set()
-
-        for source, target in participants:
-            source = get_node(source, nodes)
-            if source:
-                reactants.add(source)
-
-            target = get_node(target, nodes)
-            if target:
-                products.add(target)
-
-        reaction_node = reaction(reactants=reactants, products=products)
-        graph.add_node_from_data(reaction_node)
+        graph.add_node_from_data(get_reaction_node(participants, nodes, interactions))
 
     else:
         for source, target in participants:
-            u = get_node(source, nodes)
-            v = get_node(target, nodes)
+            u = get_node(source, nodes, interactions)
+            v = get_node(target, nodes, interactions)
 
             if u and v:
                 add_simple_edge(graph, u, v, edge_types, uri_id)

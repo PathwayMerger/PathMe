@@ -48,7 +48,22 @@ GET_ENTRIES_SUBTYPES_SPARQL = """
 
 #: SPARQL query to get all data nodes in a pathway network with some arguments.
 GET_ALL_DATA_NODES_SPARQL = """
-    SELECT DISTINCT (?uri_id AS ?identifier) (?dc_identifier AS ?identifier) ?uri_id (STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types) (STRAFTER(STR(?ncbigene_uri), str(ncbigene:)) AS ?identifier ) (STRAFTER(STR(?hgnc_uri), str(hgnc:)) AS ?bdb_hgncsymbol) (STRAFTER(STR(?ensembl_uri), str(ensembl:)) AS ?bdb_ensembl) (STRAFTER(STR(?ncbigene_uri), str(ncbigene:)) AS ?bdb_ncbigene) (STRAFTER(STR(?uniprot_uri), str(uniprot:)) AS ?bdb_uniprot) (STRAFTER(STR(?chebi_uri), str(chebi:)) AS ?bdb_chebi) (STRAFTER(STR(?chemspider_uri), str(chemspider:)) AS ?bdb_chemspider) (STRAFTER(STR(?pubchem_uri), str(pubchem:)) AS ?bdb_pubchem) (STRAFTER(STR(?wikidata_uri), str(wikidata:)) AS ?bdb_wikidata) (STRAFTER(STR(?hmdb_uri), str(hmdb:)) AS ?bdb_hmdb) ?name
+    SELECT DISTINCT 
+    (?uri_id AS ?identifier) 
+    (?dc_identifier AS ?identifier) 
+    ?uri_id
+    ?name
+    (STRAFTER(STR(?ncbigene_uri), str(ncbigene:)) AS ?identifier ) 
+    (STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types) 
+    (STRAFTER(STR(?hgnc_uri), str(hgnc:)) AS ?bdb_hgncsymbol) 
+    (STRAFTER(STR(?ensembl_uri), str(ensembl:)) AS ?bdb_ensembl) 
+    (STRAFTER(STR(?ncbigene_uri), str(ncbigene:)) AS ?bdb_ncbigene) 
+    (STRAFTER(STR(?uniprot_uri), str(uniprot:)) AS ?bdb_uniprot) 
+    (STRAFTER(STR(?chebi_uri), str(chebi:)) AS ?bdb_chebi) 
+    (STRAFTER(STR(?chemspider_uri), str(chemspider:)) AS ?bdb_chemspider) 
+    (STRAFTER(STR(?pubchem_uri), str(pubchem:)) AS ?bdb_pubchem) 
+    (STRAFTER(STR(?wikidata_uri), str(wikidata:)) AS ?bdb_wikidata) 
+    (STRAFTER(STR(?hmdb_uri), str(hmdb:)) AS ?bdb_hmdb) 
     WHERE {
        ?pathway a wp:Pathway .
        ?uri_id dcterms:isPartOf ?pathway .
@@ -75,7 +90,13 @@ GET_ALL_DATA_NODES_SPARQL = """
 
 #: SPARQL query to get all data nodes in a pathway network with some arguments.
 GET_ALL_COMPLEXES_SPARQL = """
-    SELECT DISTINCT ?uri_id (STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types) (?participants_entry AS ?participants) (?participants_id AS ?participants) ?name (STRAFTER(STR(?ncbigene_participants), str(ncbigene:)) AS ?participants )
+    SELECT DISTINCT 
+    ?uri_id 
+    (STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types) 
+    (?participants_entry AS ?participants) 
+    (?participants_id AS ?participants) 
+    ?name 
+    (STRAFTER(STR(?ncbigene_participants), str(ncbigene:)) AS ?participants )
     WHERE {
        ?pathway a wp:Pathway .
        ?uri_id dcterms:isPartOf ?pathway .
@@ -90,7 +111,16 @@ GET_ALL_COMPLEXES_SPARQL = """
 # TODO: Check interaction complexes.
 #: SPARQL query to get all directed interactions in a pathway network with source and target.
 GET_ALL_DIRECTED_INTERACTIONS_SPARQL = """
-    SELECT DISTINCT (?source_entry AS ?source) (?dc_source AS ?source) (?target_entry AS ?target) (?dc_target AS ?target) ?uri_id (STRAFTER(STR(?uri_type), str(wp:)) AS ?interaction_types) (STRAFTER(STR(?ncbigene_source), str(ncbigene:)) AS ?source ) (STRAFTER(STR(?ncbigene_target), str(ncbigene:)) AS ?target )
+    SELECT DISTINCT 
+    (?source_entry AS ?source) 
+    (?dc_source AS ?source) 
+    (?target_entry AS ?target) 
+    (?dc_target AS ?target) 
+    ?uri_id
+    (STRAFTER(STR(?uri_id), "/Interaction/") AS ?identifier) 
+    (STRAFTER(STR(?uri_type), str(wp:)) AS ?interaction_types) 
+    (STRAFTER(STR(?ncbigene_source), str(ncbigene:)) AS ?source ) 
+    (STRAFTER(STR(?ncbigene_target), str(ncbigene:)) AS ?target )
     WHERE {
        ?pathway a wp:Pathway .
        ?uri_id dcterms:isPartOf ?pathway .
@@ -155,20 +185,20 @@ def _get_complexes(rdf_graph) -> Dict[str, Dict[str, Dict[str, str]]]:
     )
 
 
-def _get_interactions(rdf_graph) -> List[dict]:
+def _get_interactions(rdf_graph) -> Dict[str, Dict]:
     """Get all interactions from a RDF pathway network.
 
     :param rdflib.Graph rdf_graph: RDF graph object
     :returns: Interactions as a list of dictionaries, where the participants are in an entry and the interaction metadata in other
     """
-    return list(query_result_to_dict(
+    return query_result_to_dict(
         rdf_graph.query(GET_ALL_DIRECTED_INTERACTIONS_SPARQL, initNs=PREFIXES),
         directed_interaction=('source', 'target')
-    ).values())
+    )
 
 
 def _get_pathway_components(graph) -> Tuple[
-    Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]], List[dict]]:
+    Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]]]:
     """Get all components in data structures from a RDF pathway network.
 
     :param graph: RDF graph object
