@@ -122,7 +122,7 @@ def complex_to_bel(complex, nodes, graph: BELGraph):
 
     _, _, _, identifier = parse_id_uri(complex['uri_id'])
 
-    complex_bel_node = complex_abundance(members=members, identifier=identifier, namespace='wp_complex')
+    complex_bel_node = complex_abundance(members=members, identifier=identifier)
     graph.add_node_from_data(complex_bel_node)
 
     return complex_bel_node
