@@ -175,7 +175,7 @@ def gene_to_bel_node(graph, node):
                 return protein_node
 
             else:
-                protein_node = protein(namespace=KEGG, name=attribute[KEGG_ID], identifier=attribute[KEGG_ID])
+                protein_node = protein(namespace=KEGG.upper(), name=attribute[KEGG_ID], identifier=attribute[KEGG_ID])
                 graph.add_node_from_data(protein_node)
                 return protein_node
 
@@ -213,7 +213,7 @@ def flatten_gene_to_bel_node(graph, node):
             return protein_node
 
         else:
-            protein_node = protein(namespace=KEGG, name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
+            protein_node = protein(namespace=KEGG.upper(), name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
             graph.add_node_from_data(protein_node)
             return protein_node
 
@@ -232,7 +232,7 @@ def flatten_gene_to_bel_node(graph, node):
             proteins_list.append(protein_node)
 
         else:
-            protein_node = protein(namespace=KEGG, name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
+            protein_node = protein(namespace=KEGG.upper(), name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
             graph.add_node_from_data(protein_node)
             proteins_list.append(protein_node)
 
@@ -274,7 +274,7 @@ def compound_to_bel(graph, node):
             return compound
 
         else:
-            compound = abundance(namespace=KEGG, name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
+            compound = abundance(namespace=KEGG.upper(), name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
             graph.add_node_from_data(compound)
             return compound
 
@@ -322,7 +322,7 @@ def flatten_compound_to_bel_node(graph, node):
             return compound
 
         else:
-            compound = abundance(namespace=KEGG, name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
+            compound = abundance(namespace=KEGG.upper(), name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
             graph.add_node_from_data(compound)
             return compound
 
@@ -352,7 +352,7 @@ def flatten_compound_to_bel_node(graph, node):
             compounds_list.append(compound_node)
 
         else:
-            compound_node = abundance(namespace=KEGG, name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
+            compound_node = abundance(namespace=KEGG.upper(), name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
             graph.add_node_from_data(compound_node)
             compounds_list.append(compound_node)
 
@@ -372,7 +372,7 @@ def map_to_bel_node(graph, node):
         name = attribute['map_name']
         identifier = attribute[KEGG_ID]
 
-        bio_process = bioprocess(namespace=KEGG, name=name, identifier=identifier)
+        bio_process = bioprocess(namespace=KEGG.upper(), name=name, identifier=identifier)
         graph.add_node_from_data(bio_process)
         return bio_process
 
@@ -398,7 +398,7 @@ def flatten_complex_to_bel_node(graph, node):
             members.append(protein_node)
 
         else:
-            protein_node = protein(namespace=KEGG, name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
+            protein_node = protein(namespace=KEGG.upper(), name=node_dict[KEGG_ID], identifier=node_dict[KEGG_ID])
             members.append(protein_node)
 
     complex_members = complex_abundance(members=members)
