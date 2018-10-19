@@ -90,8 +90,8 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
         _, _, namespace, _ = parse_id_uri(uri_id)
         return abundance(namespace=namespace, name=name, identifier=identifier)
 
-    elif 'Pathway' in node_types:
-        # Parse URI to get namespace
+    elif '/wikipathways/WP' in str(uri_id) and {'DataNode'} == node_types:
+        # Check the uri_id if is a Pathway
         _, _, namespace, _ = parse_id_uri(uri_id)
         return bioprocess(namespace=namespace, name=name, identifier=identifier)
 

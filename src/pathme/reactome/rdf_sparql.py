@@ -81,13 +81,35 @@ WHERE
 
 #: SPARQL query to get all the possible metadate (optional statements) of an entity (Protein, Dna, Pathway...).
 GET_ENTITY_METADATA = """
-SELECT DISTINCT (STRAFTER(STR(?entity), '#') AS ?identifier) (STR(?entity) AS ?uri_reactome_id) (STR(?entity) AS ?uri_id) (STR(?entity_reference) AS ?uri_id) ?name ?cell_locat ?display_name ?complex_components ?comment (STRAFTER (STR(?uri_type), str(biopax3:)) AS ?entity_type) 
+SELECT DISTINCT 
+(STRAFTER (STR(?uri_type), str(biopax3:)) AS ?entity_type) 
+
+(STRAFTER(STR(?entity), '#') AS ?identifier)
+?identifier
+?db 
+(STR(?entity) AS ?uri_reactome_id) 
+(STRAFTER(STR(?entity), '#') AS ?reactome_id)
+(STR(?entity) AS ?uri_id) 
+(STR(?entity_reference) AS ?uri_id) 
+
+?name 
+?cell_locat 
+?display_name 
+?complex_components 
+?comment 
+
 WHERE
     {        
         ?entity rdf:type ?uri_type .
         optional {?entity biopax3:comment ?comment .}
         
         optional {?entity biopax3:entityReference ?entity_reference .}
+        optional {?reference_entry biopax3:SmallMoleculeReference ?entity_reference .}
+        optional {?reference_entry biopax3:xref ?x_reference .}
+        optional {?x_reference biopax3:id ?identifier .}
+        optional {?x_reference biopax3:db ?entity_reference .}
+
+
         optional {?entity biopax3:name ?name .}
         optional {?entity biopax3:displayName ?display_name .}
         

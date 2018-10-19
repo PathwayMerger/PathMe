@@ -49,12 +49,15 @@ GET_ENTRIES_SUBTYPES_SPARQL = """
 #: SPARQL query to get all data nodes in a pathway network with some arguments.
 GET_ALL_DATA_NODES_SPARQL = """
     SELECT DISTINCT 
-    (?uri_id AS ?identifier) 
-    (?dc_identifier AS ?identifier) 
     ?uri_id
     ?name
-    (STRAFTER(STR(?ncbigene_uri), str(ncbigene:)) AS ?identifier ) 
     (STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types) 
+
+    (?uri_id AS ?identifier) 
+    (?dc_identifier AS ?identifier) 
+    (STRAFTER(STR(?ncbigene_uri), str(ncbigene:)) AS ?identifier )
+    (STRAFTER(STR(?chebi_uri), str(chebi:)) AS ?identifier )
+
     (STRAFTER(STR(?hgnc_uri), str(hgnc:)) AS ?bdb_hgncsymbol) 
     (STRAFTER(STR(?ensembl_uri), str(ensembl:)) AS ?bdb_ensembl) 
     (STRAFTER(STR(?ncbigene_uri), str(ncbigene:)) AS ?bdb_ncbigene) 
