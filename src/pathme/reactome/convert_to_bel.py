@@ -7,8 +7,8 @@ from typing import Dict, Iterable, List, Tuple
 from bio2bel_hgnc import Manager as HgncManager
 from pybel import BELGraph
 from pybel.dsl import (
-    abundance, activity, BaseEntity, composite_abundance, complex_abundance, gene, rna, protein, reaction, bioprocess
-)
+    abundance, activity, BaseEntity, composite_abundance, complex_abundance, gene, rna, protein, reaction, bioprocess,
+    CompositeAbundance)
 
 from pathme.constants import UNKNOWN
 from pathme.reactome.utils import get_valid_node_parameters, process_multiple_proteins
@@ -51,7 +51,7 @@ def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Di
     return graph
 
 
-def create_composite(members: Iterable) -> List:
+def create_composite(members: Iterable) -> CompositeAbundance:
     composite_members = []
     for node_member in members:
         composite_members.append(node_member)

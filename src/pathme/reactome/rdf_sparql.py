@@ -85,8 +85,7 @@ SELECT DISTINCT
 (STRAFTER (STR(?uri_type), str(biopax3:)) AS ?entity_type) 
 
 (STRAFTER(STR(?entity), '#') AS ?identifier)
-?identifier
-?db 
+
 (STR(?entity) AS ?uri_reactome_id) 
 (STRAFTER(STR(?entity), '#') AS ?reactome_id)
 (STR(?entity) AS ?uri_id) 
@@ -104,12 +103,7 @@ WHERE
         optional {?entity biopax3:comment ?comment .}
         
         optional {?entity biopax3:entityReference ?entity_reference .}
-        optional {?reference_entry biopax3:SmallMoleculeReference ?entity_reference .}
-        optional {?reference_entry biopax3:xref ?x_reference .}
-        optional {?x_reference biopax3:id ?identifier .}
-        optional {?x_reference biopax3:db ?entity_reference .}
-
-
+   
         optional {?entity biopax3:name ?name .}
         optional {?entity biopax3:displayName ?display_name .}
         

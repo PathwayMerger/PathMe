@@ -39,10 +39,9 @@ def get_valid_node_parameters(node, hgnc_manager):
         else:
             name = UNKNOWN
 
-    namespace = node.get('db')
-    identifier = node.get('identifier')
+    namespace = None
 
-    if namespace is None:
+    if 'uri_id' in node:
         _, _, namespace, identifier = parse_id_uri(node['uri_id'])
 
     # Look up in HGNC Manager the HGNC Symbol for a given UniProt or ENSEMBL identifier.
