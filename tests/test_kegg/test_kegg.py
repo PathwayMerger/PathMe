@@ -273,10 +273,10 @@ class TestKegg(KeggTest):
 
         # Test pathway map nodes
         self.assertEqual(flat_glycolysis_nodes['54'],
-                         bioprocess(namespace=KEGG, name='Citrate cycle (TCA cycle)', identifier='path:hsa00020')
+                         bioprocess(namespace=KEGG.upper(), name='Citrate cycle (TCA cycle)', identifier='path:hsa00020')
                          )
         self.assertEqual(flat_notch_nodes['4'],
-                         bioprocess(namespace=KEGG, name='MAPK signaling pathway', identifier='path:hsa04010')
+                         bioprocess(namespace=KEGG.upper(), name='MAPK signaling pathway', identifier='path:hsa04010')
                          )
 
         # Test un-flattened compound nodes
