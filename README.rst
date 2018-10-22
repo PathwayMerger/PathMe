@@ -5,6 +5,12 @@ Expression Language (BEL). It is the continuation of the ComPath web application
 and curating pathway knowledge in a gene-centric view. This different approach involves converting
 all the pathways in these resources into BEL as a pivotal integration schema to harmonize entities and relationships in order across these multiple resources; thus, enabling a more comprehensive evaluation of pathway cross-talks, consensus, and boundaries. Additionally, PathMe is complemented with the `PathMe-Viewer <https://github.com/ComPath/PathMe-Viewer>`_ , a web application that enables querying, browsing, and navigating  pathway knowledge assisted by a user-friendly visualization.
 
+Citation
+--------
+If you use PathMe in your work, please cite:
+
+Domingo-Fernández, D., *et al.* (2018). PathMe: Merging and exploring mechanistic pathway knowledge. bioRxiv.
+
 Installation |pypi_version| |python_versions| |pypi_license|
 ------------------------------------------------------------
 1. ``pathme`` can be installed with the following commands:
