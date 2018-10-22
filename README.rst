@@ -3,7 +3,7 @@ PathMe |build| |coverage| |docs| |zenodo|
 PathMe is a Python package aimed to convert KEGG, Reactome, and WikiPathways (see References below) to Biological
 Expression Language (BEL). It is the continuation of the ComPath web application aimed at exploring, analyzing,
 and curating pathway knowledge in a gene-centric view. This different approach involves converting
-all the pathways in these resources into BEL as a pivotal integration schema to harmonize entities and relationships in order across these multiple resources; thus, enabling a more comprehensive evaluation of pathway cross-talks, consensus, and boundaries. Additionally, PathMe is complemented with the `PathMe-Viewer <https://github.com/ComPath/PathMe-Viewer>`_ , a web application that enables querying, browsing, and navigating  pathway knowledge assisted by a user-friendly visualization.
+all the pathways in these resources into BEL as a pivotal integration schema to harmonize entities and relationships in order across these multiple resources; thus, enabling a more comprehensive evaluation of pathway cross-talks, consensus, and boundaries. Additionally, PathMe is complemented with the `PathMe-Viewer <https://github.com/ComPath/PathMe-Viewer>`_, a web application that enables querying, browsing, and navigating  pathway knowledge assisted by a user-friendly visualization.
 
 Citation
 --------
