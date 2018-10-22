@@ -75,11 +75,11 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
 
     if 'Protein' in node_types:
         namespace, name, identifier = get_valid_gene_identifier(node_ids_dict, hgnc_manager)
-        return protein(namespace=namespace, name=name, identifier=identifier)
+        return protein(namespace=namespace.upper(), name=name, identifier=identifier)
 
     elif 'Rna' in node_types:
         namespace, name, identifier = get_valid_gene_identifier(node_ids_dict, hgnc_manager)
-        return rna(namespace=namespace, name=name, identifier=identifier)
+        return rna(namespace=namespace.upper(), name=name, identifier=identifier)
 
     elif 'GeneProduct' in node_types:
         namespace, name, identifier = get_valid_gene_identifier(node_ids_dict, hgnc_manager)
@@ -88,17 +88,17 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
     elif 'Metabolite' in node_types:
         # Parse URI to get namespace
         _, _, namespace, _ = parse_id_uri(uri_id)
-        return abundance(namespace=namespace, name=name, identifier=identifier)
+        return abundance(namespace=namespace.upper(), name=name, identifier=identifier)
 
     elif '/wikipathways/WP' in str(uri_id) and {'DataNode'} == node_types:
         # Check the uri_id if is a Pathway
         _, _, namespace, _ = parse_id_uri(uri_id)
-        return bioprocess(namespace=namespace, name=name, identifier=identifier)
+        return bioprocess(namespace=namespace.upper(), name=name, identifier=identifier)
 
     elif 'DataNode' in node_types:
         # Parse URI to get namespace
         _, _, namespace, _ = parse_id_uri(uri_id)
-        return abundance(namespace=namespace, name=name, identifier=identifier)
+        return abundance(namespace=namespace.upper(), name=name, identifier=identifier)
 
     else:
         log.debug('Unknown %s', node_types)

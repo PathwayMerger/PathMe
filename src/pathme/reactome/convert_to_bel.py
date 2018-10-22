@@ -78,19 +78,19 @@ def node_to_bel(node: Dict, graph, hgnc_manager: HgncManager) -> BaseEntity:
         return composite_abundance(process_multiple_proteins(identifier))
 
     elif 'Protein' in node_types:
-        return protein(namespace=namespace, name=name, identifier=identifier)
+        return protein(namespace=namespace.upper(), name=name, identifier=identifier)
 
     elif 'Dna' in node_types:
-        return gene(namespace=namespace, name=name, identifier=identifier)
+        return gene(namespace=namespace.upper(), name=name, identifier=identifier)
 
     elif 'Rna' in node_types:
-        return rna(namespace=namespace, name=name, identifier=identifier)
+        return rna(namespace=namespace.upper(), name=name, identifier=identifier)
 
     elif 'SmallMolecule' in node_types:
-        return abundance(namespace=namespace, name=name, identifier=identifier)
+        return abundance(namespace=namespace.upper(), name=name, identifier=identifier)
 
     elif 'PhysicalEntity' in node_types:
-        return abundance(namespace=namespace, name=name, identifier=identifier)
+        return abundance(namespace=namespace.upper(), name=name, identifier=identifier)
 
     elif 'Complex' in node_types:
         complex_components = node.get('complex_components')
@@ -101,10 +101,10 @@ def node_to_bel(node: Dict, graph, hgnc_manager: HgncManager) -> BaseEntity:
 
                 members.add(bel_node)
 
-        return complex_abundance(members=members, identifier=identifier, namespace=namespace)
+        return complex_abundance(members=members, identifier=identifier, namespace=namespace.upper())
 
     elif 'Pathway' in node_types:
-        bioprocess_node = bioprocess(identifier=identifier, name=name, namespace=namespace)
+        bioprocess_node = bioprocess(identifier=identifier, name=name, namespace=namespace.upper())
         graph.add_node_from_data(bioprocess_node)
         return bioprocess_node
 

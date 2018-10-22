@@ -170,7 +170,7 @@ def gene_to_bel_node(graph, node):
                 return protein_node
 
             elif UNIPROT in attribute:
-                protein_node = protein(namespace=UNIPROT, name=attribute[UNIPROT], identifier=attribute[UNIPROT])
+                protein_node = protein(namespace=UNIPROT.upper(), name=attribute[UNIPROT], identifier=attribute[UNIPROT])
                 graph.add_node_from_data(protein_node)
                 return protein_node
 
@@ -208,7 +208,7 @@ def flatten_gene_to_bel_node(graph, node):
             return protein_node
 
         elif UNIPROT in node_dict:
-            protein_node = protein(namespace=UNIPROT, name=node_dict[UNIPROT], identifier=node_dict[UNIPROT])
+            protein_node = protein(namespace=UNIPROT.upper(), name=node_dict[UNIPROT], identifier=node_dict[UNIPROT])
             graph.add_node_from_data(protein_node)
             return protein_node
 
@@ -228,7 +228,7 @@ def flatten_gene_to_bel_node(graph, node):
             proteins_list.append(protein_node)
 
         elif UNIPROT in node_dict:
-            protein_node = protein(namespace=UNIPROT, name=node_dict[UNIPROT], identifier=node_dict[UNIPROT])
+            protein_node = protein(namespace=UNIPROT.upper(), name=node_dict[UNIPROT], identifier=node_dict[UNIPROT])
             proteins_list.append(protein_node)
 
         else:
@@ -255,21 +255,13 @@ def compound_to_bel(graph, node):
 
         if CHEBI in node_dict:
 
-            identifier = node_dict[CHEBI]
-            name = node_dict[CHEBI_NAME]
-            namespace = CHEBI
-
-            compound = abundance(namespace=namespace, name=name, identifier=identifier)
+            compound = abundance(namespace=CHEBI.upper(), name=node_dict[CHEBI_NAME], identifier=node_dict[CHEBI])
             graph.add_node_from_data(compound)
             return compound
 
         elif PUBCHEM in node_dict:
 
-            identifier = node_dict[PUBCHEM]
-            name = node_dict[PUBCHEM]
-            namespace = PUBCHEM
-
-            compound = abundance(namespace=namespace, name=name, identifier=identifier)
+            compound = abundance(namespace=PUBCHEM.upper(), name=node_dict[PUBCHEM], identifier=node_dict[PUBCHEM])
             graph.add_node_from_data(compound)
             return compound
 
@@ -303,21 +295,13 @@ def flatten_compound_to_bel_node(graph, node):
 
         if CHEBI in node_dict:
 
-            identifier = node_dict[CHEBI]
-            name = node_dict[CHEBI_NAME]
-            namespace = CHEBI
-
-            compound = abundance(namespace=namespace, name=name, identifier=identifier)
+            compound = abundance(namespace=CHEBI.upper(), name=node_dict[CHEBI_NAME], identifier=node_dict[CHEBI])
             graph.add_node_from_data(compound)
             return compound
 
         elif PUBCHEM in node_dict:
 
-            identifier = node_dict[PUBCHEM]
-            name = node_dict[PUBCHEM]
-            namespace = PUBCHEM
-
-            compound = abundance(namespace=namespace, name=name, identifier=identifier)
+            compound = abundance(namespace=PUBCHEM.upper(), name=node_dict[PUBCHEM], identifier=node_dict[PUBCHEM])
             graph.add_node_from_data(compound)
             return compound
 
@@ -333,21 +317,13 @@ def flatten_compound_to_bel_node(graph, node):
 
         if CHEBI in node_dict:
 
-            identifier = node_dict[CHEBI]
-            name = node_dict[CHEBI_NAME]
-            namespace = CHEBI
-
-            compound_node = abundance(namespace=namespace, name=name, identifier=identifier)
+            compound_node = abundance(namespace=CHEBI.upper(), name=node_dict[CHEBI_NAME], identifier=node_dict[CHEBI])
             graph.add_node_from_data(compound_node)
             compounds_list.append(compound_node)
 
         elif PUBCHEM in node_dict:
 
-            identifier = node_dict[PUBCHEM]
-            name = node_dict[PUBCHEM]
-            namespace = PUBCHEM
-
-            compound_node = abundance(namespace=namespace, name=name, identifier=identifier)
+            compound_node = abundance(namespace=PUBCHEM.upper(), name=node_dict[PUBCHEM], identifier=node_dict[PUBCHEM])
             graph.add_node_from_data(compound_node)
             compounds_list.append(compound_node)
 
@@ -394,7 +370,7 @@ def flatten_complex_to_bel_node(graph, node):
             members.append(protein_node)
 
         elif UNIPROT in node_dict:
-            protein_node = protein(namespace=UNIPROT, name=node_dict[UNIPROT], identifier=node_dict[UNIPROT])
+            protein_node = protein(namespace=UNIPROT.upper(), name=node_dict[UNIPROT], identifier=node_dict[UNIPROT])
             members.append(protein_node)
 
         else:

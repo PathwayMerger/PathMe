@@ -281,18 +281,18 @@ class TestKegg(KeggTest):
 
         # Test un-flattened compound nodes
         self.assertEqual(ppar_nodes['48'], composite_abundance([
-            abundance(namespace=CHEBI, name='9(S)-HODE', identifier='	34496'),
-            abundance(namespace=CHEBI, name='13(S)-HODE', identifier='34154')
+            abundance(namespace=CHEBI.upper(), name='9(S)-HODE', identifier='	34496'),
+            abundance(namespace=CHEBI.upper(), name='13(S)-HODE', identifier='34154')
         ]))
 
         # Test flattened compound nodes
         self.assertEqual(flat_ppar_nodes['48'], [
-            abundance(namespace=CHEBI, name='9(S)-HODE', identifier='	34496'),
-            abundance(namespace=CHEBI, name='13(S)-HODE', identifier='34154')
+            abundance(namespace=CHEBI.upper(), name='9(S)-HODE', identifier='	34496'),
+            abundance(namespace=CHEBI.upper(), name='13(S)-HODE', identifier='34154')
         ])
         self.assertEqual(
             flat_glycolysis_nodes['85'],
-            abundance(namespace=CHEBI, name='2-phospho-D-glyceric acid', identifier='17835')
+            abundance(namespace=CHEBI.upper(), name='2-phospho-D-glyceric acid', identifier='17835')
         )
 
     def test_complex_node(self):
