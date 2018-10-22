@@ -65,7 +65,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-__version__ = '0.0.4-dev'
+__version__ = '0.0.4'
 
 __title__ = 'pathme'
 __description__ = "Harmonizing pathway databases using Biological Expression Language (BEL)"
