@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE pathway SYSTEM "http://www.kegg.jp/kegg/xml/KGML_v0.7.2_.dtd">
+<!-- Creation date: Jul 4, 2016 09:16:33 +0900 (GMT+9) -->
+<pathway name="path:hsa04150" org="hsa" number="04150"
+         title="mTOR signaling pathway"
+         image="http://www.kegg.jp/kegg/pathway/hsa/hsa04150.png"
+         link="http://www.kegg.jp/kegg-bin/show_pathway?hsa04150">
+    <entry id="1" name="path:hsa04150" type="map"
+        link="http://www.kegg.jp/dbget-bin/www_bget?hsa04150">
+        <graphics name="TITLE:mTOR signaling pathway" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="roundrectangle" x="150" y="58" width="220" height="25"/>
+    </entry>
+    <entry id="2" name="hsa:3480 hsa:3643" type="gene"
+        link="http://www.kegg.jp/dbget-bin/www_bget?hsa:3480+hsa:3643">
+        <graphics name="IGF1R, CD221, IGFIR, IGFR, JTK13..." fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="150" y="590" width="46" height="17"/>
+    </entry>
+    <entry id="3" name="hsa:3667" type="gene"
+        link="http://www.kegg.jp/dbget-bin/www_bget?hsa:3667">
+        <graphics name="IRS1, HIRS-1" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="338" y="589" width="46" height="17"/>
+    </entry>
+    <entry id="13" name="hsa:7248 hsa:7249" type="gene"
+        link="http://www.kegg.jp/dbget-bin/www_bget?hsa:7248+hsa:7249">
+        <graphics name="TSC1, LAM, TSC..." fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="486" y="334" width="46" height="17"/>
+    </entry>
+    <entry id="14" name="hsa:6009" type="gene"
+        link="http://www.kegg.jp/dbget-bin/www_bget?hsa:6009">
+        <graphics name="RHEB, RHEB2" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="579" y="342" width="46" height="17"/>
+    </entry>
+    <entry id="22" name="hsa:107080638 hsa:51256" type="gene"
+        link="http://www.kegg.jp/dbget-bin/www_bget?hsa:107080638+hsa:51256">
+        <graphics name="107080638..." fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="486" y="351" width="46" height="17"/>
+    </entry>
+    <entry id="26" name="hsa:5562 hsa:5563" type="gene"
+        link="http://www.kegg.jp/dbget-bin/www_bget?hsa:5562+hsa:5563">
+        <graphics name="PRKAA1, AMPK, AMPKa1..." fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="338" y="244" width="46" height="17"/>
+    </entry>
+    <entry id="35" name="hsa:3551" type="gene"
+        link="http://www.kegg.jp/dbget-bin/www_bget?hsa:3551">
+        <graphics name="IKBKB, IKK-beta, IKK2, IKKB, IMD15, NFKBIKB" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="338" y="341" width="46" height="17"/>
+    </entry>
+    <relation entry1="13" entry2="22" type="PPrel">
+        <subtype name="binding/association" value="---"/>
+    </relation>
+    <relation entry1="2" entry2="3" type="PPrel">
+        <subtype name="activation" value="--&gt;"/>
+    </relation>
+    <relation entry1="26" entry2="22" type="PPrel">
+        <subtype name="activation" value="--&gt;"/>
+        <subtype name="phosphorylation" value="+p"/>
+    </relation>
+    <relation entry1="35" entry2="13" type="PPrel">
+        <subtype name="inhibition" value="--|"/>
+        <subtype name="phosphorylation" value="+p"/>
+    </relation>
+    <relation entry1="35" entry2="22" type="PPrel">
+        <subtype name="inhibition" value="--|"/>
+        <subtype name="phosphorylation" value="+p"/>
+    </relation>
+    <relation entry1="13" entry2="14" type="PPrel">
+        <subtype name="inhibition" value="--|"/>
+    </relation>
+    <relation entry1="22" entry2="14" type="PPrel">
+        <subtype name="inhibition" value="--|"/>
+    </relation>
+</pathway>
