@@ -492,15 +492,42 @@ def add_simple_edge(graph, u, v, relation_type):
     :param v: target node
     :param list relation_type: source ID, target ID and relation types
     """
-    # Subject activity increases protein modification of object
-    if relation_type in {'phosphorylation', 'glycosylation', 'ubiquitination', 'methylation'}:
+    # Check if multiple relation subtypes present
+    if isinstance(relation_type, list):
+
+        # TODO: represent abundance modification in BEL?
+        # Check if protein modification is a relation subtype
+        if relation_type[1] in {'phosphorylation', 'glycosylation', 'ubiquitination', 'methylation'}:
+
+            # If the object is a gene, miRNA, RNA, or protein, add protein modification
+            if isinstance(v, CentralDogma):
+                v_modified = v.with_variants(pmod(KEGG_MODIFICATIONS[relation_type[1]]))
+
+                # Add increases edge if accompanying relation subtype is activation to represent protein
+                # modification by a kinase
+                if relation_type[0] == 'activation':
+                    graph.add_increases(u, v_modified, citation='', evidence='', subject_modifier=activity(),
+                                        annotations={})
+
+                # Add decreases edge if accompanying relation subtype is inhibition to represent protein
+                # modification by a kinase
+                elif relation_type[0] == 'inhibition':
+                    graph.add_decreases(u, v_modified, citation='', evidence='', subject_modifier=activity(),
+                                        annotations={})
+        # TODO: add pmod of v activates v
+
+    # If only one pmod relation subtype
+    elif relation_type in {'phosphorylation', 'glycosylation', 'ubiquitination', 'methylation'}:
+
         # If the object is a gene, miRNA, RNA, or protein, add protein modification
         if isinstance(v, CentralDogma):
-            v = v.with_variants(pmod(KEGG_MODIFICATIONS[relation_type]))
-        graph.add_increases(u, v, citation='', evidence='', subject_modifier=activity(), annotations={})
+            v_modified = v.with_variants(pmod(KEGG_MODIFICATIONS[relation_type]))
+            graph.add_increases(u, v_modified, citation='', evidence='', subject_modifier=activity(),
+                                annotations={})
 
     # Subject activity decreases protein modification (i.e. dephosphorylation) of object
     elif relation_type == 'dephosphorylation':
+
         # If the object is a gene, miRNA, RNA, or protein, add protein modification
         if isinstance(v, CentralDogma):
             v = v.with_variants(pmod('Ph'))
@@ -524,6 +551,7 @@ def add_simple_edge(graph, u, v, relation_type):
 
     # Subject increases expression of object
     elif relation_type == 'expression':
+
         # Expression object is converted to RNA abundance
         if isinstance(v, CentralDogma):
             v = v.get_rna()
@@ -531,6 +559,7 @@ def add_simple_edge(graph, u, v, relation_type):
 
     # Subject decreases expression of object
     elif relation_type == 'repression':
+
         # Repression object is converted to RNA abundance
         if isinstance(v, CentralDogma):
             v = v.get_rna()
@@ -603,3 +632,4 @@ def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager
         )
 
         to_pickle(bel_graph, pickle_path)
+
