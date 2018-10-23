@@ -305,7 +305,10 @@ def get_all_relationships(tree):
     """
     relations_list = []
 
+
     for relation in tree.findall("relation"):
+
+        subtype_list = []
 
         relation_entry1 = relation.get("entry1")
         relation_entry2 = relation.get("entry2")
@@ -315,6 +318,7 @@ def get_all_relationships(tree):
 
             relation_subtype = subtype.get("name")
             relation_value = subtype.get("value")
+            subtype_list.append(relation_subtype)
 
             # TODO: assume association ??
             if not relation_subtype:
@@ -322,10 +326,16 @@ def get_all_relationships(tree):
 
             # Add protein-protein, protein-compound and transcription factor-target gene product interactions
             if relation_type in {'PPrel', 'PCrel', 'GErel'}:
+
                 if relation_subtype == 'compound':
                     relations_list.append((relation_entry1, relation_entry2, 'binding/association'))
+
                 else:
-                    relations_list.append((relation_entry1, relation_entry2, relation_subtype))
+                    # Check if multiple relation subtypes present  
+                    if len(subtype_list) == 1:
+                        relations_list.append((relation_entry1, relation_entry2, relation_subtype))
+                    else:
+                        relations_list.append((relation_entry1, relation_entry2, subtype_list))
 
             # Add enzyme-enzyme relations denoted as binding/association
             elif relation_type.startswith('ECrel'):
