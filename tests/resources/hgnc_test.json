@@ -6892,6 +6892,638 @@
         "location_sortable": "03p25.2",
         "uuid": "7e58272e-bf58-4afc-9566-c63e957fae47",
         "_version_": 1611556026706821126
+      },
+      {
+        "hgnc_id": "HGNC:5465",
+        "symbol": "IGF1R",
+        "name": "insulin like growth factor 1 receptor",
+        "status": "Approved",
+        "locus_type": "gene with protein product",
+        "prev_name": [
+          "insulin-like growth factor 1 receptor"
+        ],
+        "alias_symbol": [
+          "JTK13",
+          "CD221",
+          "IGFIR",
+          "MGC18216",
+          "IGFR"
+        ],
+        "location": "15q26.3",
+        "date_approved_reserved": "1988-07-07",
+        "date_modified": "2018-10-20",
+        "date_name_changed": "2015-11-23",
+        "ena": [
+          "M69229"
+        ],
+        "entrez_id": "3480",
+        "mgd_id": [
+          "MGI:96433"
+        ],
+        "cd": "CD221",
+        "iuphar": "objectId:1801",
+        "cosmic": "IGF1R",
+        "orphanet": 138578,
+        "pubmed_id": [
+          1316909
+        ],
+        "refseq_accession": [
+          "NM_000875"
+        ],
+        "gene_family": [
+          "Receptor tyrosine kinases",
+          "CD molecules",
+          "Fibronectin type III domain containing"
+        ],
+        "vega_id": "OTTHUMG00000149851",
+        "lsdb": [
+          "LOVD - Leiden Open Variation Database|http://chromium.liacs.nl/LOVD2/growth/home.php?select_db=IGF1R",
+          "LRG_1055|http://ftp.ebi.ac.uk/pub/databases/lrgex/pending/LRG_1055.xml"
+        ],
+        "ensembl_gene_id": "ENSG00000140443",
+        "ccds_id": [
+          "CCDS10378",
+          "CCDS73785"
+        ],
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "147370"
+        ],
+        "uniprot_ids": [
+          "P08069"
+        ],
+        "ucsc_id": "uc002bul.4",
+        "rgd_id": [
+          "RGD:2869"
+        ],
+        "gene_family_id": [
+          321,
+          471,
+          555
+        ],
+        "location_sortable": "15q26.3",
+        "uuid": "11b883a4-41e2-4950-b0e0-849ce71d494e",
+        "_version_": 1615089757323264001
+      },
+      {
+        "hgnc_id": "HGNC:6091",
+        "symbol": "INSR",
+        "name": "insulin receptor",
+        "status": "Approved",
+        "locus_type": "gene with protein product",
+        "alias_symbol": [
+          "CD220"
+        ],
+        "location": "19p13.2",
+        "date_approved_reserved": "1986-01-01",
+        "date_modified": "2017-07-07",
+        "ena": [
+          "M10051"
+        ],
+        "entrez_id": "3643",
+        "mgd_id": [
+          "MGI:96575"
+        ],
+        "cd": "CD220",
+        "iuphar": "objectId:1800",
+        "cosmic": "INSR",
+        "orphanet": 122664,
+        "pubmed_id": [
+          2983222
+        ],
+        "refseq_accession": [
+          "NM_000208"
+        ],
+        "gene_family": [
+          "Receptor tyrosine kinases",
+          "CD molecules",
+          "Fibronectin type III domain containing"
+        ],
+        "vega_id": "OTTHUMG00000181992",
+        "ensembl_gene_id": "ENSG00000171105",
+        "ccds_id": [
+          "CCDS12176",
+          "CCDS42487"
+        ],
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "147670"
+        ],
+        "uniprot_ids": [
+          "P06213"
+        ],
+        "ucsc_id": "uc002mgd.2",
+        "rgd_id": [
+          "RGD:2917"
+        ],
+        "gene_family_id": [
+          321,
+          471,
+          555
+        ],
+        "location_sortable": "19p13.2",
+        "uuid": "c2322ddb-3d59-4c2f-9c3d-bd2c75df48d8",
+        "_version_": 1615089757407150085
+      },
+      {
+        "hgnc_id": "HGNC:6125",
+        "symbol": "IRS1",
+        "name": "insulin receptor substrate 1",
+        "status": "Approved",
+        "locus_type": "gene with protein product",
+        "alias_symbol": [
+          "HIRS-1"
+        ],
+        "location": "2q36.3",
+        "date_approved_reserved": "1992-08-24",
+        "date_modified": "2016-10-05",
+        "entrez_id": "3667",
+        "mgd_id": [
+          "MGI:99454"
+        ],
+        "cosmic": "IRS1",
+        "pubmed_id": [
+          1648180
+        ],
+        "refseq_accession": [
+          "NM_005544"
+        ],
+        "gene_family": [
+          "Pleckstrin homology domain containing"
+        ],
+        "vega_id": "OTTHUMG00000133179",
+        "ensembl_gene_id": "ENSG00000169047",
+        "ccds_id": [
+          "CCDS2463"
+        ],
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "147545"
+        ],
+        "uniprot_ids": [
+          "P35568"
+        ],
+        "ucsc_id": "uc002voh.5",
+        "rgd_id": [
+          "RGD:2922"
+        ],
+        "gene_family_id": [
+          682
+        ],
+        "location_sortable": "02q36.3",
+        "uuid": "b8c7bce0-a4e9-422c-b1db-5027c64b8d62",
+        "_version_": 1615089757418684423
+      },
+      {
+        "hgnc_id": "HGNC:12362",
+        "symbol": "TSC1",
+        "name": "TSC complex subunit 1",
+        "status": "Approved",
+        "locus_type": "gene with protein product",
+        "prev_symbol": [
+          "TSC"
+        ],
+        "prev_name": [
+          "tuberous sclerosis 1"
+        ],
+        "alias_symbol": [
+          "KIAA0243",
+          "LAM",
+          "hamartin"
+        ],
+        "alias_name": [
+          "hamartin"
+        ],
+        "location": "9q34",
+        "date_approved_reserved": "1986-01-01",
+        "date_modified": "2018-10-20",
+        "date_name_changed": "2017-06-29",
+        "ena": [
+          "AF013168"
+        ],
+        "entrez_id": "7248",
+        "mgd_id": [
+          "MGI:1929183"
+        ],
+        "cosmic": "TSC1",
+        "orphanet": 120309,
+        "pubmed_id": [
+          9242607,
+          10806479
+        ],
+        "refseq_accession": [
+          "NM_000368"
+        ],
+        "gene_family": [
+          "Armadillo-like helical domain containing",
+          "TSC complex"
+        ],
+        "vega_id": "OTTHUMG00000020844",
+        "lsdb": [
+          "TSC Mutation Database|http://www.LOVD.nl/TSC1",
+          "Tuberous sclerosis database|http://chromium.liacs.nl/LOVD2/TSC/home.php?select_db=TSC1",
+          "LRG_486|http://ftp.ebi.ac.uk/pub/databases/lrgex/LRG_486.xml"
+        ],
+        "ensembl_gene_id": "ENSG00000165699",
+        "ccds_id": [
+          "CCDS6956",
+          "CCDS55350",
+          "CCDS87703"
+        ],
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "605284"
+        ],
+        "uniprot_ids": [
+          "Q92574"
+        ],
+        "ucsc_id": "uc004cca.3",
+        "rgd_id": [
+          "RGD:620124"
+        ],
+        "gene_family_id": [
+          1492,
+          1497
+        ],
+        "location_sortable": "09q34",
+        "uuid": "ecf6a2f1-99e6-41cb-aa08-101484f44f69",
+        "_version_": 1615089760484720643
+      },
+      {
+        "hgnc_id": "HGNC:12363",
+        "symbol": "TSC2",
+        "name": "TSC complex subunit 2",
+        "status": "Approved",
+        "locus_type": "gene with protein product",
+        "prev_symbol": [
+          "TSC4"
+        ],
+        "prev_name": [
+          "tuberous sclerosis 2"
+        ],
+        "alias_symbol": [
+          "tuberin",
+          "LAM",
+          "PPP1R160"
+        ],
+        "alias_name": [
+          "protein phosphatase 1, regulatory subunit 160"
+        ],
+        "location": "16p13.3",
+        "date_approved_reserved": "1989-05-25",
+        "date_modified": "2018-10-20",
+        "date_name_changed": "2017-06-29",
+        "ena": [
+          "AB014460"
+        ],
+        "entrez_id": "7249",
+        "mgd_id": [
+          "MGI:102548"
+        ],
+        "cosmic": "TSC2",
+        "orphanet": 120315,
+        "pubmed_id": [
+          1303246,
+          7558029
+        ],
+        "refseq_accession": [
+          "NM_000548"
+        ],
+        "gene_family": [
+          "Protein phosphatase 1 regulatory subunits",
+          "Armadillo-like helical domain containing",
+          "TSC complex"
+        ],
+        "vega_id": "OTTHUMG00000128745",
+        "lsdb": [
+          "TSC2 Mutation Database|http://www.LOVD.nl/TSC2",
+          "Tuberous sclerosis database|http://chromium.liacs.nl/LOVD2/TSC/home.php?select_db=TSC2",
+          "LRG_487|http://ftp.ebi.ac.uk/pub/databases/lrgex/LRG_487.xml"
+        ],
+        "ensembl_gene_id": "ENSG00000103197",
+        "ccds_id": [
+          "CCDS10458",
+          "CCDS45384",
+          "CCDS58408",
+          "CCDS81932",
+          "CCDS81933",
+          "CCDS81934",
+          "CCDS10459"
+        ],
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "191092"
+        ],
+        "uniprot_ids": [
+          "P49815"
+        ],
+        "ucsc_id": "uc002con.4",
+        "rgd_id": [
+          "RGD:3908"
+        ],
+        "gene_family_id": [
+          694,
+          1492,
+          1497
+        ],
+        "location_sortable": "16p13.3",
+        "uuid": "c6e4f623-38df-48cd-8f3d-3ddbbc8d79a4",
+        "_version_": 1615089760484720644
+      },
+      {
+        "hgnc_id": "HGNC:10011",
+        "symbol": "RHEB",
+        "name": "Ras homolog, mTORC1 binding",
+        "status": "Approved",
+        "locus_type": "gene with protein product",
+        "prev_symbol": [
+          "RHEB2"
+        ],
+        "prev_name": [
+          "Ras homolog enriched in brain 2",
+          "Ras homolog enriched in brain"
+        ],
+        "location": "7q36.1",
+        "date_approved_reserved": "1996-07-17",
+        "date_modified": "2018-07-26",
+        "date_name_changed": "2017-08-07",
+        "ena": [
+          "D78132"
+        ],
+        "entrez_id": "6009",
+        "mgd_id": [
+          "MGI:97912"
+        ],
+        "cosmic": "RHEB",
+        "orphanet": 470974,
+        "pubmed_id": [
+          15854902,
+          8661031
+        ],
+        "refseq_accession": [
+          "NM_005614"
+        ],
+        "gene_family": [
+          "RAS type GTPase family"
+        ],
+        "date_symbol_changed": "2003-07-14",
+        "vega_id": "OTTHUMG00000157330",
+        "ensembl_gene_id": "ENSG00000106615",
+        "ccds_id": [
+          "CCDS5927"
+        ],
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "601293"
+        ],
+        "uniprot_ids": [
+          "Q15382"
+        ],
+        "ucsc_id": "uc003wkh.1",
+        "rgd_id": [
+          "RGD:621840"
+        ],
+        "gene_family_id": [
+          389
+        ],
+        "location_sortable": "07q36.1",
+        "uuid": "1c32ff20-9aca-4294-be7d-2a2af691a0b3",
+        "_version_": 1615089759074385922
+      },
+      {
+        "hgnc_id": "HGNC:21066",
+        "symbol": "TBC1D7",
+        "name": "TBC1 domain family member 7",
+        "status": "Approved",
+        "locus_type": "gene with protein product",
+        "prev_name": [
+          "TBC1 domain family, member 7"
+        ],
+        "alias_symbol": [
+          "dJ257A7.3",
+          "FLJ32666"
+        ],
+        "alias_name": [
+          "TS complex subunit 3"
+        ],
+        "location": "6p24.1",
+        "date_approved_reserved": "2003-05-14",
+        "date_modified": "2016-10-05",
+        "date_name_changed": "2015-11-18",
+        "ena": [
+          "AF151073"
+        ],
+        "entrez_id": "51256",
+        "mgd_id": [
+          "MGI:1914296"
+        ],
+        "cosmic": "TBC1D7",
+        "orphanet": 371601,
+        "pubmed_id": [
+          11042152,
+          17646400,
+          26893383
+        ],
+        "refseq_accession": [
+          "NM_016495"
+        ],
+        "gene_family": [
+          "TSC complex"
+        ],
+        "vega_id": "OTTHUMG00000014272",
+        "ensembl_gene_id": "ENSG00000145979",
+        "ccds_id": [
+          "CCDS4523",
+          "CCDS47376",
+          "CCDS58995",
+          "CCDS83062"
+        ],
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "612655"
+        ],
+        "uniprot_ids": [
+          "Q9P0N9"
+        ],
+        "ucsc_id": "uc063lxp.1",
+        "rgd_id": [
+          "RGD:1307661"
+        ],
+        "gene_family_id": [
+          1497
+        ],
+        "location_sortable": "06p24.1",
+        "uuid": "f39b2bb7-8bc9-4eed-9083-4681b95f6b89",
+        "_version_": 1615089760182730756
+      },
+      {
+        "hgnc_id": "HGNC:9376",
+        "symbol": "PRKAA1",
+        "name": "protein kinase AMP-activated catalytic subunit alpha 1",
+        "status": "Approved",
+        "locus_type": "gene with protein product",
+        "prev_name": [
+          "protein kinase, AMP-activated, alpha 1 catalytic subunit"
+        ],
+        "alias_symbol": [
+          "AMPKa1"
+        ],
+        "alias_name": [
+          "AMPK, alpha, 1"
+        ],
+        "location": "5p13.1",
+        "date_approved_reserved": "1997-05-09",
+        "date_modified": "2016-01-27",
+        "date_name_changed": "2016-01-27",
+        "entrez_id": "5562",
+        "mgd_id": [
+          "MGI:2145955"
+        ],
+        "iuphar": "objectId:1541",
+        "cosmic": "PRKAA1",
+        "pubmed_id": [
+          8557660
+        ],
+        "refseq_accession": [
+          "NM_006251"
+        ],
+        "vega_id": "OTTHUMG00000162269",
+        "ensembl_gene_id": "ENSG00000132356",
+        "ccds_id": [
+          "CCDS3932",
+          "CCDS3933"
+        ],
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "602739"
+        ],
+        "uniprot_ids": [
+          "Q13131"
+        ],
+        "ucsc_id": "uc003jmc.4",
+        "rgd_id": [
+          "RGD:3387"
+        ],
+        "location_sortable": "05p13.1",
+        "uuid": "08d0d300-1eb1-4c73-9722-de7b5884f086",
+        "_version_": 1615089758899273730
+      },
+      {
+        "hgnc_id": "HGNC:9377",
+        "symbol": "PRKAA2",
+        "name": "protein kinase AMP-activated catalytic subunit alpha 2",
+        "status": "Approved",
+        "locus_type": "gene with protein product",
+        "prev_symbol": [
+          "PRKAA"
+        ],
+        "prev_name": [
+          "protein kinase, AMP-activated, alpha 2 catalytic subunit"
+        ],
+        "alias_symbol": [
+          "AMPK",
+          "AMPKa2"
+        ],
+        "location": "1p32.2",
+        "date_approved_reserved": "1995-12-12",
+        "date_modified": "2016-10-05",
+        "date_name_changed": "2016-01-27",
+        "ena": [
+          "BC069823"
+        ],
+        "entrez_id": "5563",
+        "mgd_id": [
+          "MGI:1336173"
+        ],
+        "iuphar": "objectId:1542",
+        "cosmic": "PRKAA2",
+        "pubmed_id": [
+          7959015
+        ],
+        "refseq_accession": [
+          "NM_006252"
+        ],
+        "vega_id": "OTTHUMG00000008282",
+        "ensembl_gene_id": "ENSG00000162409",
+        "ccds_id": [
+          "CCDS605"
+        ],
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "600497"
+        ],
+        "uniprot_ids": [
+          "P54646"
+        ],
+        "ucsc_id": "uc001cyk.5",
+        "rgd_id": [
+          "RGD:620893"
+        ],
+        "location_sortable": "01p32.2",
+        "uuid": "0bceae3d-62fa-4019-a20e-82322d600176",
+        "_version_": 1615089758899273731
+      },
+      {
+        "hgnc_id": "HGNC:5960",
+        "symbol": "IKBKB",
+        "name": "inhibitor of nuclear factor kappa B kinase subunit beta",
+        "status": "Approved",
+        "locus_type": "gene with protein product",
+        "prev_name": [
+          "inhibitor of kappa light polypeptide gene enhancer in B-cells, kinase beta"
+        ],
+        "alias_symbol": [
+          "IKK2",
+          "NFKBIKB",
+          "IKK-beta",
+          "IKKB"
+        ],
+        "location": "8p11.21",
+        "date_approved_reserved": "1998-02-11",
+        "date_modified": "2018-10-20",
+        "date_name_changed": "2016-12-21",
+        "ena": [
+          "AF029684"
+        ],
+        "entrez_id": "3551",
+        "mgd_id": [
+          "MGI:1338071"
+        ],
+        "iuphar": "objectId:2039",
+        "cosmic": "IKBKB",
+        "orphanet": 401771,
+        "pubmed_id": [
+          9878263,
+          9763654,
+          18308615
+        ],
+        "refseq_accession": [
+          "NM_001190720"
+        ],
+        "vega_id": "OTTHUMG00000164092",
+        "lsdb": [
+          "LRG_1241|http://ftp.ebi.ac.uk/pub/databases/lrgex/LRG_1241.xml"
+        ],
+        "ensembl_gene_id": "ENSG00000104365",
+        "ccds_id": [
+          "CCDS6128",
+          "CCDS55228",
+          "CCDS56535"
+        ],
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "603258"
+        ],
+        "uniprot_ids": [
+          "O14920"
+        ],
+        "ucsc_id": "uc003xow.3",
+        "rgd_id": [
+          "RGD:621375"
+        ],
+        "location_sortable": "08p11.21",
+        "uuid": "d2e6f476-873a-4f53-bb0a-84e521a04c15",
+        "_version_": 1615089757377789952
       }
     ]
   }
