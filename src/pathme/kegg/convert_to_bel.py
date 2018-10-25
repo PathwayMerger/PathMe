@@ -495,7 +495,6 @@ def add_simple_edge(graph, u, v, relation_type):
     # Check if multiple relation subtypes present
     if isinstance(relation_type, list):
 
-        # TODO: represent abundance modification in BEL?
         # Check if protein modification is a relation subtype
         if relation_type[1] in {'phosphorylation', 'glycosylation', 'ubiquitination', 'methylation'}:
 
@@ -503,18 +502,18 @@ def add_simple_edge(graph, u, v, relation_type):
             if isinstance(v, CentralDogma):
                 v_modified = v.with_variants(pmod(KEGG_MODIFICATIONS[relation_type[1]]))
 
-                # Add increases edge if accompanying relation subtype is activation to represent protein
-                # modification by a kinase
+                # Add increases edge if pmod subtype is coupled with activation subtype
                 if relation_type[0] == 'activation':
                     graph.add_increases(u, v_modified, citation='', evidence='', subject_modifier=activity(),
                                         annotations={})
 
-                # Add decreases edge if accompanying relation subtype is inhibition to represent protein
-                # modification by a kinase
+                # Add decreases edge if pmod subtype is coupled with inhibition subtype
                 elif relation_type[0] == 'inhibition':
                     graph.add_decreases(u, v_modified, citation='', evidence='', subject_modifier=activity(),
                                         annotations={})
+
         # TODO: add pmod of v activates v
+        # TODO: how to represent abundance modification in BEL?
 
     # If only one pmod relation subtype
     elif relation_type in {'phosphorylation', 'glycosylation', 'ubiquitination', 'methylation'}:
@@ -632,4 +631,3 @@ def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager
         )
 
         to_pickle(bel_graph, pickle_path)
-
