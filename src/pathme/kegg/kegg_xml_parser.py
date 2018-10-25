@@ -305,7 +305,6 @@ def get_all_relationships(tree):
     """
     relations_list = []
 
-
     for relation in tree.findall("relation"):
 
         subtype_list = []
@@ -331,7 +330,7 @@ def get_all_relationships(tree):
                     relations_list.append((relation_entry1, relation_entry2, 'binding/association'))
 
                 else:
-                    # Check if multiple relation subtypes present  
+                    # Check if multiple relation subtypes present
                     if len(subtype_list) == 1:
                         relations_list.append((relation_entry1, relation_entry2, relation_subtype))
                     else:
