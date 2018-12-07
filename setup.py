@@ -25,9 +25,9 @@ CLASSIFIERS = [
     'Topic :: Scientific/Engineering :: Bio-Informatics',
 ]
 INSTALL_REQUIRES = [
-    'pandas==0.23.4',
-    'tqdm==4.28.1',
-    'numpy==1.15.4',
+    'pandas',
+    'tqdm',
+    'numpy',
     'rdflib==4.2.2',
     'bio2bel==0.2.0',
     'bio2bel_hgnc==0.2.1',
