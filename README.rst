@@ -11,7 +11,7 @@ Citation
 --------
 If you use PathMe in your work, please cite [1]_:
 
-.. [1] Domingo-Fernández, D., *et al.* (2018). `PathMe: Merging and exploring mechanistic pathway knowledge 
+.. [1] Domingo-Fernández, D., *et al.* (2018). `PathMe: Merging and exploring mechanistic pathway knowledge
     <https://doi.org/10.1101/451625>`_. bioRxiv *451625*.
 
 Installation |pypi_version| |python_versions| |pypi_license|
