@@ -25,18 +25,18 @@ CLASSIFIERS = [
     'Topic :: Scientific/Engineering :: Bio-Informatics',
 ]
 INSTALL_REQUIRES = [
-    'pandas',
-    'tqdm',
-    'numpy',
+    'pandas==0.23.4',
+    'tqdm==4.28.1',
+    'numpy==1.15.4',
     'rdflib==4.2.2',
-    'bio2bel',
-    'bio2bel_hgnc>=0.1.1',
-    'bio2bel_chebi',
-    'bio2bel_kegg',
-    'bio2bel_wikipathways',
-    'bio2bel_reactome',
-    'pybel',
-    'pybel-tools',
+    'bio2bel==0.2.0',
+    'bio2bel_hgnc==0.2.1',
+    'bio2bel_chebi==0.2.0',
+    'bio2bel_kegg==0.2.1',
+    'bio2bel_wikipathways==0.2.0',
+    'bio2bel_reactome==0.2.0',
+    'pybel==0.12.2',
+    'pybel-tools==0.7.0',
 ]
 ENTRY_POINTS = {
     'console_scripts': [
