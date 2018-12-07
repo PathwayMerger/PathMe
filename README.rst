@@ -1,6 +1,7 @@
 PathMe |build| |coverage| |docs| |zenodo|
 =========================================
-PathMe is a Python package aimed to convert KEGG [2]_ [3]_ [4]_, Reactome [5]_ [6]_, and WikiPathways [7]_ [8]_ [9]_ to Biological Expression Language (BEL). 
+PathMe is a Python package aimed to convert KEGG [2]_ [3]_ [4]_, Reactome [5]_ [6]_, and WikiPathways [7]_ [8]_ [9]_ to
+Biological Expression Language (BEL).
 
 It is the continuation of the ComPath web application aimed at exploring, analyzing,
 and curating pathway knowledge in a gene-centric view. This different approach involves converting
@@ -11,7 +12,7 @@ Citation
 If you use PathMe in your work, please cite [1]_:
 
 .. [1] Domingo-Fernández, D., *et al.* (2018). `PathMe: Merging and exploring mechanistic pathway knowledge 
-       <https://doi.org/10.1101/451625>`_. bioRxiv *451625*.
+    <https://doi.org/10.1101/451625>`_. bioRxiv *451625*.
 
 Installation |pypi_version| |python_versions| |pypi_license|
 ------------------------------------------------------------
