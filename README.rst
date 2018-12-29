@@ -104,8 +104,8 @@ WikiPathways
 .. [9] Kelder, T., et al. WikiPathways: building research communities on biological pathways. Nucleic Acids Res. 2012
        Jan;40(Database issue):D1301-7
 
-.. |build| image:: https://travis-ci.org/PathwayMerger/PathMe.svg?branch=master
-    :target: https://travis-ci.org/PathwayMerger/PathMe
+.. |build| image:: https://travis-ci.com/PathwayMerger/PathMe.svg?branch=master
+    :target: https://travis-ci.com/PathwayMerger/PathMe
     :alt: Build Status
 
 .. |coverage| image:: https://codecov.io/gh/PathwayMerger/PathMe/coverage.svg?branch=master
