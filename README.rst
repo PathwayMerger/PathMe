@@ -104,20 +104,20 @@ WikiPathways
 .. [9] Kelder, T., et al. WikiPathways: building research communities on biological pathways. Nucleic Acids Res. 2012
        Jan;40(Database issue):D1301-7
 
-.. |build| image:: https://travis-ci.org/ComPath/PathMe.svg?branch=master
-    :target: https://travis-ci.org/ComPath/PathMe
+.. |build| image:: https://travis-ci.org/PathwayMerger/PathMe.svg?branch=master
+    :target: https://travis-ci.org/PathwayMerger/PathMe
     :alt: Build Status
 
-.. |coverage| image:: https://codecov.io/gh/ComPath/PathMe/coverage.svg?branch=master
-    :target: https://codecov.io/gh/ComPath/PathMe?branch=master
+.. |coverage| image:: https://codecov.io/gh/PathwayMerger/PathMe/coverage.svg?branch=master
+    :target: https://codecov.io/gh/PathwayMerger/PathMe?branch=master
     :alt: Coverage Status
 
 .. |docs| image:: http://readthedocs.org/projects/pathme/badge/?version=latest
     :target: https://pathme.readthedocs.io/en/latest/
     :alt: Documentation Status
 
-.. |climate| image:: https://codeclimate.com/github/compath/pathme/badges/gpa.svg
-    :target: https://codeclimate.com/github/compath/pathme
+.. |climate| image:: https://codeclimate.com/github/pathwaymerger/pathme/badges/gpa.svg
+    :target: https://codeclimate.com/github/pathwaymerger/pathme
     :alt: Code Climate
 
 .. |python_versions| image:: https://img.shields.io/pypi/pyversions/pathme.svg
