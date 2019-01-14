@@ -19,6 +19,18 @@ __all__ = [
 ]
 
 
+def _check_empty_complex(complex: Dict[str, Dict], nodes: Dict[str, BaseEntity]):
+    members = {
+        nodes[member_id]
+        for member_id in complex['participants']
+        if member_id in nodes
+    }
+    if not members:
+        return False
+
+    return True
+
+
 def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interactions: Dict[str, Dict],
                    pathway_info, hgnc_manager: Manager) -> BELGraph:
     """Convert  RDF graph info to BEL."""
@@ -111,10 +123,12 @@ def complexes_to_bel(complexes: Dict[str, Dict], nodes: Dict[str, BaseEntity], g
     return {
         complex_id: complex_to_bel(complex, nodes, graph)
         for complex_id, complex in complexes.items()
+        if _check_empty_complex(complex, nodes)
     }
 
 
 def complex_to_bel(complex, nodes, graph: BELGraph):
+    """Convert complex abundance to BEL"""
     members = {
         nodes[member_id]
         for member_id in complex['participants']
@@ -127,6 +141,7 @@ def complex_to_bel(complex, nodes, graph: BELGraph):
     graph.add_node_from_data(complex_bel_node)
 
     return complex_bel_node
+
 
 def get_reaction_node(participants, nodes, interactions):
     reactants = set()
@@ -142,6 +157,7 @@ def get_reaction_node(participants, nodes, interactions):
             products.add(target)
 
     return reaction(reactants=reactants, products=products)
+
 
 def get_node(node, nodes, interactions):
     if node not in nodes:
