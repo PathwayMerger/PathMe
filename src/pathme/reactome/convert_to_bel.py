@@ -118,9 +118,18 @@ def node_to_bel(node: Dict, graph, hgnc_manager: HgncManager) -> BaseEntity:
                 members.add(bel_node)
 
         if members:
-            return complex_abundance(members=members, identifier=identifier, namespace=namespace.upper())
+            return complex_abundance(
+                name=node.get('display_name'),
+                members=members,
+                identifier=identifier,
+                namespace=namespace.upper()
+            )
         else:
-            return NamedComplexAbundance(identifier=identifier, namespace=namespace.upper())
+            return NamedComplexAbundance(
+                name=node.get('display_name'),
+                identifier=identifier,
+                namespace=namespace.upper()
+            )
 
 
     elif 'Pathway' in node_types:
