@@ -3,7 +3,7 @@
 """This module contains the methods to convert a Reactome RDF network into a BELGraph."""
 
 import logging
-from typing import Dict, Iterable, List, Tuple
+from typing import Dict, List, Tuple
 
 from bio2bel_hgnc import Manager as HgncManager
 from pybel import BELGraph
@@ -18,7 +18,6 @@ from pybel.dsl import (
     reaction,
     bioprocess,
     BaseEntity,
-    CompositeAbundance,
     NamedComplexAbundance
 )
 
@@ -64,22 +63,11 @@ def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Di
     return graph
 
 
-def create_composite(members: Iterable) -> CompositeAbundance:
-    composite_members = []
-    for node_member in members:
-        composite_members.append(node_member)
-
-    return composite_abundance(composite_members)
-
-
-def nodes_to_bel(nodes: Dict[str, Dict], graph, hgnc_manager: HgncManager) -> Dict[str, BaseEntity]:
+def nodes_to_bel(nodes: Dict[str, Dict], graph: BELGraph, hgnc_manager: HgncManager) -> Dict[str, BaseEntity]:
     """Convert dictionary values to BEL nodes."""
     return {
         node_id: node_to_bel(node_att, graph, hgnc_manager)
         for node_id, node_att in nodes.items()
-        if 'Complex' != node_att['entity_type'] or (
-            'Complex' == node_att['entity_type'] and node_att.get('complex_components')
-    )
     }
 
 
