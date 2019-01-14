@@ -45,10 +45,11 @@ def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False):
         name=root.attrib['title'],
         version='1.0.0',
         description=root.attrib['link'],
-        pathway_id=root.attrib['name'],
         authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
         contact='daniel.domingo.fernandez@scai.fraunhofer.de'
     )
+
+    graph.graph['pathway_id'] = root.attrib['name']
 
     # Parse file and get entities and interactions
     genes_dict, compounds_dict, maps_dict, orthologs_dict = get_entity_nodes(xml_tree, hgnc_manager, chebi_manager)

@@ -35,10 +35,11 @@ def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Di
         name=pathway_info['display_name'],
         version='1.0.0',
         description=pathway_info['comment'],
-        pathway_id=identifier,
         authors="Josep Marín-Llaó, Daniel Domingo-Fernández & Sarah Mubeen",
         contact='daniel.domingo.fernandez@scai.fraunhofer.de',
     )
+
+    graph.graph['pathway_id'] = identifier
 
     nodes = nodes_to_bel(nodes, graph, hgnc_manager)
 
