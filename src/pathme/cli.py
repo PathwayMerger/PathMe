@@ -67,8 +67,14 @@ def bel(flatten, export_folder):
     log.info('Initiating HGNC Manager')
     hgnc_manager = HgncManager()
 
+    if not hgnc_manager.is_populated():
+        raise EnvironmentError('Your HGNC database is not populated. Please run python3 -m bio2bel_hgnc populate')
+
     log.info('Initiating ChEBI Manager')
     chebi_manager = ChebiManager()
+
+    if not chebi_manager.is_populated():
+        raise EnvironmentError('Your CHEBI database is not populated. Please run python3 -m bio2bel_chebi populate')
 
     if flatten:
         log.info('Flattening mode activated')
@@ -140,6 +146,9 @@ def bel(connection, debug, only_canonical):
 
     log.info('Initiating HGNC Manager')
     hgnc_manager = HgncManager()
+
+    if not hgnc_manager.is_populated():
+        raise EnvironmentError('Your HGNC database is not populated. Please run python3 -m bio2bel_hgnc populate')
 
     t = time.time()
 
@@ -235,6 +244,9 @@ def bel(verbose):
 
     log.info('Initiating HGNC Manager')
     hgnc_manager = HgncManager()
+
+    if not hgnc_manager.is_populated():
+        raise EnvironmentError('Your HGNC database is not populated. Please run python3 -m bio2bel_hgnc populate')
 
     resource_file = os.path.join(REACTOME_FILES, 'Homo_sapiens.owl')
 
