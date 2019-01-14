@@ -1,14 +1,26 @@
 # -*- coding: utf-8 -*-
 
 """This module contains the methods to convert a Reactome RDF network into a BELGraph."""
+
 import logging
 from typing import Dict, Iterable, List, Tuple
 
 from bio2bel_hgnc import Manager as HgncManager
 from pybel import BELGraph
 from pybel.dsl import (
-    abundance, activity, BaseEntity, composite_abundance, complex_abundance, gene, rna, protein, reaction, bioprocess,
-    CompositeAbundance)
+    abundance,
+    activity,
+    composite_abundance,
+    complex_abundance,
+    gene,
+    rna,
+    protein,
+    reaction,
+    bioprocess,
+    BaseEntity,
+    CompositeAbundance,
+    NamedComplexAbundance
+)
 
 from pathme.constants import UNKNOWN
 from pathme.reactome.utils import get_valid_node_parameters, process_multiple_proteins
@@ -22,7 +34,7 @@ __all__ = [
 
 
 def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]], pathway_info: Dict,
-                    hgnc_manager) -> BELGraph:
+                   hgnc_manager) -> BELGraph:
     uri_id = pathway_info['uri_reactome_id']
 
     if uri_id != UNKNOWN:
@@ -65,6 +77,9 @@ def nodes_to_bel(nodes: Dict[str, Dict], graph, hgnc_manager: HgncManager) -> Di
     return {
         node_id: node_to_bel(node_att, graph, hgnc_manager)
         for node_id, node_att in nodes.items()
+        if 'Complex' != node_att['entity_type'] or (
+            'Complex' == node_att['entity_type'] and node_att.get('complex_components')
+    )
     }
 
 
@@ -102,7 +117,11 @@ def node_to_bel(node: Dict, graph, hgnc_manager: HgncManager) -> BaseEntity:
 
                 members.add(bel_node)
 
-        return complex_abundance(members=members, identifier=identifier, namespace=namespace.upper())
+        if members:
+            return complex_abundance(members=members, identifier=identifier, namespace=namespace.upper())
+        else:
+            return NamedComplexAbundance(identifier=identifier, namespace=namespace.upper())
+
 
     elif 'Pathway' in node_types:
         bioprocess_node = bioprocess(identifier=identifier, name=name, namespace=namespace.upper())
