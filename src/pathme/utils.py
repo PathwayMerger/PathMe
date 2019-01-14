@@ -6,6 +6,7 @@ import collections
 import itertools as itt
 import logging
 import os
+import re
 import pickle
 from typing import Dict, List, Optional, Set
 from urllib.parse import urlparse
@@ -61,7 +62,13 @@ def check_multiple(element, element_name):
     if isinstance(element, set) or isinstance(element, list):
         log.warning('Multiple {}: {}'.format(element_name, element))
         # TODO: print the wikipathways bps that return a set because they are probably wrong.
-        if len(element) != 0:
+        if len(element) == 1:
+            return list(element)[0]
+        elif len(element) > 1:
+            for subelement in element:
+                if bool(re.match('^[A-Z0-9]+$', subelement)):
+                    return subelement
+
             return list(element)[0]
         else:
             log.warning('Empty list/set %s', element)
@@ -404,7 +411,7 @@ def get_bel_stats(resource_folder):
     return df
 
 
-def get_genes_from_pickles(resource_folder: str, files: List[str], manager) -> Dict[str,set]:
+def get_genes_from_pickles(resource_folder: str, files: List[str], manager) -> Dict[str, set]:
     """Get BEL graph gene set for all pathways in resource.
 
     :param str resource_folder: path to resource folder
@@ -427,7 +434,7 @@ def get_genes_from_pickles(resource_folder: str, files: List[str], manager) -> D
     return pathway_genes_dict
 
 
-def get_kegg_genes_from_pickles(resource_folder, files: List[str], manager) ->  Dict[str,Set]:
+def get_kegg_genes_from_pickles(resource_folder, files: List[str], manager) -> Dict[str, Set]:
     """Get BEL graph gene set for all KEGG pathways.
 
     :param str resource_folder: path to resource folder
