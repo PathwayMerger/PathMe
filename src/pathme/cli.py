@@ -137,7 +137,7 @@ def download():
 @click.option('-x', '--only-canonical', default=True, help='Parse only canonical pathways')
 def bel(connection, debug, only_canonical):
     """Convert WikiPathways to BEL."""
-    logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
 
     if debug:
         log.setLevel(logging.DEBUG)
