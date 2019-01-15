@@ -39,32 +39,6 @@ hgnc_test_path = os.path.join(resources_path, 'hgnc_test.json')
 chebi_test_path = os.path.join(resources_path, 'chebi_test.tsv.gz')
 
 
-class WikipathwaysTest(TemporaryConnectionMixin):
-    """A test case with a populated HGNC databases for WikiPathways parser."""
-
-    @classmethod
-    def setUpClass(cls):
-        """Create temporary file"""
-
-        logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
-        log.setLevel(logging.INFO)
-
-        """Create temporary file"""
-
-        cls.fd, cls.path = tempfile.mkstemp()
-        cls.connection = 'sqlite:///' + cls.path
-
-        # create temporary database
-        cls.manager = Manager(cls.connection)
-
-        """HGNC Manager"""
-
-        cls.hgnc_manager = HgncManager(engine=cls.manager.engine, session=cls.manager.session)
-        cls.hgnc_manager.populate(hgnc_file_path=hgnc_test_path, use_hcop=False)
-
-        log.info('HGNC database loaded')
-
-
 class KeggTest(TemporaryConnectionMixin):
     """A test case with a populated HGNC/CheBI databases for KEGG parser."""
 

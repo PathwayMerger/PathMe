@@ -2,14 +2,44 @@
 
 """Tests for converting WikiPathways."""
 
-import unittest
+import tempfile
 
+from bio2bel.testing import TemporaryConnectionMixin
+from bio2bel_hgnc import Manager as HgncManager
+from bio2bel_kegg.manager import Manager
+from pybel import BELGraph
 from pybel_tools.summary.edge_summary import count_relations
 
+from pathme.kegg.kegg_xml_parser import *
 from pathme.utils import parse_rdf
 from pathme.wikipathways.rdf_sparql import wikipathways_to_bel, _get_nodes, _get_interactions
-from pybel import BELGraph
-from tests.constants import WikipathwaysTest, WP22, WP2359, WP706, WP1871, WP2799
+from tests.constants import WP22, WP2359, WP706, WP1871, WP2799
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+resources_path = os.path.join(dir_path, 'resources')
+
+hgnc_test_path = os.path.join(resources_path, 'hgnc_test.json')
+
+
+class WikipathwaysTest(TemporaryConnectionMixin):
+    """A test case with a populated HGNC databases for WikiPathways parser."""
+
+    @classmethod
+    def setUpClass(cls):
+        """Create temporary file"""
+
+        """Create temporary file"""
+
+        cls.fd, cls.path = tempfile.mkstemp()
+        cls.connection = 'sqlite:///' + cls.path
+
+        """HGNC Manager"""
+        cls.manager = Manager(cls.connection)
+
+        cls.hgnc_manager = HgncManager(engine=cls.manager.engine, session=cls.manager.session)
+        cls.hgnc_manager.populate(hgnc_file_path=hgnc_test_path, use_hcop=False)
+
+        log.info('HGNC database loaded')
 
 
 class TestWikipathways(WikipathwaysTest):
