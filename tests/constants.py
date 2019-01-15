@@ -97,55 +97,61 @@ class KeggTest(TemporaryConnectionMixin):
             name='Glycolysis',
             version='1.0.0',
             description='Glycolysis',
-            pathway_id='path:hsa00010',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
             contact='daniel.domingo.fernandez@scai.fraunhofer.de'
         )
+
+        cls.glycolysis_empty_graph.graph['pathway_id'] = 'path:hsa00010'
 
         cls.glycolysis_empty_flatten_graph = BELGraph(
             name='Glycolysis flatten',
             version='1.0.0',
             description='Glycolysis',
-            pathway_id='path:hsa00010',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
             contact='daniel.domingo.fernandez@scai.fraunhofer.de'
         )
+
+        cls.glycolysis_empty_graph.graph['pathway_id'] = 'path:hsa00010'
 
         cls.notch_empty_graph = BELGraph(
             name='Notch',
             version='1.0.0',
             description='Notch signaling pathway',
-            pathway_id='path:hsa04330',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
             contact='daniel.domingo.fernandez@scai.fraunhofer.de'
         )
+
+        cls.notch_empty_graph.graph['pathway_id'] = 'path:hsa04330'
 
         cls.notch_empty_flatten_graph = BELGraph(
             name='Notch flatten',
             version='1.0.0',
             description='Notch signaling pathway',
-            pathway_id='path:hsa04330',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
             contact='daniel.domingo.fernandez@scai.fraunhofer.de'
         )
+
+        cls.notch_empty_flatten_graph.graph['pathway_id'] = 'path:hsa04330'
 
         cls.ppar_empty_graph = BELGraph(
             name='PPAR',
             version='1.0.0',
             description='PPAR signaling pathway',
-            pathway_id='path:hsa03320',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
             contact='daniel.domingo.fernandez@scai.fraunhofer.de'
         )
+
+        cls.ppar_empty_graph.graph['pathway_id'] = 'path:hsa03320'
 
         cls.ppar_empty_flatten_graph = BELGraph(
             name='PPAR flatten',
             version='1.0.0',
             description='PPAR signaling pathway',
-            pathway_id='path:hsa03320',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
             contact='daniel.domingo.fernandez@scai.fraunhofer.de'
         )
+
+        cls.ppar_empty_flatten_graph.graph['pathway_id'] = 'path:hsa03320'
 
     @classmethod
     def tearDownClass(cls):
