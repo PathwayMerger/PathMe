@@ -31,7 +31,6 @@ matrix:
       - env: TOXENV=flake8
       - env: TOXENV=xenon
       - env: TOXENV=vulture
-      - env: TOXENV=py
 install:
 - pip install --upgrade pip
 - pip install tox
