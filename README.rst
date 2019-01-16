@@ -5,7 +5,11 @@ Biological Expression Language (BEL).
 
 It is the continuation of the ComPath web application aimed at exploring, analyzing,
 and curating pathway knowledge in a gene-centric view. This different approach involves converting
-all the pathways in these resources into BEL as a pivotal integration schema to harmonize entities and relationships in order across these multiple resources; thus, enabling a more comprehensive evaluation of pathway cross-talks, consensus, and boundaries. Additionally, PathMe is complemented with the `PathMe-Viewer <https://github.com/ComPath/PathMe-Viewer>`_, a web application that enables querying, browsing, and navigating  pathway knowledge assisted by a user-friendly visualization.
+all the pathways in these resources into BEL as a pivotal integration schema to harmonize entities and relationships in
+order across these multiple resources; thus, enabling a more comprehensive evaluation of pathway cross-talks, consensus,
+and boundaries. Additionally, PathMe is complemented with the
+`PathMe-Viewer <https://github.com/ComPath/PathMe-Viewer>`_, a web application that enables querying, browsing, and
+navigating  pathway knowledge assisted by a user-friendly visualization.
 
 Citation
 --------
@@ -32,8 +36,8 @@ Installation |pypi_version| |python_versions| |pypi_license|
 
 How to Use
 ----------
-Before using PathMe, make sure you have installed and populated the `Bio2BEL HGNC <https://github.com/bio2bel/hgnc>`_ and
-`Bio2BEL ChEBI <https://github.com/bio2bel/chebi>`_ databases (Simple run:"python3 -m bio2bel_hgnc populate" and 
+Before using PathMe, make sure you have installed and populated the `Bio2BEL HGNC <https://github.com/bio2bel/hgnc>`_
+and `Bio2BEL ChEBI <https://github.com/bio2bel/chebi>`_ databases (Simple run:"python3 -m bio2bel_hgnc populate" and
 "python3 -m bio2bel_chebi populate") in your favourite terminal.
 
 Each database has three main commands: ``download``, ``bel``, and ``summarize``:
@@ -51,9 +55,9 @@ running the command ('database' can be either KEGG, Reactome, or WikiPathways):
 
 Once the raw files are downloaded, you can run the following to command to generate BELGraphs that will be exported
 as Python pickles files for further analysis. Furthermore, the conversion to BEL can be tuned differently for each
-database by using specific commands. For example, KEGG parameters are shown when running
-"python3 -m pathme kegg bel --help". Finally, please bear in mind that converting the Reactome files take up to 8 hours due 
-to the large amount of its RDF file.
+database by using specific commands. For example, KEGG parameters are shown when running "python3 -m pathme kegg bel
+--help". Finally, please bear in mind that converting the Reactome files take up to 8 hours due to the large amount of
+its RDF file.
 
 .. code-block:: sh
 
