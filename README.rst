@@ -32,8 +32,9 @@ Installation |pypi_version| |python_versions| |pypi_license|
 
 How to Use
 ----------
-Before using PathMe, make sure you have installed and populated the `Bio2BEL HGNC <https://github.com/bio2bel/hgnc>`_ and `Bio2BEL ChEBI <https://github.com/bio2bel/chebi>`_ databases (Simple run:
-"python3 -m bio2bel_hgnc populate" and "python3 -m bio2bel_chebi populate") in your favourite terminal.
+Before using PathMe, make sure you have installed and populated the `Bio2BEL HGNC <https://github.com/bio2bel/hgnc>`_ and
+`Bio2BEL ChEBI <https://github.com/bio2bel/chebi>`_ databases (Simple run:"python3 -m bio2bel_hgnc populate" and 
+"python3 -m bio2bel_chebi populate") in your favourite terminal.
 
 Each database has three main commands: ``download``, ``bel``, and ``summarize``:
 
@@ -51,7 +52,8 @@ running the command ('database' can be either KEGG, Reactome, or WikiPathways):
 Once the raw files are downloaded, you can run the following to command to generate BELGraphs that will be exported
 as Python pickles files for further analysis. Furthermore, the conversion to BEL can be tuned differently for each
 database by using specific commands. For example, KEGG parameters are shown when running
-"python3 -m pathme kegg bel --help". Finally, please bear in mind that converting the Reactome files take up to 8 hours due to the large amount of its RDF file.
+"python3 -m pathme kegg bel --help". Finally, please bear in mind that converting the Reactome files take up to 8 hours due 
+to the large amount of its RDF file.
 
 .. code-block:: sh
 
