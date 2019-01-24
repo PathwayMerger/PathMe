@@ -41,11 +41,15 @@ def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Di
     else:
         identifier = UNKNOWN
 
+    description = pathway_info['comment']
+    if isinstance(description, (set, list)):
+        description = '\n'.join(description)
+
     """Convert graph-like dictionaries to BELGraph."""
     graph = BELGraph(
         name=pathway_info['display_name'],
         version='1.0.0',
-        description=pathway_info['comment'],
+        description=description,
         authors="Josep Marín-Llaó, Daniel Domingo-Fernández & Sarah Mubeen",
         contact='daniel.domingo.fernandez@scai.fraunhofer.de',
     )
