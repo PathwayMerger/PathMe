@@ -244,13 +244,14 @@ def bel(verbose):
 
     log.info('Initiating HGNC Manager')
     hgnc_manager = HgncManager()
+    chebi_manager = ChebiManager()
 
     if not hgnc_manager.is_populated():
         raise EnvironmentError('Your HGNC database is not populated. Please run python3 -m bio2bel_hgnc populate')
 
     resource_file = os.path.join(REACTOME_FILES, 'Homo_sapiens.owl')
 
-    reactome_to_bel(resource_file, hgnc_manager)
+    reactome_to_bel(resource_file, hgnc_manager, chebi_manager)
 
     log.info('Reactome exported in %.2f seconds', time.time() - t)
 
@@ -284,10 +285,11 @@ def statistics(connection, verbose, only_canonical, export):
 
     log.info('Initiating HGNC Manager')
     hgnc_manager = HgncManager()
+    chebi_manager = ChebiManager()
 
     resource_file = os.path.join(REACTOME_FILES, 'Homo_sapiens.owl')
 
-    global_statistics, all_pathways_statistics = get_reactome_statistics(resource_file, hgnc_manager)
+    global_statistics, all_pathways_statistics = get_reactome_statistics(resource_file, hgnc_manager, chebi_manager)
 
     if export:
         df = statistics_to_df(all_pathways_statistics)

@@ -85,10 +85,11 @@ SELECT DISTINCT
 (STRAFTER (STR(?uri_type), str(biopax3:)) AS ?entity_type) 
 
 (STRAFTER(STR(?entity), '#') AS ?identifier)
-
-(STR(?entity) AS ?uri_reactome_id) 
-(STRAFTER(STR(?entity), '#') AS ?reactome_id)
 (STR(?entity) AS ?uri_id) 
+
+(STRAFTER(STR(?entity), '#') AS ?reactome_id)
+(STR(?entity) AS ?uri_reactome_id) 
+
 (STR(?entity_reference) AS ?uri_id) 
 
 ?name 
@@ -270,7 +271,7 @@ def _get_pathway_components(pathway_uri: rdflib.URIRef, rdf_graph: rdflib.Graph)
     return nodes, list(interactions.values())
 
 
-def get_reactome_statistics(resource_file, hgnc_manager):
+def get_reactome_statistics(resource_file, hgnc_manager, chebi_manager):
     """Get types statistics for Reactome.
 
     :param str resource_file: RDF file
@@ -294,7 +295,7 @@ def get_reactome_statistics(resource_file, hgnc_manager):
             edge['metadata']['interaction_type'] for edge in edges
         ]
 
-        bel_graph = convert_to_bel(nodes, edges, pathway_metadata, hgnc_manager)
+        bel_graph = convert_to_bel(nodes, edges, pathway_metadata, hgnc_manager, chebi_manager)
 
         global_statistics, pathway_statistics = get_pathway_statitics(
             nodes_types, edges_types, bel_graph, global_statistics=global_statistics
@@ -303,7 +304,7 @@ def get_reactome_statistics(resource_file, hgnc_manager):
     return global_statistics
 
 
-def reactome_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager):
+def reactome_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager, chebi_manager):
     """Convert a Reactome pathway to BEL.
 
     :param str filepath: path to the file
@@ -314,10 +315,10 @@ def reactome_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager):
 
     nodes, interactions = _get_pathway_components(pathway_uri, rdf_graph)
 
-    return convert_to_bel(nodes, interactions, pathway_metadata, hgnc_manager)
+    return convert_to_bel(nodes, interactions, pathway_metadata, hgnc_manager, chebi_manager)
 
 
-def reactome_to_bel(resource_file, hgnc_manager, export_folder=REACTOME_BEL):
+def reactome_to_bel(resource_file, hgnc_manager, chebi_manager, export_folder=REACTOME_BEL):
     """Create Reactome BEL graphs.
 
     :param str resource_file: rdf reactome file (there is only one)
@@ -341,7 +342,7 @@ def reactome_to_bel(resource_file, hgnc_manager, export_folder=REACTOME_BEL):
         if os.path.exists(pickle_file):
             continue
 
-        bel_graph = reactome_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager)
+        bel_graph = reactome_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager, chebi_manager)
 
         # Export BELGraph to pickle
         to_pickle(bel_graph, pickle_file)

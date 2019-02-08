@@ -27,17 +27,7 @@ def get_hgnc_node_info(gene):
     """
     return gene.identifier, gene.symbol, HGNC
 
-def get_valid_node_parameters(node, hgnc_manager):
-
-    if 'display_name' in node:
-        name = node['display_name']
-    else:
-        if 'name' in node:
-            name = node['name']
-            if isinstance(name, set):
-                name = list(name)[0]
-        else:
-            name = UNKNOWN
+def get_valid_node_parameters(node, hgnc_manager, chebi_manager):
 
     namespace = None
 
@@ -72,7 +62,7 @@ def get_valid_node_parameters(node, hgnc_manager):
         else:
             identifier, name, namespace = get_hgnc_node_info(hgnc_entry)
 
-    elif (namespace == 'obo' and 'CHEBI' in identifier) or namespace == 'chebi':
+    elif namespace == 'obo' and 'CHEBI' in identifier:
         namespace = 'chebi'
 
     elif 'uri_reactome_id' in node:
@@ -88,6 +78,21 @@ def get_valid_node_parameters(node, hgnc_manager):
 
     else:
         log.debug('Not found HGNC Symbol neither Reactome id for %s ', node['uri_id'])
+
+    if 'display_name' in node:
+        name = node['display_name']
+        if namespace == 'chebi' or namespace == 'CHEBI':
+            if not chebi_manager.get_chemical_by_chebi_name(node['display_name']):
+                chem = chebi_manager.get_chemical_by_chebi_id(identifier.replace('CHEBI:', ''))
+                name = chem.safe_name
+
+    else:
+        if 'name' in node:
+            name = node['name']
+            if isinstance(name, set):
+                name = list(name)[0]
+        else:
+            name = UNKNOWN
 
     return identifier, name, namespace
 
@@ -112,6 +117,7 @@ def untar_file(file_path, export_folder):
 
     :param str file_path: name of the file
     :param str export_folder: name of the file
+
     """
     tar_ref = tarfile.open(file_path, 'r:bz2')
     tar_ref.extractall(export_folder)
