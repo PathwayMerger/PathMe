@@ -3,14 +3,16 @@
 """This module contains the methods to convert a WikiPathways RDF network into a BELGraph."""
 
 import logging
-from typing import Dict, List, Tuple
+from typing import Dict
 
 from bio2bel_hgnc import Manager
+from pybel import BELGraph
+from pybel.constants import REGULATES
+from pybel.dsl import abundance, activity, BaseEntity, bioprocess, complex_abundance, gene, protein, reaction, rna
+
 from pathme.constants import HGNC
 from pathme.utils import parse_id_uri, check_multiple
 from pathme.wikipathways.utils import evaluate_wikipathways_metadata, get_valid_gene_identifier
-from pybel import BELGraph
-from pybel.dsl import abundance, activity, BaseEntity, bioprocess, complex_abundance, gene, protein, reaction, rna
 
 log = logging.getLogger(__name__)
 
@@ -210,7 +212,13 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
         graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity(), annotations={})
 
     elif 'DirectedInteraction' in edge_types:
-        graph.add_association(u, v, citation=uri_id, evidence='', annotations={'EdgeTypes': edge_types})
+        graph.add_qualified_edge(
+            u, v,
+            relation=REGULATES,
+            citation=uri_id,
+            evidence='',
+            annotations={'EdgeTypes': edge_types}
+        )
 
     elif 'Interaction' in edge_types:
         log.debug('No interaction subtype for %s', str(uri_id))
