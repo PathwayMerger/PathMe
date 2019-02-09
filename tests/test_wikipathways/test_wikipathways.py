@@ -87,7 +87,7 @@ class TestWikipathways(WikipathwaysTest):
 
         self.assertEqual(test_graph.summary_dict()['Number of Nodes'], 2)
         self.assertEqual(test_graph.summary_dict()['Number of Edges'], 1)
-        self.assertEqual(count_relations(test_graph)['association'], 1)
+        self.assertEqual(count_relations(test_graph)['regulates'], 1)
 
     def test_wp_22_to_bel(self):
         """Test 22."""
