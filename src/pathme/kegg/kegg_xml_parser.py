@@ -6,7 +6,7 @@ import itertools as itt
 import json
 import logging
 import os
-import xml.etree.ElementTree as ET
+from xml.etree.ElementTree import parse
 from collections import defaultdict
 
 import requests
@@ -29,7 +29,7 @@ def import_xml_etree(filename):
     :rtype: xml.etree.ElementTree.ElementTree
     """
     try:
-        tree = ET.parse(filename)
+        tree = parse(filename)
     except IOError as ioerr:
         print('File error: ' + str(ioerr))
         return None
