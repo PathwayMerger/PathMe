@@ -27,8 +27,8 @@ def get_hgnc_node_info(gene):
     """
     return gene.identifier, gene.symbol, HGNC
 
-def get_valid_node_parameters(node, hgnc_manager, chebi_manager):
 
+def get_valid_node_parameters(node, hgnc_manager, chebi_manager):
     namespace = None
 
     if 'uri_id' in node:
@@ -83,8 +83,14 @@ def get_valid_node_parameters(node, hgnc_manager, chebi_manager):
         name = node['display_name']
         if namespace == 'chebi' or namespace == 'CHEBI':
             if not chebi_manager.get_chemical_by_chebi_name(node['display_name']):
-                chem = chebi_manager.get_chemical_by_chebi_id(identifier.replace('CHEBI:', ''))
-                name = chem.safe_name
+                identifier = identifier.replace('CHEBI:', '')
+                chem = chebi_manager.get_chemical_by_chebi_id(identifier)
+
+                # In case chebi id is outdated use the identifier as the name
+                if chem:
+                    name = chem.safe_name
+                else:
+                    name = identifier
 
     else:
         if 'name' in node:
@@ -111,6 +117,7 @@ def process_multiple_proteins(hgnc_entries: List) -> List:
         )
 
     return protein_group
+
 
 def untar_file(file_path, export_folder):
     """Unzip file into a destination folder.
