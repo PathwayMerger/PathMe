@@ -45,11 +45,11 @@ Each database has three main commands: ``download``, ``bel``, and ``summarize``:
 1. **Download content**
 
 PathMe first requires to download the raw files from the original pathway databases. This can be accomplished by
-running the command ('database' can be either KEGG, Reactome, or WikiPathways):
+running the command ('database' can be either KEGG, Reactome, or WikiPathways). E.g., python3 -m pathme kegg download
 
 .. code-block:: sh
 
-    $ python3 -m pathme 'database' download
+    $ python3 -m pathme <database> download
 
 2. **Generate BEL Graphs**
 
@@ -61,7 +61,7 @@ its RDF file.
 
 .. code-block:: sh
 
-    $ python3 -m pathme 'database' bel
+    $ python3 -m pathme <database> bel
 
 2. **Summarize**
 
@@ -69,7 +69,7 @@ Summarizes the result of the conversion to BEL.
 
 .. code-block:: sh
 
-    $ python3 -m pathme 'database' summarize
+    $ python3 -m pathme <database> summarize
 
 Advanced Parameters
 -------------------
