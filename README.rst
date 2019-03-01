@@ -105,7 +105,7 @@ Reactome
 
 WikiPathways
 ~~~~~~~~~~~~
-.. [7] Slenter, D.N.,  *et al.* (2017). WikiPathways: a multifaceted pathway database bridging metabolomics to other omics 
+.. [7] Slenter, D.N.,  *et al.* (2017). WikiPathways: a multifaceted pathway database bridging metabolomics to other omics
        research. *Nucleic Acids Research*, doi.org/10.1093/nar/gkx1064
 .. [8] Kutmon, M., *et al.* (2016). WikiPathways: capturing the full diversity of pathway knowledge Nucl. Acids Res., 44,
        D488-D494.
