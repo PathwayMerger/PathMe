@@ -88,29 +88,25 @@ References
 ----------
 KEGG
 ~~~~
-PathMe makes use of KEGG KGML files that are downloaded via the KEGG API for academic purposes (see `KEGG Terms and
-conditions <https://www.kegg.jp/kegg/rest/>`_.).
+PathMe makes use of KEGG KGML files that are downloaded via the KEGG API for academic purposes (please make sure you comply their  `Terms and Conditions <https://www.kegg.jp/kegg/rest/>`_).
 
-.. [2] Kanehisa, Furumichi, M., Tanabe, M., Sato, Y., and Morishima, K.; KEGG: new perspectives on genomes,
-       pathways, diseases and drugs. Nucleic Acids Res. 45, D353-D361 (2017).
-.. [3] Kanehisa, M., Sato, Y., Kawashima, M., Furumichi, M., and Tanabe, M.; KEGG as a reference resource
-       for gene and protein annotation. Nucleic Acids Res. 44, D457-D462 (2016).
-.. [4] Kanehisa, M. and Goto, S.; KEGG: Kyoto Encyclopedia of Genes and Genomes. Nucleic Acids Res. 28, 27-30 (2000).
+.. [2] Kanehisa, *et al.* (2017) KEGG: new perspectives on genomes, pathways, diseases and drugs. Nucleic Acids Res. 45, D353-D361.
+.. [3] Kanehisa, M., *et al.* (2016). KEGG as a reference resource
+       for gene and protein annotation. Nucleic Acids Res. 44, D457-D462.
+.. [4] Kanehisa, M. and Goto, S. (2000). KEGG: Kyoto Encyclopedia of Genes and Genomes. Nucleic Acids Res. 28, 27-30.
 
 Reactome
 ~~~~~~~~
-.. [5] Fabregat, Antonio et al. “The Reactome Pathway Knowledgebase.” Nucleic Acids Research 44.Database issue (2016):
-       D481–D487. PMC. Web. 6 Oct. 2017.
-.. [6] Croft, David et al. “The Reactome Pathway Knowledgebase.” Nucleic Acids Research 42.Database issue (2014):
-       D472–D477. PMC. Web. 6 Oct. 2017.
+.. [5] Fabregat, A *et al.* (2016). The Reactome Pathway Knowledgebase. Nucleic Acids Research 44. Database issue:
+       D481–D487.
+.. [6] Croft, D *et al.* (2014). The Reactome Pathway Knowledgebase. *Nucleic Acids Research* 42.Database issue:
+       D472–D477.
 
 WikiPathways
 ~~~~~~~~~~~~
-.. [7] Slenter, D.N., et al WikiPathways: a multifaceted pathway database bridging metabolomics to other omics research
-       Nucleic Acids Research, (2017) doi.org/10.1093/nar/gkx1064
-.. [8] Kutmon, M., et al. WikiPathways: capturing the full diversity of pathway knowledge Nucl. Acids Res., 44, D488-D494
-       (2016) doi:10.1093/nar/gkv1024
-.. [9] Kelder, T., et al. WikiPathways: building research communities on biological pathways. Nucleic Acids Res. 2012
+.. [7] Slenter, D.N.,  *et al.* (2017). WikiPathways: a multifaceted pathway database bridging metabolomics to other omics research. *Nucleic Acids Research*, doi.org/10.1093/nar/gkx1064
+.. [8] Kutmon, M., *et al.* (2016). WikiPathways: capturing the full diversity of pathway knowledge Nucl. Acids Res., 44, D488-D494.
+.. [9] Kelder, T., *et al.* (201). WikiPathways: building research communities on biological pathways. Nucleic Acids Res.
        Jan;40(Database issue):D1301-7
 
 .. |build| image:: https://travis-ci.com/PathwayMerger/PathMe.svg?branch=master
