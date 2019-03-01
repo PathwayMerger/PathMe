@@ -3,16 +3,13 @@
 """This module has utilities method for parsing, handling wikipathways RDF and data."""
 
 import logging
-import os
 import tarfile
 from typing import List
 
 from pybel.dsl import protein
 
 from pathme.utils import parse_id_uri
-from ..constants import DATA_DIR, WIKIPATHWAYS, HGNC, UNKNOWN, UNIPROT, ENSEMBL
-
-WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
+from ..constants import HGNC, UNKNOWN, UNIPROT, ENSEMBL
 
 log = logging.getLogger(__name__)
 
