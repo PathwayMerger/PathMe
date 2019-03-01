@@ -308,8 +308,19 @@ def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
     from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
 
     kegg_pickles = get_files_in_folder(kegg_path)
+
+    if not kegg_pickles:
+        log.warning('No KEGG files found. Please create the BEL KEGG files')
+
     reactome_pickles = get_files_in_folder(reactome_path)
+
+    if not reactome_pickles:
+        log.warning('No Reactome files found. Please create the BEL Reactome files')
+
     wp_pickles = get_files_in_folder(wikipathways_path)
+
+    if not wp_pickles:
+        log.warning('No WikiPathways files found. Please create the BEL WikiPathways files')
 
     all_pickles = kegg_pickles + reactome_pickles + wp_pickles
 
