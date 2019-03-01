@@ -313,6 +313,8 @@ def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
 
     all_pickles = kegg_pickles + reactome_pickles + wp_pickles
 
+    log.info(f'A total of {len(all_pickles)} will be exported')
+
     # Export KEGG
     for file in tqdm(all_pickles, desc='Exporting SPIA excel files'):
         if not file.endswith('.pickle'):
