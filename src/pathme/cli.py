@@ -8,6 +8,7 @@ import time
 import click
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
+from pybel import from_pickle
 from tqdm import tqdm
 
 from pathme.constants import *
@@ -19,7 +20,6 @@ from pathme.reactome.utils import untar_file
 from pathme.utils import CallCounted, get_files_in_folder, make_downloader, statistics_to_df, summarize_helper
 from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pickles
 from pathme.wikipathways.utils import get_file_name_from_url, get_wikipathways_files, unzip_file
-from pybel import from_pickle
 
 log = logging.getLogger(__name__)
 
@@ -296,6 +296,49 @@ def statistics(connection, verbose, only_canonical, export):
 
         df.to_excel(os.path.join(DATA_DIR, 'reactome_statistics.xlsx'))
         df.to_csv(os.path.join(DATA_DIR, 'reactome_statistics.csv'))
+
+
+@main.command()
+@click.option('-k', '--kegg_path', help='KEGG BEL folder', default=KEGG_BEL, show_default=True)
+@click.option('-r', '--reactome_path', help='Reactome BEL folder.', default=REACTOME_BEL, show_default=True)
+@click.option('-w', '--wikipathways_path', help='WikiPathways BEL folder', default=WIKIPATHWAYS_BEL, show_default=True)
+@click.option('-o', '--output', help='Output directory', default=SPIA_DIR, show_default=True)
+def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
+    """Export BEL Pickles to SPIA Excel."""
+    from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
+
+    kegg_pickles = get_files_in_folder(kegg_path)
+    reactome_pickles = get_files_in_folder(reactome_path)
+    wp_pickles = get_files_in_folder(wikipathways_path)
+
+    all_pickles = kegg_pickles + reactome_pickles + wp_pickles
+
+    # Export KEGG
+    for file in tqdm(all_pickles, desc='Exporting SPIA excel files'):
+        if not file.endswith('.pickle'):
+            continue
+
+        if file in kegg_pickles:
+            file_path = from_pickle(os.path.join(kegg_path, file))
+
+        elif file in reactome_pickles:
+            file_path = from_pickle(os.path.join(reactome_path, file))
+
+        elif file in reactome_pickles:
+            file_path = from_pickle(os.path.join(wikipathways_path, file))
+
+        else:
+            raise ValueError(f'Unknown pickle file: {file}')
+
+        spia_matrices = bel_to_spia_matrices(file_path)
+
+        spia_matrices_to_excel(spia_matrices, os.path.join(output, f"{file.strip('.pickle')}.xlsx"))
+
+
+@main.command()
+def get_harmonize_universe():
+    """Return harmonized universe of all the databases included in PathMe."""
+    NotImplemented
 
 
 if __name__ == '__main__':
