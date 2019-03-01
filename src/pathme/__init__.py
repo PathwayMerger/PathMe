@@ -60,19 +60,3 @@ Example:
 
     python3 -m pathme kegg download
 """
-
-import logging
-
-log = logging.getLogger(__name__)
-
-__version__ = '0.1.1-dev'
-
-__title__ = 'pathme'
-__description__ = "Harmonizing pathway databases using Biological Expression Language (BEL)"
-__url__ = 'https://github.com/ComPath/PathMe'
-
-__author__ = 'Daniel Domingo-Fernández, Sarah Mubeen, and Josep Marín-Llaó'
-__email__ = 'daniel.domingo.fernandez@scai.fraunhofer.de'
-
-__license__ = 'MIT License'
-__copyright__ = 'Copyright (c) 2018 Daniel Domingo-Fernández, Sarah Mubeen, and Josep Marín-Llaó'
