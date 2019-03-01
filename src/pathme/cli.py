@@ -328,7 +328,7 @@ def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
         elif file in reactome_pickles:
             file_path = from_pickle(os.path.join(reactome_path, file))
 
-        elif file in reactome_pickles:
+        elif file in wp_pickles:
             file_path = from_pickle(os.path.join(wikipathways_path, file))
 
         else:
