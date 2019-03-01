@@ -315,8 +315,10 @@ def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
 
     log.info(f'A total of {len(all_pickles)} will be exported')
 
+    iterator = tqdm(all_pickles, desc='Exporting SPIA excel files')
+
     # Export KEGG
-    for file in tqdm(all_pickles, desc='Exporting SPIA excel files'):
+    for file in iterator:
         if not file.endswith('.pickle'):
             continue
 
@@ -330,11 +332,17 @@ def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
             file_path = from_pickle(os.path.join(wikipathways_path, file))
 
         else:
-            raise ValueError(f'Unknown pickle file: {file}')
+            log.warning(f'Unknown pickle file: {file}')
+            continue
 
         spia_matrices = bel_to_spia_matrices(file_path)
 
-        spia_matrices_to_excel(spia_matrices, os.path.join(output, f"{file.strip('.pickle')}.xlsx"))
+        output_file = os.path.join(output, f"{file.strip('.pickle')}.xlsx")
+
+        if os.path.isfile(output_file):
+            continue
+
+        spia_matrices_to_excel(spia_matrices, output_file)
 
 
 @main.command()
