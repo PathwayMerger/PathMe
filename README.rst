@@ -88,10 +88,10 @@ References
 ----------
 KEGG
 ~~~~
-PathMe makes use of KEGG KGML files that are downloaded via the KEGG API for academic purposes (please make sure you comply 
-their  `Terms and Conditions <https://www.kegg.jp/kegg/rest/>`_).
+PathMe makes use of KEGG KGML files that are downloaded via the KEGG API for academic purposes (please make sure you comply their `Terms and Conditions <https://www.kegg.jp/kegg/rest/>`_).
 
-.. [2] Kanehisa, *et al.* (2017) KEGG: new perspectives on genomes, pathways, diseases and drugs. Nucleic Acids Res. 45, D353-D361.
+.. [2] Kanehisa, *et al.* (2017) KEGG: new perspectives on genomes, pathways, diseases and drugs. Nucleic Acids Res. 45,
+       D353-D361.
 .. [3] Kanehisa, M., *et al.* (2016). KEGG as a reference resource
        for gene and protein annotation. Nucleic Acids Res. 44, D457-D462.
 .. [4] Kanehisa, M. and Goto, S. (2000). KEGG: Kyoto Encyclopedia of Genes and Genomes. Nucleic Acids Res. 28, 27-30.
@@ -107,7 +107,7 @@ WikiPathways
 ~~~~~~~~~~~~
 .. [7] Slenter, D.N.,  *et al.* (2017). WikiPathways: a multifaceted pathway database bridging metabolomics to other omics 
        research. *Nucleic Acids Research*, doi.org/10.1093/nar/gkx1064
-.. [8] Kutmon, M., *et al.* (2016). WikiPathways: capturing the full diversity of pathway knowledge Nucl. Acids Res., 44, 
+.. [8] Kutmon, M., *et al.* (2016). WikiPathways: capturing the full diversity of pathway knowledge Nucl. Acids Res., 44,
        D488-D494.
 .. [9] Kelder, T., *et al.* (201). WikiPathways: building research communities on biological pathways. Nucleic Acids Res.
        Jan;40(Database issue):D1301-7
