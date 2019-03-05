@@ -6,13 +6,11 @@ import logging
 import time
 
 import click
-from bio2bel_chebi import Manager as ChebiManager
-from bio2bel_hgnc import Manager as HgncManager
-from pybel import from_pickle
 from tqdm import tqdm
 
+from bio2bel_chebi import Manager as ChebiManager
+from bio2bel_hgnc import Manager as HgncManager
 from pathme.constants import *
-from pathme.constants import DEFAULT_CACHE_CONNECTION
 from pathme.kegg.convert_to_bel import kegg_to_pickles
 from pathme.kegg.utils import download_kgml_files, get_kegg_pathway_ids
 from pathme.reactome.rdf_sparql import get_reactome_statistics, reactome_to_bel
@@ -20,6 +18,8 @@ from pathme.reactome.utils import untar_file
 from pathme.utils import CallCounted, get_files_in_folder, make_downloader, statistics_to_df, summarize_helper
 from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pickles
 from pathme.wikipathways.utils import get_file_name_from_url, get_wikipathways_files, unzip_file
+from pybel import from_pickle
+from pybel.struct.mutation import collapse_to_genes, collapse_all_variants
 
 log = logging.getLogger(__name__)
 
@@ -359,7 +359,22 @@ def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
 @main.command()
 def get_harmonize_universe():
     """Return harmonized universe of all the databases included in PathMe."""
-    NotImplemented
+
+    def get_universe_graph():
+        raise NotADirectoryError
+
+    universe = get_universe_graph()
+
+    # Step 1: Flat complexes and composites
+    from pybel_tools.node_utils import list_abundance_cartesian_expansion, reaction_cartesian_expansion
+    list_abundance_cartesian_expansion(universe)
+    reaction_cartesian_expansion(universe)
+
+    # TODO: Harmonize entitiy names
+
+    # Step: 3. Merge to genes and variants
+    collapse_all_variants(universe)
+    collapse_to_genes(universe)
 
 
 if __name__ == '__main__':
