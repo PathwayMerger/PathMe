@@ -344,14 +344,29 @@ def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
 
 
 @main.command()
-@click.option('-k', '--kegg_path', help='KEGG BEL folder', default=KEGG_BEL, show_default=True)
-@click.option('-r', '--reactome_path', help='Reactome BEL folder.', default=REACTOME_BEL, show_default=True)
-@click.option('-w', '--wikipathways_path', help='WikiPathways BEL folder', default=WIKIPATHWAYS_BEL, show_default=True)
+@click.option('-k', '--kegg-path', help='KEGG BEL folder', default=KEGG_BEL, show_default=True)
+@click.option('-r', '--reactome-path', help='Reactome BEL folder.', default=REACTOME_BEL, show_default=True)
+@click.option('-w', '--wikipathways-path', help='WikiPathways BEL folder', default=WIKIPATHWAYS_BEL, show_default=True)
 @click.option('-o', '--output', help='Output directory', default=SPIA_DIR, show_default=True)
-@click.option('-f', '--flatten', is_flag=True, default=True)
-def get_harmonize_universe(kegg_path, reactome_path, wikipathways_path, output, flatten):
+@click.option('--no-explode', is_flag=True, help='Do not explode complex/reactions nodes')
+@click.option('--no-harmonize-names', is_flag=True, help='Do not harmonize names')
+def export_harmonized_universe(kegg_path, reactome_path, wikipathways_path, output, no_explode, no_harmonize_names):
     """Return harmonized universe BELGraph of all the databases included in PathMe."""
-    universe_graph = get_universe_graph(kegg_path, reactome_path, wikipathways_path, flatten)
+    logging.basicConfig(level=logging.info, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+    logger.setLevel(logging.INFO)
+
+    if not no_explode:
+        logger.warning('Complexes and Reactions will be not be flatten to single nodes')
+
+    if no_harmonize_names:
+        logger.warning('Names will not be normalized to lower case')
+
+    logger.info("Merging graphs to universe and harmonizing...(this might take a while)")
+
+    # Not explode will flip the boolean coming from the cli
+    universe_graph = get_universe_graph(
+        kegg_path, reactome_path, wikipathways_path, not no_explode, not no_harmonize_names
+    )
 
     logger.info("Merging variants and genes")
     collapse_all_variants(universe_graph)
