@@ -6,8 +6,9 @@ import logging
 import os
 from typing import List
 
-from pathme.pybel_utils import flatten_complex_nodes
+from pathme.constants import KEGG, REACTOME, WIKIPATHWAYS
 from pathme.normalize_names import normalize_graph_names
+from pathme.pybel_utils import flatten_complex_nodes
 from pybel import BELGraph
 from pybel import from_pickle
 from pybel import union
@@ -62,7 +63,7 @@ def get_universe_graph(
                 flatten_complex_nodes(graph)
 
             if normalize_names:
-                normalize_graph_names(graph)
+                normalize_graph_names(graph, KEGG)
 
         elif file in reactome_pickles:
             graph = from_pickle(os.path.join(reactome_path, file))
@@ -71,7 +72,7 @@ def get_universe_graph(
                 flatten_complex_nodes(graph)
 
             if normalize_names:
-                normalize_graph_names(graph)
+                normalize_graph_names(graph, REACTOME)
 
         elif file in wp_pickles:
             graph = from_pickle(os.path.join(wikipathways_path, file))
@@ -80,7 +81,7 @@ def get_universe_graph(
                 flatten_complex_nodes(graph)
 
             if normalize_names:
-                normalize_graph_names(graph)
+                normalize_graph_names(graph, WIKIPATHWAYS)
         else:
             logger.warning(f'Unknown pickle file: {file}')
             continue
