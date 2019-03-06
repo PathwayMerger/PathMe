@@ -2,8 +2,18 @@
 
 """Export harmonized universe."""
 
+import logging
+import os
 from typing import List
+
+from pathme.utils import get_files_in_folder
+from pybel import BELGraph
+from pybel import from_pickle
+from pybel import union
 from pybel.dsl import Abundance, BiologicalProcess, CentralDogma, ListAbundance, Reaction
+from tqdm import tqdm
+
+logger = logging.getLogger(__name__)
 
 WIKIPATHWAYS_BIOL_PROCESS = {
     "lipid biosynthesis", "hsc survival", "glycolysis & gluconeogenesis",
@@ -62,6 +72,61 @@ REACTOME_PROT = {
     "rna-binding protein in rnp (ribonucleoprotein) complexes", "effector proteins", "usp3, saga complex",
     'dephosphorylated "receiver" raf/ksr1'
 }
+
+
+def get_all_pickles(kegg_path, reactome_path, wikipathways_path):
+    """Return a list with all pickle paths."""
+    kegg_pickles = get_files_in_folder(kegg_path)
+
+    if not kegg_pickles:
+        logger.warning('No KEGG files found. Please create the BEL KEGG files')
+
+    reactome_pickles = get_files_in_folder(reactome_path)
+
+    if not reactome_pickles:
+        logger.warning('No Reactome files found. Please create the BEL Reactome files')
+
+    wp_pickles = get_files_in_folder(wikipathways_path)
+
+    if not wp_pickles:
+        logger.warning('No WikiPathways files found. Please create the BEL WikiPathways files')
+
+    return kegg_pickles, reactome_pickles, wp_pickles
+
+
+def get_universe_graph(kegg_path: str, reactome_path: str, wikipathways_path: str) -> BELGraph:
+    """Return universe graph."""
+    kegg_pickles, reactome_pickles, wp_pickles = get_all_pickles(kegg_path, reactome_path, wikipathways_path)
+
+    all_pickles = kegg_pickles + reactome_pickles + wp_pickles
+
+    logger.info(f'A total of {len(all_pickles)} will be merged into the universe')
+
+    iterator = tqdm(all_pickles, desc='Creating universe')
+
+    universe_list = []
+
+    # Export KEGG
+    for file in iterator:
+        if not file.endswith('.pickle'):
+            continue
+
+        if file in kegg_pickles:
+            graph = from_pickle(os.path.join(kegg_path, file))
+
+        elif file in reactome_pickles:
+            graph = from_pickle(os.path.join(reactome_path, file))
+
+        elif file in wp_pickles:
+            graph = from_pickle(os.path.join(wikipathways_path, file))
+
+        else:
+            logger.warning(f'Unknown pickle file: {file}')
+            continue
+
+        universe_list.append(graph)
+
+    return union(universe_list)
 
 
 def process_reactome_multiple_genes(genes: str) -> List:
@@ -218,4 +283,3 @@ def calculate_database_sets(nodes, database):
             bp_nodes.add(name)
 
     return gene_nodes, mirna_nodes, metabolite_nodes, bp_nodes
-
