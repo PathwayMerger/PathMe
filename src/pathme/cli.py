@@ -356,24 +356,28 @@ def export_harmonized_universe(kegg_path, reactome_path, wikipathways_path, outp
     logger.setLevel(logging.INFO)
 
     if not no_explode:
-        logger.warning('Complexes and Reactions will be not be flatten to single nodes')
+        click.echo('Complexes and Reactions will be not be flatten to single nodes')
 
     if no_harmonize_names:
-        logger.warning('Names will not be normalized to lower case')
+        click.echo('Names will not be normalized to lower case')
 
-    logger.info("Merging graphs to universe and harmonizing...(this might take a while)")
+    click.echo("Merging graphs to universe and harmonizing...(this might take a while)")
 
     # Not explode will flip the boolean coming from the cli
     universe_graph = get_universe_graph(
         kegg_path, reactome_path, wikipathways_path, not no_explode, not no_harmonize_names
     )
 
-    logger.info("Merging variants and genes")
+    click.echo("Merging variants and genes")
     collapse_all_variants(universe_graph)
     collapse_to_genes(universe_graph)
 
-    logger.info(f"Export BEL graph to: {os.path.join(output, 'pathme_universe_bel_graph.pickle')}")
-    to_pickle(universe_graph, os.path.join(output, "pathme_universe_bel_graph.pickle"))
+    universe_graph.name = 'PathMe Universe'
+
+    click.echo(f"Export BEL graph to: {os.path.join(output, 'pathme_universe_bel_graph.bel.pickle')}")
+    click.echo(universe_graph.summary_str())
+
+    to_pickle(universe_graph, os.path.join(output, "pathme_universe_bel_graph.bel.pickle"))
 
 
 if __name__ == '__main__':
