@@ -347,7 +347,7 @@ def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
 @click.option('-k', '--kegg-path', help='KEGG BEL folder', default=KEGG_BEL, show_default=True)
 @click.option('-r', '--reactome-path', help='Reactome BEL folder.', default=REACTOME_BEL, show_default=True)
 @click.option('-w', '--wikipathways-path', help='WikiPathways BEL folder', default=WIKIPATHWAYS_BEL, show_default=True)
-@click.option('-o', '--output', help='Output directory', default=SPIA_DIR, show_default=True)
+@click.option('-o', '--output', help='Output directory', default=UNIVERSE_DIR, show_default=True)
 @click.option('--no-explode', is_flag=True, help='Do not explode complex/reactions nodes')
 @click.option('--no-harmonize-names', is_flag=True, help='Do not harmonize names')
 def export_harmonized_universe(kegg_path, reactome_path, wikipathways_path, output, no_explode, no_harmonize_names):
