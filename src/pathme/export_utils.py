@@ -47,7 +47,7 @@ def get_universe_graph(
 
     logger.info(f'A total of {len(all_pickles)} will be merged into the universe')
 
-    iterator = tqdm(all_pickles, desc='Creating universe')
+    iterator = tqdm(all_pickles, desc='Loading of the graph pickles')
 
     universe_list = []
 
@@ -87,6 +87,8 @@ def get_universe_graph(
             continue
 
         universe_list.append(graph)
+
+    logger.info('Merging all into a hairball...')
 
     return union(universe_list)
 

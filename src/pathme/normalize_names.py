@@ -151,8 +151,9 @@ def normalize_graph_names(graph: BELGraph, database: str) -> None:
                     if isinstance(reactome_cell, list):
                         for lower_name in reactome_cell:
                             one_to_many_mapping[node].add(
-                                MicroRna(node.namespace, name=lower_name.replace("mir-", "mir"))
-                            )
+                                MicroRna(
+                                    node.namespace, name=lower_name.replace("mir-", "mir"), identifier=node.identifier
+                                ))
 
                     one_to_one_mapping[node] = MicroRna(
                         node.namespace,
@@ -161,7 +162,9 @@ def normalize_graph_names(graph: BELGraph, database: str) -> None:
                     continue
 
                 # KEGG and Reactome
-                one_to_one_mapping[node] = MicroRna(node.namespace, name=node.name.replace("mir-", "mir"))
+                one_to_one_mapping[node] = MicroRna(
+                    node.namespace, name=node.name.replace("mir-", "mir"), identifier=node.identifier
+                )
 
             ##################
             # Genes entities #
@@ -179,19 +182,21 @@ def normalize_graph_names(graph: BELGraph, database: str) -> None:
                                 lower_name = lower_name.strip("(").strip(")")
 
                             one_to_many_mapping[node].add(
-                                Protein(node.namespace, name=lower_name)
+                                Protein(node.namespace, name=lower_name, identifier=node.identifier)
                             )
                     else:
-                        one_to_one_mapping[node] = Protein(node.namespace, name=lower_name)
+                        one_to_one_mapping[node] = Protein(node.namespace, name=lower_name, identifier=node.identifier)
 
                     continue
 
                 # WikiPathways and KEGG do not require any processing of genes
                 elif database == WIKIPATHWAYS and lower_name in WIKIPATHWAYS_BIOL_PROCESS:
-                    one_to_one_mapping[node] = BiologicalProcess(node.namespace, name=lower_name)
+                    one_to_one_mapping[node] = BiologicalProcess(
+                        node.namespace, name=lower_name, identifier=node.identifier
+                    )
                     continue
 
-                one_to_one_mapping[node] = Protein(node.namespace, name=lower_name)
+                one_to_one_mapping[node] = Protein(node.namespace, name=lower_name, identifier=node.identifier)
 
         #######################
         # Metabolite entities #
@@ -202,13 +207,17 @@ def normalize_graph_names(graph: BELGraph, database: str) -> None:
             if database == 'wikipathways':
                 # Biological processes that are captured as abundance in BEL since they were characterized wrong in WikiPathways
                 if lower_name in WIKIPATHWAYS_BIOL_PROCESS:
-                    one_to_one_mapping[node] = BiologicalProcess(node.namespace, name=lower_name)
+                    one_to_one_mapping[node] = BiologicalProcess(
+                        node.namespace, name=lower_name, identifier=node.identifier
+                    )
                     continue
 
                 # Abundances to BiologicalProcesses
                 elif node.namespace in {'WIKIDATA', 'WIKIPATHWAYS', 'REACTOME'} \
                         and lower_name not in WIKIPATHWAYS_METAB:
-                    one_to_one_mapping[node] = BiologicalProcess(node.namespace, name=lower_name)
+                    one_to_one_mapping[node] = BiologicalProcess(
+                        node.namespace, name=lower_name, identifier=node.identifier
+                    )
                     continue
 
                 # Fix naming in duplicate entity
@@ -218,7 +227,9 @@ def normalize_graph_names(graph: BELGraph, database: str) -> None:
             elif database == REACTOME:
                 # Curated proteins that were coded as metabolites
                 if lower_name in REACTOME_PROT:
-                    one_to_one_mapping[node] = Protein(node.namespace, name=lower_name)
+                    one_to_one_mapping[node] = Protein(
+                        node.namespace, name=lower_name, identifier=node.identifier
+                    )
                     continue
 
                 # Flat multiple identifiers (this is not trivial because most of ChEBI names contain commas,
@@ -229,11 +240,11 @@ def normalize_graph_names(graph: BELGraph, database: str) -> None:
                 ):
                     for string in lower_name.split(","):
                         one_to_many_mapping[node].add(
-                            Abundance(node.namespace, name=string)
+                            Abundance(node.namespace, name=string, identifier=node.identifier)
                         )
                     continue
 
-            one_to_one_mapping[node] = Abundance(node.namespace, name=lower_name)
+            one_to_one_mapping[node] = Abundance(node.namespace, name=lower_name, identifier=node.identifier)
 
         #################################
         # Biological Processes entities #
@@ -244,7 +255,9 @@ def normalize_graph_names(graph: BELGraph, database: str) -> None:
             if lower_name.startswith('title:'):
                 lower_name = lower_name[6:]
 
-            one_to_one_mapping[node] = BiologicalProcess(node.namespace, name=lower_name)
+            one_to_one_mapping[node] = BiologicalProcess(
+                node.namespace, name=lower_name, identifier=node.identifier
+            )
 
     relabel_nodes(graph, one_to_one_mapping)
     multi_relabel(graph, one_to_many_mapping)
