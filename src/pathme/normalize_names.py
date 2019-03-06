@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 
-"""Export harmonized universe."""
+"""Methods to normalize names across databases."""
 
 import logging
-import os
+from collections import defaultdict
 from typing import List
 
-from pathme.utils import get_files_in_folder
+from networkx import relabel_nodes
+from pathme.constants import REACTOME, WIKIPATHWAYS
+from pathme.pybel_utils import multi_relabel
 from pybel import BELGraph
-from pybel import from_pickle
-from pybel import union
-from pybel.dsl import Abundance, BiologicalProcess, CentralDogma, ListAbundance, Reaction
-from tqdm import tqdm
+from pybel.dsl import Abundance, BiologicalProcess, CentralDogma, ListAbundance, Reaction, MicroRna, Protein
 
 logger = logging.getLogger(__name__)
 
+# Curated list of BPs from WikiPathways
 WIKIPATHWAYS_BIOL_PROCESS = {
     "lipid biosynthesis", "hsc survival", "glycolysis & gluconeogenesis",
     "triacylglyceride  synthesis", "wnt canonical signaling", "regulation of actin skeleton",
@@ -46,12 +46,15 @@ WIKIPATHWAYS_BIOL_PROCESS = {
     "g1/s cell cycle transition", "dna damage response", "gastric histamine release"
 }
 
+# WikiPathways Abundances that were categorized with the wrong function
 WIKIPATHWAYS_METAB = {
     "2,8-dihydroxyadenine", "8,11-dihydroxy-delta-9-thc", "adp-ribosyl", "cocaethylene", "dhcer1p",
     "ecgonidine", "f2-isoprostane", "fumonisins b1", "iodine", "l-glutamate", "lactosylceramide",
     "methylecgonidine", "n-acetyl-l-aspartate", "nad+", "nadph oxidase", "neuromelanin",
     "nicotinic acid (na)", "nmn", "pip2", "sphingomyelin", "thf"
 }
+
+# Normalize name WikiPathways
 WIKIPATHWAYS_NAME_NORMALIZATION = {
     "Ca 2+": "ca 2+", "acetyl coa": "acetyl-coa", "acetyl-coa(mit)": "acetyl-coa",
     "h20": "h2o"
@@ -74,63 +77,8 @@ REACTOME_PROT = {
 }
 
 
-def get_all_pickles(kegg_path, reactome_path, wikipathways_path):
-    """Return a list with all pickle paths."""
-    kegg_pickles = get_files_in_folder(kegg_path)
-
-    if not kegg_pickles:
-        logger.warning('No KEGG files found. Please create the BEL KEGG files')
-
-    reactome_pickles = get_files_in_folder(reactome_path)
-
-    if not reactome_pickles:
-        logger.warning('No Reactome files found. Please create the BEL Reactome files')
-
-    wp_pickles = get_files_in_folder(wikipathways_path)
-
-    if not wp_pickles:
-        logger.warning('No WikiPathways files found. Please create the BEL WikiPathways files')
-
-    return kegg_pickles, reactome_pickles, wp_pickles
-
-
-def get_universe_graph(kegg_path: str, reactome_path: str, wikipathways_path: str) -> BELGraph:
-    """Return universe graph."""
-    kegg_pickles, reactome_pickles, wp_pickles = get_all_pickles(kegg_path, reactome_path, wikipathways_path)
-
-    all_pickles = kegg_pickles + reactome_pickles + wp_pickles
-
-    logger.info(f'A total of {len(all_pickles)} will be merged into the universe')
-
-    iterator = tqdm(all_pickles, desc='Creating universe')
-
-    universe_list = []
-
-    # Export KEGG
-    for file in iterator:
-        if not file.endswith('.pickle'):
-            continue
-
-        if file in kegg_pickles:
-            graph = from_pickle(os.path.join(kegg_path, file))
-
-        elif file in reactome_pickles:
-            graph = from_pickle(os.path.join(reactome_path, file))
-
-        elif file in wp_pickles:
-            graph = from_pickle(os.path.join(wikipathways_path, file))
-
-        else:
-            logger.warning(f'Unknown pickle file: {file}')
-            continue
-
-        universe_list.append(graph)
-
-    return union(universe_list)
-
-
 def process_reactome_multiple_genes(genes: str) -> List:
-    """Process a wrong ID with multiple identifiers"""
+    """Process a wrong ID with multiple identifiers."""
     gene_list = []
     for counter, gene in enumerate(genes):
 
@@ -161,7 +109,7 @@ def process_reactome_multiple_genes(genes: str) -> List:
 
 
 def munge_reactome_gene(gene):
-    """Process Reactome gene"""
+    """Process Reactome gene."""
     if "," in gene:
         return process_reactome_multiple_genes(gene.split(","))
 
@@ -171,20 +119,22 @@ def munge_reactome_gene(gene):
     return gene
 
 
-def calculate_database_sets(nodes, database):
-    """Calculate node sets for each modality in the database"""
-    gene_nodes = set()
-    mirna_nodes = set()
-    metabolite_nodes = set()
-    bp_nodes = set()
+def normalize_graph_names(graph: BELGraph, database: str) -> None:
+    """Normalize graph names."""
 
-    for node in nodes:
+    # Victim to Survivor (one to one node) mapping
+    one_to_one_mapping = {}
+    # Victim to Survivors (one to many nodes) mapping
+    one_to_many_mapping = defaultdict(set)
 
+    for node in graph.nodes():
+
+        # Skip ListAbundances and Reactions since they do not have a name
         if isinstance(node, ListAbundance) or isinstance(node, Reaction) or not node.name:
             continue
 
-        # Lower case name and strip quotes or white spaces
-        name = node.name.lower().strip('"').strip()
+        # Normalize names: Lower case name and strip quotes or white spaces
+        lower_name = node.name.lower().strip('"').strip()
 
         # Dealing with Genes/miRNAs
         if isinstance(node, CentralDogma):
@@ -193,20 +143,25 @@ def calculate_database_sets(nodes, database):
             # miRNA entities #
             ##################
 
-            if name.startswith("mir"):
+            if lower_name.startswith("mir"):
 
                 # Reactome preprocessing to flat multiple identifiers
-                if database == 'reactome':
-                    reactome_cell = munge_reactome_gene(name)
+                if database == REACTOME:
+                    reactome_cell = munge_reactome_gene(lower_name)
                     if isinstance(reactome_cell, list):
-                        for name in reactome_cell:
-                            mirna_nodes.add(name.replace("mir-", "mir"))
-                    else:
-                        mirna_nodes.add(name.strip(' genes').replace("mir-", "mir"))
+                        for lower_name in reactome_cell:
+                            one_to_many_mapping[node].add(
+                                MicroRna(node.namespace, name=lower_name.replace("mir-", "mir"))
+                            )
 
+                    one_to_one_mapping[node] = MicroRna(
+                        node.namespace,
+                        name=lower_name.strip(' genes').replace("mir-", "mir")  # Special case for Reactome
+                    )
                     continue
 
-                mirna_nodes.add(name.replace("mir-", "mir"))
+                # KEGG and Reactome
+                one_to_one_mapping[node] = MicroRna(node.namespace, name=node.name.replace("mir-", "mir"))
 
             ##################
             # Genes entities #
@@ -214,25 +169,29 @@ def calculate_database_sets(nodes, database):
 
             else:
                 # Reactome preprocessing to flat multiple identifiers
-                if database == 'reactome':
-                    reactome_cell = munge_reactome_gene(name)
+                if database == REACTOME:
+                    reactome_cell = munge_reactome_gene(lower_name)
                     if isinstance(reactome_cell, list):
-                        for name in reactome_cell:
-                            if name in BLACK_LIST_REACTOME:  # Filter entities in black list
+                        for lower_name in reactome_cell:
+                            if lower_name in BLACK_LIST_REACTOME:  # Filter entities in black list
                                 continue
-                            elif name.startswith("("):  # remove redundant parentheses
-                                name = name.strip("(").strip(")")
+                            elif lower_name.startswith("("):  # remove redundant parentheses
+                                lower_name = lower_name.strip("(").strip(")")
 
-                            gene_nodes.add(name)
+                            one_to_many_mapping[node].add(
+                                Protein(node.namespace, name=lower_name)
+                            )
                     else:
-                        gene_nodes.add(name)
+                        one_to_one_mapping[node] = Protein(node.namespace, name=lower_name)
+
                     continue
 
                 # WikiPathways and KEGG do not require any processing of genes
-                if name in WIKIPATHWAYS_BIOL_PROCESS:
-                    bp_nodes.add(name)
+                elif database == WIKIPATHWAYS and lower_name in WIKIPATHWAYS_BIOL_PROCESS:
+                    one_to_one_mapping[node] = BiologicalProcess(node.namespace, name=lower_name)
                     continue
-                gene_nodes.add(name)
+
+                one_to_one_mapping[node] = Protein(node.namespace, name=lower_name)
 
         #######################
         # Metabolite entities #
@@ -242,44 +201,50 @@ def calculate_database_sets(nodes, database):
 
             if database == 'wikipathways':
                 # Biological processes that are captured as abundance in BEL since they were characterized wrong in WikiPathways
-                if name in WIKIPATHWAYS_BIOL_PROCESS:
-                    bp_nodes.add(name)
+                if lower_name in WIKIPATHWAYS_BIOL_PROCESS:
+                    one_to_one_mapping[node] = BiologicalProcess(node.namespace, name=lower_name)
                     continue
 
-                elif node.namespace in {'WIKIDATA', 'WIKIPATHWAYS', 'REACTOME'} and name not in WIKIPATHWAYS_METAB:
-                    bp_nodes.add(name)
+                # Abundances to BiologicalProcesses
+                elif node.namespace in {'WIKIDATA', 'WIKIPATHWAYS', 'REACTOME'} \
+                        and lower_name not in WIKIPATHWAYS_METAB:
+                    one_to_one_mapping[node] = BiologicalProcess(node.namespace, name=lower_name)
                     continue
 
                 # Fix naming in duplicate entity
-                if name in WIKIPATHWAYS_NAME_NORMALIZATION:
-                    name = WIKIPATHWAYS_NAME_NORMALIZATION[name]
+                if lower_name in WIKIPATHWAYS_NAME_NORMALIZATION:
+                    lower_name = WIKIPATHWAYS_NAME_NORMALIZATION[lower_name]
 
-            elif database == 'reactome':
+            elif database == REACTOME:
                 # Curated proteins that were coded as metabolites
-                if name in REACTOME_PROT:
-                    gene_nodes.add(name)
+                if lower_name in REACTOME_PROT:
+                    one_to_one_mapping[node] = Protein(node.namespace, name=lower_name)
                     continue
 
                 # Flat multiple identifiers (this is not trivial because most of ChEBI names contain commas,
                 # so a clever way to fix some of the entities is to check that all identifiers contain letters)
-                elif "," in name and all(
+                elif "," in lower_name and all(
                         string.isalpha()
-                        for string in name.split(",")
+                        for string in lower_name.split(",")
                 ):
-                    for string in name.split(","):
-                        metabolite_nodes.add(name)
+                    for string in lower_name.split(","):
+                        one_to_many_mapping[node].add(
+                            Abundance(node.namespace, name=string)
+                        )
                     continue
 
-            metabolite_nodes.add(name)
+            one_to_one_mapping[node] = Abundance(node.namespace, name=lower_name)
 
         #################################
         # Biological Processes entities #
         #################################
 
         elif isinstance(node, BiologicalProcess):
-            if name.startswith('title:'):
-                name = name[6:]  # KEGG normalize
+            # KEGG normalize name by removing the title prefix
+            if lower_name.startswith('title:'):
+                lower_name = lower_name[6:]
 
-            bp_nodes.add(name)
+            one_to_one_mapping[node] = BiologicalProcess(node.namespace, name=lower_name)
 
-    return gene_nodes, mirna_nodes, metabolite_nodes, bp_nodes
+    relabel_nodes(graph, one_to_one_mapping)
+    multi_relabel(graph, one_to_many_mapping)
