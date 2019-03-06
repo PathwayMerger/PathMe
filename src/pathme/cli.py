@@ -12,6 +12,7 @@ from pathme.constants import *
 from pathme.export_utils import get_all_pickles, get_files_in_folder, get_universe_graph
 from pathme.kegg.convert_to_bel import kegg_to_pickles
 from pathme.kegg.utils import download_kgml_files, get_kegg_pathway_ids
+from pathme.pybel_utils import flatten_complex_nodes
 from pathme.reactome.rdf_sparql import get_reactome_statistics, reactome_to_bel
 from pathme.reactome.utils import untar_file
 from pathme.utils import CallCounted, make_downloader, statistics_to_df, summarize_helper
@@ -321,19 +322,26 @@ def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
             continue
 
         if file in kegg_pickles:
-            file_path = from_pickle(os.path.join(kegg_path, file))
+            pathway_graph = from_pickle(os.path.join(kegg_path, file))
 
         elif file in reactome_pickles:
-            file_path = from_pickle(os.path.join(reactome_path, file))
+            pathway_graph = from_pickle(os.path.join(reactome_path, file))
 
         elif file in wp_pickles:
-            file_path = from_pickle(os.path.join(wikipathways_path, file))
+            pathway_graph = from_pickle(os.path.join(wikipathways_path, file))
 
         else:
             logger.warning(f'Unknown pickle file: {file}')
             continue
 
-        spia_matrices = bel_to_spia_matrices(file_path)
+        # Explode complex nodes
+        flatten_complex_nodes(pathway_graph)
+
+        # Collapse nodes
+        collapse_all_variants(pathway_graph)
+        collapse_to_genes(pathway_graph)
+
+        spia_matrices = bel_to_spia_matrices(pathway_graph)
 
         output_file = os.path.join(output, f"{file.strip('.pickle')}.xlsx")
 
