@@ -22,6 +22,8 @@ from pybel import from_pickle, to_pickle
 from pybel.struct.mutation import collapse_to_genes, collapse_all_variants
 from tqdm import tqdm
 
+from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
+
 logger = logging.getLogger(__name__)
 
 
@@ -306,13 +308,13 @@ def statistics(connection, verbose, only_canonical, export):
 @click.option('-o', '--output', help='Output directory', default=SPIA_DIR, show_default=True)
 def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
     """Export BEL Pickles to SPIA Excel."""
-    from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
+    click.echo(f'Results will be exported to {output}')
 
     kegg_pickles, reactome_pickles, wp_pickles = get_all_pickles(kegg_path, reactome_path, wikipathways_path)
 
     all_pickles = kegg_pickles + reactome_pickles + wp_pickles
 
-    logger.info(f'A total of {len(all_pickles)} will be exported')
+    click.echo(f'A total of {len(all_pickles)} will be exported')
 
     iterator = tqdm(all_pickles, desc='Exporting SPIA excel files')
 
