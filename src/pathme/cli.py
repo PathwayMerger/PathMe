@@ -20,6 +20,7 @@ from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pi
 from pathme.wikipathways.utils import get_file_name_from_url, get_wikipathways_files, unzip_file
 from pybel import from_pickle, to_pickle
 from pybel.struct.mutation import collapse_to_genes, collapse_all_variants
+from pybel_tools.node_utils import remove_complex_nodes
 from tqdm import tqdm
 
 from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
@@ -377,6 +378,9 @@ def export_harmonized_universe(kegg_path, reactome_path, wikipathways_path, outp
     universe_graph = get_universe_graph(
         kegg_path, reactome_path, wikipathways_path, not no_explode, not no_harmonize_names
     )
+
+    if not no_explode:
+        remove_complex_nodes(universe_graph)
 
     click.echo("Merging variants and genes")
     collapse_all_variants(universe_graph)
