@@ -293,7 +293,7 @@ def wikipathways_to_pickles(resource_files, resource_folder, hgnc_manager, expor
         if os.path.exists(pickle_path):
             continue
 
-        # Parse pathway rdf_file and log stats
+        # Parse pathway rdf_file and logger stats
         pathway_path = os.path.join(resource_folder, rdf_file)
 
         bel_graph = wikipathways_to_bel(pathway_path, hgnc_manager)

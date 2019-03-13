@@ -24,6 +24,7 @@ def ensure_pathme_folders():
     os.makedirs(WIKIPATHWAYS_DIR, exist_ok=True)
     os.makedirs(KEGG_CACHE, exist_ok=True)
     os.makedirs(SPIA_DIR, exist_ok=True)
+    os.makedirs(UNIVERSE_DIR, exist_ok=True)
 
     os.makedirs(KEGG_BEL, exist_ok=True)
     os.makedirs(REACTOME_BEL, exist_ok=True)
@@ -51,6 +52,7 @@ KEGG_DIR = os.path.join(DATA_DIR, KEGG)
 REACTOME_DIR = os.path.join(DATA_DIR, REACTOME)
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
 SPIA_DIR = os.path.join(DATA_DIR, 'spia')
+UNIVERSE_DIR = os.path.join(DATA_DIR, 'universe')
 
 KEGG_BEL = os.path.join(KEGG_DIR, 'bel')
 REACTOME_BEL = os.path.join(REACTOME_DIR, 'bel')

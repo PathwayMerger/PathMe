@@ -19,6 +19,7 @@ import rdflib
 from pathme.constants import UNKNOWN, BEL_STATS_COLUMN_NAMES
 
 import pybel
+from pathme.export_utils import get_files_in_folder
 from pybel import from_pickle
 from pybel import union
 from pybel.struct.summary import count_functions, edge_summary
@@ -37,19 +38,6 @@ class CallCounted:
     def __call__(self, *args, **kwargs):
         self.counter += 1
         return self.method(*args, **kwargs)
-
-
-def get_files_in_folder(path: str) -> List[str]:
-    """Return the files in a given folder.
-
-    :param path: folder path
-    :return: file names in folder
-    """
-    return [
-        file
-        for file in os.listdir(path)
-        if os.path.isfile(os.path.join(path, file))
-    ]
 
 
 def check_multiple(element, element_name):

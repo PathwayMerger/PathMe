@@ -8,20 +8,24 @@ import time
 import click
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
-from pybel import from_pickle
-from tqdm import tqdm
-
 from pathme.constants import *
-from pathme.constants import DEFAULT_CACHE_CONNECTION
+from pathme.export_utils import get_all_pickles, get_files_in_folder, get_universe_graph
 from pathme.kegg.convert_to_bel import kegg_to_pickles
 from pathme.kegg.utils import download_kgml_files, get_kegg_pathway_ids
+from pathme.pybel_utils import flatten_complex_nodes
 from pathme.reactome.rdf_sparql import get_reactome_statistics, reactome_to_bel
 from pathme.reactome.utils import untar_file
-from pathme.utils import CallCounted, get_files_in_folder, make_downloader, statistics_to_df, summarize_helper
+from pathme.utils import CallCounted, make_downloader, statistics_to_df, summarize_helper
 from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pickles
 from pathme.wikipathways.utils import get_file_name_from_url, get_wikipathways_files, unzip_file
+from pybel import from_pickle, to_pickle
+from pybel.struct.mutation import collapse_to_genes, collapse_all_variants
+from pybel_tools.node_utils import remove_complex_nodes
+from tqdm import tqdm
 
-log = logging.getLogger(__name__)
+from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
+
+logger = logging.getLogger(__name__)
 
 
 @click.group(help='PathMe')
@@ -60,24 +64,24 @@ def download(connection):
 def bel(flatten, export_folder):
     """Convert KEGG to BEL."""
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
-    log.setLevel(logging.INFO)
+    logger.setLevel(logging.INFO)
 
     t = time.time()
 
-    log.info('Initiating HGNC Manager')
+    logger.info('Initiating HGNC Manager')
     hgnc_manager = HgncManager()
 
     if not hgnc_manager.is_populated():
         raise EnvironmentError('Your HGNC database is not populated. Please run python3 -m bio2bel_hgnc populate')
 
-    log.info('Initiating ChEBI Manager')
+    logger.info('Initiating ChEBI Manager')
     chebi_manager = ChebiManager()
 
     if not chebi_manager.is_populated():
         raise EnvironmentError('Your CHEBI database is not populated. Please run python3 -m bio2bel_chebi populate')
 
     if flatten:
-        log.info('Flattening mode activated')
+        logger.info('Flattening mode activated')
 
     resource_files = [
         file
@@ -93,7 +97,7 @@ def bel(flatten, export_folder):
         export_folder=export_folder,
     )
 
-    log.info('KEGG exported in %.2f seconds', time.time() - t)
+    logger.info('KEGG exported in %.2f seconds', time.time() - t)
 
 
 @kegg.command()
@@ -124,11 +128,11 @@ def wikipathways():
 def download():
     """Download WikiPathways RDF."""
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
-    log.setLevel(logging.INFO)
+    logger.setLevel(logging.INFO)
 
     cached_file = os.path.join(WIKIPATHWAYS_FILES, get_file_name_from_url(RDF_WIKIPATHWAYS))
     make_downloader(RDF_WIKIPATHWAYS, cached_file, WIKIPATHWAYS_FILES, unzip_file)
-    log.info('WikiPathways was downloaded')
+    logger.info('WikiPathways was downloaded')
 
 
 @wikipathways.command()
@@ -140,11 +144,11 @@ def bel(connection, debug, only_canonical):
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
 
     if debug:
-        log.setLevel(logging.DEBUG)
+        logger.setLevel(logging.DEBUG)
 
     logging.debug = CallCounted(logging.debug)
 
-    log.info('Initiating HGNC Manager')
+    logger.info('Initiating HGNC Manager')
     hgnc_manager = HgncManager()
 
     if not hgnc_manager.is_populated():
@@ -159,7 +163,7 @@ def bel(connection, debug, only_canonical):
 
     wikipathways_to_pickles(resource_files, resource_folder, hgnc_manager)
 
-    log.info(
+    logger.info(
         'WikiPathways exported in %.2f seconds. A total of {} warnings regarding entities that could not be converted '
         'to standard identifiers were found.',
         time.time() - t, logging.debug.counter
@@ -191,9 +195,9 @@ def statistics(connection, verbose, only_canonical, export):
     """Generate statistics for a database."""
     logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     if verbose:
-        log.setLevel(logging.DEBUG)
+        logger.setLevel(logging.DEBUG)
 
-    log.info('Initiating HGNC Manager')
+    logger.info('Initiating HGNC Manager')
     hgnc_manager = HgncManager()
 
     # TODO: Allow for an optional parameter giving the folder of the files
@@ -221,13 +225,13 @@ def reactome():
 def download():
     """Download Reactome RDF."""
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
-    log.setLevel(logging.INFO)
+    logger.setLevel(logging.INFO)
 
-    log.info('Downloading Reactome RDF file')
+    logger.info('Downloading Reactome RDF file')
 
     cached_file = os.path.join(REACTOME_FILES, get_file_name_from_url(RDF_REACTOME))
     make_downloader(RDF_REACTOME, cached_file, REACTOME_FILES, untar_file)
-    log.info('Reactome was downloaded')
+    logger.info('Reactome was downloaded')
 
 
 @reactome.command()
@@ -236,13 +240,13 @@ def bel(verbose):
     """Convert Reactome to BEL."""
     logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     if verbose:
-        log.setLevel(logging.DEBUG)
+        logger.setLevel(logging.DEBUG)
     else:
-        log.setLevel(logging.INFO)
+        logger.setLevel(logging.INFO)
 
     t = time.time()
 
-    log.info('Initiating HGNC Manager')
+    logger.info('Initiating HGNC Manager')
     hgnc_manager = HgncManager()
     chebi_manager = ChebiManager()
 
@@ -253,7 +257,7 @@ def bel(verbose):
 
     reactome_to_bel(resource_file, hgnc_manager, chebi_manager)
 
-    log.info('Reactome exported in %.2f seconds', time.time() - t)
+    logger.info('Reactome exported in %.2f seconds', time.time() - t)
 
 
 @reactome.command()
@@ -281,9 +285,9 @@ def statistics(connection, verbose, only_canonical, export):
     """Generate statistics for a database."""
     logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     if verbose:
-        log.setLevel(logging.DEBUG)
+        logger.setLevel(logging.DEBUG)
 
-    log.info('Initiating HGNC Manager')
+    logger.info('Initiating HGNC Manager')
     hgnc_manager = HgncManager()
     chebi_manager = ChebiManager()
 
@@ -305,26 +309,13 @@ def statistics(connection, verbose, only_canonical, export):
 @click.option('-o', '--output', help='Output directory', default=SPIA_DIR, show_default=True)
 def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
     """Export BEL Pickles to SPIA Excel."""
-    from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
+    click.echo(f'Results will be exported to {output}')
 
-    kegg_pickles = get_files_in_folder(kegg_path)
-
-    if not kegg_pickles:
-        log.warning('No KEGG files found. Please create the BEL KEGG files')
-
-    reactome_pickles = get_files_in_folder(reactome_path)
-
-    if not reactome_pickles:
-        log.warning('No Reactome files found. Please create the BEL Reactome files')
-
-    wp_pickles = get_files_in_folder(wikipathways_path)
-
-    if not wp_pickles:
-        log.warning('No WikiPathways files found. Please create the BEL WikiPathways files')
+    kegg_pickles, reactome_pickles, wp_pickles = get_all_pickles(kegg_path, reactome_path, wikipathways_path)
 
     all_pickles = kegg_pickles + reactome_pickles + wp_pickles
 
-    log.info(f'A total of {len(all_pickles)} will be exported')
+    click.echo(f'A total of {len(all_pickles)} will be exported')
 
     iterator = tqdm(all_pickles, desc='Exporting SPIA excel files')
 
@@ -334,19 +325,26 @@ def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
             continue
 
         if file in kegg_pickles:
-            file_path = from_pickle(os.path.join(kegg_path, file))
+            pathway_graph = from_pickle(os.path.join(kegg_path, file))
 
         elif file in reactome_pickles:
-            file_path = from_pickle(os.path.join(reactome_path, file))
+            pathway_graph = from_pickle(os.path.join(reactome_path, file))
 
         elif file in wp_pickles:
-            file_path = from_pickle(os.path.join(wikipathways_path, file))
+            pathway_graph = from_pickle(os.path.join(wikipathways_path, file))
 
         else:
-            log.warning(f'Unknown pickle file: {file}')
+            logger.warning(f'Unknown pickle file: {file}')
             continue
 
-        spia_matrices = bel_to_spia_matrices(file_path)
+        # Explode complex nodes
+        flatten_complex_nodes(pathway_graph)
+
+        # Collapse nodes
+        collapse_all_variants(pathway_graph)
+        collapse_to_genes(pathway_graph)
+
+        spia_matrices = bel_to_spia_matrices(pathway_graph)
 
         output_file = os.path.join(output, f"{file.strip('.pickle')}.xlsx")
 
@@ -357,9 +355,43 @@ def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
 
 
 @main.command()
-def get_harmonize_universe():
-    """Return harmonized universe of all the databases included in PathMe."""
-    NotImplemented
+@click.option('-k', '--kegg-path', help='KEGG BEL folder', default=KEGG_BEL, show_default=True)
+@click.option('-r', '--reactome-path', help='Reactome BEL folder.', default=REACTOME_BEL, show_default=True)
+@click.option('-w', '--wikipathways-path', help='WikiPathways BEL folder', default=WIKIPATHWAYS_BEL, show_default=True)
+@click.option('-o', '--output', help='Output directory', default=UNIVERSE_DIR, show_default=True)
+@click.option('--no-explode', is_flag=True, help='Do not explode complex/reactions nodes')
+@click.option('--no-harmonize-names', is_flag=True, help='Do not harmonize names')
+def export_harmonized_universe(kegg_path, reactome_path, wikipathways_path, output, no_explode, no_harmonize_names):
+    """Return harmonized universe BELGraph of all the databases included in PathMe."""
+    logging.basicConfig(level=logging.info, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+    logger.setLevel(logging.INFO)
+
+    if not no_explode:
+        click.echo('Complexes and Reactions will be not be flatten to single nodes')
+
+    if no_harmonize_names:
+        click.echo('Names will not be normalized to lower case')
+
+    click.echo("Merging graphs to universe and harmonizing...(this might take a while)")
+
+    # Not explode will flip the boolean coming from the cli
+    universe_graph = get_universe_graph(
+        kegg_path, reactome_path, wikipathways_path, not no_explode, not no_harmonize_names
+    )
+
+    if not no_explode:
+        remove_complex_nodes(universe_graph)
+
+    click.echo("Merging variants and genes")
+    collapse_all_variants(universe_graph)
+    collapse_to_genes(universe_graph)
+
+    universe_graph.name = 'PathMe Universe'
+
+    click.echo(f"Export BEL graph to: {os.path.join(output, 'pathme_universe_bel_graph.bel.pickle')}")
+    click.echo(universe_graph.summary_str())
+
+    to_pickle(universe_graph, os.path.join(output, "pathme_universe_bel_graph.bel.pickle"))
 
 
 if __name__ == '__main__':
