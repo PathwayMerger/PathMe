@@ -8,6 +8,12 @@ import time
 import click
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
+from pybel import from_pickle, to_pickle
+from pybel.dsl import ComplexAbundance
+from pybel.struct.mutation import collapse_to_genes, collapse_all_variants
+from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
+from tqdm import tqdm
+
 from pathme.constants import *
 from pathme.export_utils import get_all_pickles, get_files_in_folder, get_universe_graph
 from pathme.kegg.convert_to_bel import kegg_to_pickles
@@ -18,12 +24,6 @@ from pathme.reactome.utils import untar_file
 from pathme.utils import CallCounted, make_downloader, statistics_to_df, summarize_helper
 from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pickles
 from pathme.wikipathways.utils import get_file_name_from_url, get_wikipathways_files, unzip_file
-from pybel import from_pickle, to_pickle
-from pybel.struct.mutation import collapse_to_genes, collapse_all_variants
-from pybel_tools.node_utils import remove_complex_nodes
-from tqdm import tqdm
-
-from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
 
 logger = logging.getLogger(__name__)
 
@@ -380,7 +380,12 @@ def export_harmonized_universe(kegg_path, reactome_path, wikipathways_path, outp
     )
 
     if not no_explode:
-        remove_complex_nodes(universe_graph)
+        list_nodes = {
+            node
+            for node in universe_graph.nodes()
+            if isinstance(node, ComplexAbundance)
+        }
+        universe_graph.remove_nodes_from(list_nodes)
 
     click.echo("Merging variants and genes")
     collapse_all_variants(universe_graph)
