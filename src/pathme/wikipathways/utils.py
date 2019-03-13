@@ -10,13 +10,11 @@ from typing import Dict, List, Tuple
 import networkx as nx
 from bio2bel_wikipathways import Manager as WikiPathwaysManager
 
+from pathme.export_utils import get_files_in_folder
 from ..constants import (
     BRENDA, DATA_DIR, ENSEMBL, ENTREZ, EXPASY, HGNC, KEGG, UNIPROT, WIKIPATHWAYS, WIKIPEDIA, INTERPRO, PFAM
 )
-from ..utils import get_files_in_folder, check_multiple
-from ..constants import DATA_DIR, ENSEMBL, ENTREZ, EXPASY, HGNC, KEGG, UNIPROT, WIKIPATHWAYS, WIKIPEDIA, INTERPRO, PFAM
 from ..utils import check_multiple
-from pathme.export_utils import get_files_in_folder
 
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
 
