@@ -156,6 +156,7 @@ BEL_STATS_COLUMN_NAMES = {
     'Reaction': 'BEL Reactions',
     'increases': 'BEL Increase Relations',
     'decreases': 'BEL Decrease Relations',
+    'regulates': 'BEL Regulate Relations',
     'association': 'BEL Association Relations',
     'hasComponent': 'BEL Component Edges',
     'hasVariant': 'BEL Variant Edges',
