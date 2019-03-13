@@ -42,6 +42,7 @@ DEFAULT_CACHE_CONNECTION = get_connection(MODULE_NAME)
 KEGG = 'kegg'
 INTERPRO = 'interpro'
 PFAM = 'pfam'
+BRENDA = 'brenda'
 
 REACTOME = 'reactome'
 WIKIPATHWAYS = 'wikipathways'
@@ -93,7 +94,7 @@ WIKIPATHWAYS_REACTOME_MAPPINGS = 'https://github.com/ComPath/curation/raw/master
 
 KEGG_KGML_URL = 'http://rest.kegg.jp/get/{}/kgml'
 RDF_REACTOME = 'ftp://ftp.ebi.ac.uk/pub/databases/RDF/reactome/r61/reactome-biopax.tar.bz2'
-RDF_WIKIPATHWAYS = 'http://data.wikipathways.org/20181010/rdf/wikipathways-20181010-rdf-wp.zip'
+RDF_WIKIPATHWAYS = 'http://data.wikipathways.org/20190310/rdf/wikipathways-20190310-rdf-wp.zip'
 
 KEGG_STATS_COLUMN_NAMES = {
     'nodes': 'BEL Nodes',

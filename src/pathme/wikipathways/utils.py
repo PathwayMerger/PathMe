@@ -10,7 +10,9 @@ from typing import Dict, List, Tuple
 import networkx as nx
 from bio2bel_wikipathways import Manager as WikiPathwaysManager
 
-from ..constants import DATA_DIR, ENSEMBL, ENTREZ, EXPASY, HGNC, KEGG, UNIPROT, WIKIPATHWAYS, WIKIPEDIA, INTERPRO, PFAM
+from ..constants import (
+    BRENDA, DATA_DIR, ENSEMBL, ENTREZ, EXPASY, HGNC, KEGG, UNIPROT, WIKIPATHWAYS, WIKIPEDIA, INTERPRO, PFAM
+)
 from ..utils import get_files_in_folder, check_multiple
 
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
@@ -182,6 +184,16 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager):
         log.debug('Adding MIRBASE node %s ', chembl_id)
 
         return PFAM, chembl_name, chembl_id
+
+    elif 'brenda' in node_ids_dict['uri_id']:
+        brenda_id = check_multiple(node_ids_dict['identifier'], 'brenda')
+        brenda_name = check_multiple(node_ids_dict['name'], 'brenda')
+        return BRENDA.upper(), brenda_name, brenda_id
+
+    elif 'insdc' in node_ids_dict['uri_id']:
+        indsc_id = check_multiple(node_ids_dict['identifier'], 'insdc')
+        indsc_name = check_multiple(node_ids_dict['name'], 'insdc')
+        return HGNC, indsc_name, indsc_id
 
     raise Exception('Unknown identifier for node %s', node_ids_dict)
 
