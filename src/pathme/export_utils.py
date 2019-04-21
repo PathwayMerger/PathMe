@@ -9,12 +9,24 @@ from typing import List
 from pathme.constants import KEGG, REACTOME, WIKIPATHWAYS
 from pathme.normalize_names import normalize_graph_names
 from pathme.pybel_utils import flatten_complex_nodes
-from pybel import BELGraph
-from pybel import from_pickle
-from pybel import union
+from pybel import BELGraph, from_pickle
+from pathme.utils import union
 from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
+
+
+def set_resource(elements, database):
+    for element, data in elements:
+        if 'database' in data:
+            data['database'].add(database)
+        else:
+            data['database'] = {database}
+
+
+def set_graph_resource(graph, database):
+    set_resource(graph.nodes(data=True), database)
+    # set_resource(graph.edges(data=True), database)
 
 
 def get_all_pickles(kegg_path, reactome_path, wikipathways_path):
@@ -65,6 +77,9 @@ def get_universe_graph(
             if normalize_names:
                 normalize_graph_names(graph, KEGG)
 
+            set_graph_resource(graph, 'kegg')
+
+
         elif file in reactome_pickles:
             graph = from_pickle(os.path.join(reactome_path, file))
 
@@ -74,6 +89,9 @@ def get_universe_graph(
             if normalize_names:
                 normalize_graph_names(graph, REACTOME)
 
+            set_graph_resource(graph, 'reactome')
+
+
         elif file in wp_pickles:
             graph = from_pickle(os.path.join(wikipathways_path, file))
 
@@ -82,6 +100,9 @@ def get_universe_graph(
 
             if normalize_names:
                 normalize_graph_names(graph, WIKIPATHWAYS)
+
+            set_graph_resource(graph, 'wikipathways')
+
         else:
             logger.warning(f'Unknown pickle file: {file}')
             continue
