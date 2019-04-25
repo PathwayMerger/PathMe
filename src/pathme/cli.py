@@ -12,6 +12,7 @@ from pybel import from_pickle, to_pickle
 from pybel.dsl import ComplexAbundance
 from pybel.struct.mutation import collapse_to_genes, collapse_all_variants
 from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
+from pybel.struct.summary import count_functions
 from tqdm import tqdm
 
 import networkx as nx
@@ -405,6 +406,7 @@ def universe(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no
 
     click.echo(f"Export BEL graph to: {os.path.join(output, 'pathme_universe_bel_graph.bel.pickle')}")
     click.echo(universe_graph.summary_str())
+    click.echo(count_functions(universe_graph))
 
     to_pickle(universe_graph, os.path.join(output, "pathme_universe_bel_graph.bel.pickle"))
 
