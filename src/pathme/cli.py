@@ -386,7 +386,7 @@ def universe(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no
         flatten=flatten,
         normalize_names=normalize_names,
     )
-    click.echo(f'Number of isolates after getting universe: {nx.number_of_isolates()}')
+    click.echo(f'Number of isolates after getting universe: {nx.number_of_isolates(universe_graph)}')
 
     if flatten:
         universe_graph.remove_nodes_from({
@@ -394,12 +394,12 @@ def universe(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no
             for node in universe_graph.nodes()
             if isinstance(node, ComplexAbundance)
         })
-        click.echo(f'Number of isolates after flattening: {nx.number_of_isolates()}')
+        click.echo(f'Number of isolates after flattening: {nx.number_of_isolates(universe_graph)}')
 
     click.echo("Merging variants and genes")
     collapse_all_variants(universe_graph)
     collapse_to_genes(universe_graph)
-    click.echo(f'Number of isolates after collapsing variants and to genes: {nx.number_of_isolates()}')
+    click.echo(f'Number of isolates after collapsing variants and to genes: {nx.number_of_isolates(universe_graph)}')
 
     universe_graph.name = 'PathMe Universe'
 
