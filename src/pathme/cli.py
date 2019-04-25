@@ -9,7 +9,7 @@ import click
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
 from pybel import from_pickle, to_pickle
-from pybel.dsl import ComplexAbundance
+from pybel.dsl import ListAbundance
 from pybel.struct.mutation import collapse_to_genes, collapse_all_variants
 from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
 from pybel.struct.summary import count_functions
@@ -393,7 +393,7 @@ def universe(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no
         universe_graph.remove_nodes_from({
             node
             for node in universe_graph.nodes()
-            if isinstance(node, ComplexAbundance)
+            if isinstance(node, ListAbundance)
         })
         click.echo(f'Number of isolates after flattening: {nx.number_of_isolates(universe_graph)}')
 
