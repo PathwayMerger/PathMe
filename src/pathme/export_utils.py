@@ -8,9 +8,9 @@ from typing import List
 
 import networkx as nx
 import pybel
-from pybel import BELGraph, from_pickle
-from pybel.constants import RELATION
-from pybel.struct.utils import update_metadata
+from pybel import BELGraph, from_pickle, union
+from pybel.constants import RELATION, ANNOTATIONS
+from pybel.struct import add_annotation_value
 from tqdm import tqdm
 
 from pathme.constants import KEGG, REACTOME, WIKIPATHWAYS, PATHME_DIR
@@ -20,17 +20,14 @@ from pathme.pybel_utils import flatten_complex_nodes
 logger = logging.getLogger(__name__)
 
 
-def set_resource(elements, database):
-    for element, data in elements:
-        if 'database' in data:
-            data['database'].add(database)
-        else:
-            data['database'] = {database}
+def add_annotation_key(graph):
+    """Add annotation key in data (in place operation).
 
-
-def set_graph_resource(graph, database):
-    set_resource(graph.nodes(data=True), database)
-    # set_resource(graph.edges(data=True), database)
+    :param pybel.BELGraph graph: BEL Graph
+    """
+    for u, v, k in graph.edges(keys=True):
+        if ANNOTATIONS not in graph[u][v][k]:
+            graph[u][v][k][ANNOTATIONS] = {}
 
 
 def get_all_pickles(kegg_path, reactome_path, wikipathways_path):
@@ -53,65 +50,6 @@ def get_all_pickles(kegg_path, reactome_path, wikipathways_path):
     return kegg_pickles, reactome_pickles, wp_pickles
 
 
-def left_full_data_join(g, h) -> None:
-    """Wrapper around PyBEL's left_full_join to merge node data.
-
-    :param pybel.BELGraph g: A BEL graph
-    :param pybel.BELGraph h: A BEL graph
-    """
-    for node, data in h.nodes(data=True):
-        if node in g:
-            if 'database' in data and 'database' in g.nodes[node]:
-                g.nodes[node]['database'].update(data['database'])
-        else:
-            g.add_node(node, **data)
-
-    g.add_edges_from(
-        (u, v, key, data)
-        for u, v, key, data in h.edges(keys=True, data=True)
-        if u not in g or v not in g[u] or key not in g[u][v]
-    )
-
-    update_metadata(h, g)
-
-    g.warnings.extend(h.warnings)
-
-
-def union_data(graphs, use_tqdm: bool = False):
-    """Wrapper around PyBEL's union to instate left_full_data_join function.
-
-    Assumes iterator is longer than 2, but not infinite.
-
-    :param iter[BELGraph] graphs: An iterator over BEL graphs. Can't be infinite.
-    :return: A merged graph
-    :rtype: BELGraph
-
-    Example usage:
-    """
-    it = iter(graphs)
-
-    if use_tqdm:
-        it = tqdm(it, desc='taking union')
-
-    try:
-        target = next(it)
-    except StopIteration as e:
-        raise ValueError('no graphs given') from e
-
-    try:
-        graph = next(it)
-    except StopIteration as e:
-        return target
-    else:
-        target = target.copy()
-        left_full_data_join(target, graph)
-
-    for graph in it:
-        left_full_data_join(target, graph)
-
-    return target
-
-
 def get_universe_graph(
         kegg_path: str,
         reactome_path: str,
@@ -127,7 +65,7 @@ def get_universe_graph(
         normalize_names=normalize_names
     )
     logger.info('Merging all into a hairball...')
-    return union_data(universe_graphs)
+    return union(universe_graphs)
 
 
 def _iterate_universe_graphs(
@@ -161,7 +99,9 @@ def _iterate_universe_graphs(
             if normalize_names:
                 normalize_graph_names(graph, KEGG)
 
-            set_graph_resource(graph, KEGG)
+            graph.annotation_list['database'] = {KEGG, REACTOME, WIKIPATHWAYS}
+            add_annotation_key(graph)
+            add_annotation_value(graph, 'database', KEGG)
 
         elif file in reactome_pickles:
             graph = from_pickle(os.path.join(reactome_path, file), check_version=False)
@@ -172,7 +112,10 @@ def _iterate_universe_graphs(
             if normalize_names:
                 normalize_graph_names(graph, REACTOME)
 
-            set_graph_resource(graph, REACTOME)
+            graph.annotation_list['database'] = {KEGG, REACTOME, WIKIPATHWAYS}
+            add_annotation_key(graph)
+            add_annotation_value(graph, 'database', REACTOME)
+
 
         elif file in wp_pickles:
             graph = from_pickle(os.path.join(wikipathways_path, file), check_version=False)
@@ -183,7 +126,10 @@ def _iterate_universe_graphs(
             if normalize_names:
                 normalize_graph_names(graph, WIKIPATHWAYS)
 
-            set_graph_resource(graph, WIKIPATHWAYS)
+            graph.annotation_list['database'] = {KEGG, REACTOME, WIKIPATHWAYS}
+            add_annotation_key(graph)
+            add_annotation_value(graph, 'database', WIKIPATHWAYS)
+
 
         else:
             logger.warning(f'Unknown pickle file: {file}')
