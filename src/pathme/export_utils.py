@@ -6,11 +6,15 @@ import logging
 import os
 from typing import List
 
+from tqdm import tqdm
+
+from pathme.constants import KEGG, REACTOME, WIKIPATHWAYS
 import networkx as nx
 import pybel
 from pathme.constants import KEGG, REACTOME, WIKIPATHWAYS, PATHME_DIR
 from pathme.normalize_names import normalize_graph_names
 from pathme.pybel_utils import flatten_complex_nodes
+from pybel import BELGraph, from_pickle, union
 from pybel import BELGraph, from_pickle
 from pybel.struct.utils import update_metadata
 from pybel.constants import RELATION
@@ -106,8 +110,31 @@ def union_data(graphs):
     return target
 
 def get_universe_graph(
-        kegg_path: str, reactome_path: str, wikipathways_path: str,
-        flatten: bool = True, normalize_names: bool = True) -> BELGraph:
+        kegg_path: str,
+        reactome_path: str,
+        wikipathways_path: str,
+        *,
+        flatten: bool = True,
+        normalize_names: bool = True,
+) -> BELGraph:
+    """Return universe graph."""
+    universe_graphs = _iterate_universe_graphs(
+        kegg_path, reactome_path, wikipathways_path,
+        flatten=flatten,
+        normalize_names=normalize_names
+    )
+    logger.info('Merging all into a hairball...')
+    return union(universe_graphs)
+
+
+def _iterate_universe_graphs(
+        kegg_path: str,
+        reactome_path: str,
+        wikipathways_path: str,
+        *,
+        flatten: bool = True,
+        normalize_names: bool = True,
+) -> BELGraph:
     """Return universe graph."""
     kegg_pickles, reactome_pickles, wp_pickles = get_all_pickles(kegg_path, reactome_path, wikipathways_path)
 
@@ -125,7 +152,7 @@ def get_universe_graph(
             continue
 
         if file in kegg_pickles:
-            graph = from_pickle(os.path.join(kegg_path, file))
+            graph = from_pickle(os.path.join(kegg_path, file), check_version=False)
 
             if flatten:
                 flatten_complex_nodes(graph)
@@ -137,7 +164,7 @@ def get_universe_graph(
 
 
         elif file in reactome_pickles:
-            graph = from_pickle(os.path.join(reactome_path, file))
+            graph = from_pickle(os.path.join(reactome_path, file), check_version=False)
 
             if flatten:
                 flatten_complex_nodes(graph)
@@ -149,7 +176,7 @@ def get_universe_graph(
 
 
         elif file in wp_pickles:
-            graph = from_pickle(os.path.join(wikipathways_path, file))
+            graph = from_pickle(os.path.join(wikipathways_path, file), check_version=False)
 
             if flatten:
                 flatten_complex_nodes(graph)
@@ -181,6 +208,7 @@ def to_gml(graph: pybel.BELGraph, path: str = PATHME_DIR) -> None:
     """Write this graph to GML  file using :func:`networkx.write_gml`.
     """
     rv = nx.MultiDiGraph()
+        yield graph
 
     for node in graph:
         rv.add_node(munge_node_attribute(node, 'name'), namespace=str(node.get('namespace')),

@@ -6,12 +6,9 @@ import logging
 import time
 
 import click
+import networkx as nx
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
-from pybel import from_pickle, to_pickle
-from pybel.dsl import ComplexAbundance
-from pybel.struct.mutation import collapse_to_genes, collapse_all_variants
-from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
 from tqdm import tqdm
 
 from pathme.constants import *
@@ -24,6 +21,11 @@ from pathme.reactome.utils import untar_file
 from pathme.utils import CallCounted, make_downloader, statistics_to_df, summarize_helper
 from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pickles
 from pathme.wikipathways.utils import get_file_name_from_url, get_wikipathways_files, unzip_file
+from pybel import from_pickle, to_pickle
+from pybel.dsl import ListAbundance
+from pybel.struct.mutation import collapse_to_genes, collapse_all_variants, remove_isolated_list_abundances
+from pybel.struct.summary import count_functions
+from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
 
 logger = logging.getLogger(__name__)
 
@@ -307,7 +309,7 @@ def statistics(connection, verbose, only_canonical, export):
 @click.option('-r', '--reactome_path', help='Reactome BEL folder.', default=REACTOME_BEL, show_default=True)
 @click.option('-w', '--wikipathways_path', help='WikiPathways BEL folder', default=WIKIPATHWAYS_BEL, show_default=True)
 @click.option('-o', '--output', help='Output directory', default=SPIA_DIR, show_default=True)
-def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
+def spia(kegg_path, reactome_path, wikipathways_path, output):
     """Export BEL Pickles to SPIA Excel."""
     click.echo(f'Results will be exported to {output}')
 
@@ -359,42 +361,55 @@ def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
 @click.option('-r', '--reactome-path', help='Reactome BEL folder.', default=REACTOME_BEL, show_default=True)
 @click.option('-w', '--wikipathways-path', help='WikiPathways BEL folder', default=WIKIPATHWAYS_BEL, show_default=True)
 @click.option('-o', '--output', help='Output directory', default=UNIVERSE_DIR, show_default=True)
-@click.option('--no-explode', is_flag=True, help='Do not explode complex/reactions nodes')
-@click.option('--no-harmonize-names', is_flag=True, help='Do not harmonize names')
-def export_harmonized_universe(kegg_path, reactome_path, wikipathways_path, output, no_explode, no_harmonize_names):
-    """Return harmonized universe BELGraph of all the databases included in PathMe."""
+@click.option('--no-flatten', is_flag=True, help='Do not flatten complex/reactions nodes')
+@click.option('--no-normalize-names', is_flag=True, help='Do not normalize names')
+def universe(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no_normalize_names):
+    """Export harmonized PathMe universe."""
     logging.basicConfig(level=logging.info, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     logger.setLevel(logging.INFO)
 
-    if not no_explode:
+    flatten = not no_flatten
+    normalize_names = not no_normalize_names
+
+    if not flatten:
         click.echo('Complexes and Reactions will be not be flatten to single nodes')
 
-    if no_harmonize_names:
+    if not normalize_names:
         click.echo('Names will not be normalized to lower case')
 
     click.echo("Merging graphs to universe and harmonizing...(this might take a while)")
 
     # Not explode will flip the boolean coming from the cli
     universe_graph = get_universe_graph(
-        kegg_path, reactome_path, wikipathways_path, not no_explode, not no_harmonize_names
+        kegg_path,
+        reactome_path,
+        wikipathways_path,
+        flatten=flatten,
+        normalize_names=normalize_names,
     )
+    click.echo(f'Number of isolates after getting universe: {nx.number_of_isolates(universe_graph)}')
 
-    if not no_explode:
-        list_nodes = {
+    # Remove isolated list abundances
+    remove_isolated_list_abundances(universe_graph)
+
+    if flatten:
+        universe_graph.remove_nodes_from({
             node
             for node in universe_graph.nodes()
-            if isinstance(node, ComplexAbundance)
-        }
-        universe_graph.remove_nodes_from(list_nodes)
+            if isinstance(node, ListAbundance)
+        })
+        click.echo(f'Number of isolates after flattening: {nx.number_of_isolates(universe_graph)}')
 
     click.echo("Merging variants and genes")
     collapse_all_variants(universe_graph)
     collapse_to_genes(universe_graph)
+    click.echo(f'Number of isolates after collapsing variants and to genes: {nx.number_of_isolates(universe_graph)}')
 
     universe_graph.name = 'PathMe Universe'
 
     click.echo(f"Export BEL graph to: {os.path.join(output, 'pathme_universe_bel_graph.bel.pickle')}")
     click.echo(universe_graph.summary_str())
+    click.echo(count_functions(universe_graph))
 
     to_pickle(universe_graph, os.path.join(output, "pathme_universe_bel_graph.bel.pickle"))
 
