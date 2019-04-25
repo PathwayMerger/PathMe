@@ -370,10 +370,10 @@ def universe(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no
     flatten = not no_flatten
     normalize_names = not no_normalize_names
 
-    if flatten:
+    if not flatten:
         click.echo('Complexes and Reactions will be not be flatten to single nodes')
 
-    if normalize_names:
+    if not normalize_names:
         click.echo('Names will not be normalized to lower case')
 
     click.echo("Merging graphs to universe and harmonizing...(this might take a while)")
