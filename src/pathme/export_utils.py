@@ -38,8 +38,31 @@ def get_all_pickles(kegg_path, reactome_path, wikipathways_path):
 
 
 def get_universe_graph(
-        kegg_path: str, reactome_path: str, wikipathways_path: str,
-        flatten: bool = True, normalize_names: bool = True) -> BELGraph:
+        kegg_path: str,
+        reactome_path: str,
+        wikipathways_path: str,
+        *,
+        flatten: bool = True,
+        normalize_names: bool = True,
+) -> BELGraph:
+    """Return universe graph."""
+    universe_graphs = _iterate_universe_graphs(
+        kegg_path, reactome_path, wikipathways_path,
+        flatten=flatten,
+        normalize_names=normalize_names
+    )
+    logger.info('Merging all into a hairball...')
+    return union(universe_graphs)
+
+
+def _iterate_universe_graphs(
+        kegg_path: str,
+        reactome_path: str,
+        wikipathways_path: str,
+        *,
+        flatten: bool = True,
+        normalize_names: bool = True,
+) -> BELGraph:
     """Return universe graph."""
     kegg_pickles, reactome_pickles, wp_pickles = get_all_pickles(kegg_path, reactome_path, wikipathways_path)
 
@@ -48,8 +71,6 @@ def get_universe_graph(
     logger.info(f'A total of {len(all_pickles)} will be merged into the universe')
 
     iterator = tqdm(all_pickles, desc='Loading of the graph pickles')
-
-    universe_list = []
 
     # Export KEGG
     for file in iterator:
@@ -86,11 +107,7 @@ def get_universe_graph(
             logger.warning(f'Unknown pickle file: {file}')
             continue
 
-        universe_list.append(graph)
-
-    logger.info('Merging all into a hairball...')
-
-    return union(universe_list)
+        yield graph
 
 
 def get_files_in_folder(path: str) -> List[str]:

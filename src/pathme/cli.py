@@ -14,6 +14,7 @@ from pybel.struct.mutation import collapse_to_genes, collapse_all_variants
 from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
 from tqdm import tqdm
 
+import networkx as nx
 from pathme.constants import *
 from pathme.export_utils import get_all_pickles, get_files_in_folder, get_universe_graph
 from pathme.kegg.convert_to_bel import kegg_to_pickles
@@ -359,37 +360,46 @@ def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
 @click.option('-r', '--reactome-path', help='Reactome BEL folder.', default=REACTOME_BEL, show_default=True)
 @click.option('-w', '--wikipathways-path', help='WikiPathways BEL folder', default=WIKIPATHWAYS_BEL, show_default=True)
 @click.option('-o', '--output', help='Output directory', default=UNIVERSE_DIR, show_default=True)
-@click.option('--no-explode', is_flag=True, help='Do not explode complex/reactions nodes')
-@click.option('--no-harmonize-names', is_flag=True, help='Do not harmonize names')
-def export_harmonized_universe(kegg_path, reactome_path, wikipathways_path, output, no_explode, no_harmonize_names):
+@click.option('--no-flatten', is_flag=True, help='Do not flatten complex/reactions nodes')
+@click.option('--no-normalize-names', is_flag=True, help='Do not normalize names')
+def export_harmonized_universe(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no_normalize_names):
     """Return harmonized universe BELGraph of all the databases included in PathMe."""
     logging.basicConfig(level=logging.info, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     logger.setLevel(logging.INFO)
 
-    if not no_explode:
+    flatten = not no_flatten
+    normalize_names = not no_normalize_names
+
+    if flatten:
         click.echo('Complexes and Reactions will be not be flatten to single nodes')
 
-    if no_harmonize_names:
+    if normalize_names:
         click.echo('Names will not be normalized to lower case')
 
     click.echo("Merging graphs to universe and harmonizing...(this might take a while)")
 
     # Not explode will flip the boolean coming from the cli
     universe_graph = get_universe_graph(
-        kegg_path, reactome_path, wikipathways_path, not no_explode, not no_harmonize_names
+        kegg_path,
+        reactome_path,
+        wikipathways_path,
+        flatten=flatten,
+        normalize_names=normalize_names,
     )
+    click.echo(f'Number of isolates after getting universe: {nx.number_of_isolates()}')
 
-    if not no_explode:
-        list_nodes = {
+    if flatten:
+        universe_graph.remove_nodes_from({
             node
             for node in universe_graph.nodes()
             if isinstance(node, ComplexAbundance)
-        }
-        universe_graph.remove_nodes_from(list_nodes)
+        })
+        click.echo(f'Number of isolates after flattening: {nx.number_of_isolates()}')
 
     click.echo("Merging variants and genes")
     collapse_all_variants(universe_graph)
     collapse_to_genes(universe_graph)
+    click.echo(f'Number of isolates after collapsing variants and to genes: {nx.number_of_isolates()}')
 
     universe_graph.name = 'PathMe Universe'
 
