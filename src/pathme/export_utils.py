@@ -6,13 +6,12 @@ import logging
 import os
 from typing import List
 
+from tqdm import tqdm
+
 from pathme.constants import KEGG, REACTOME, WIKIPATHWAYS
 from pathme.normalize_names import normalize_graph_names
 from pathme.pybel_utils import flatten_complex_nodes
-from pybel import BELGraph
-from pybel import from_pickle
-from pybel import union
-from tqdm import tqdm
+from pybel import BELGraph, from_pickle, union
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +77,7 @@ def _iterate_universe_graphs(
             continue
 
         if file in kegg_pickles:
-            graph = from_pickle(os.path.join(kegg_path, file))
+            graph = from_pickle(os.path.join(kegg_path, file), check_version=False)
 
             if flatten:
                 flatten_complex_nodes(graph)
@@ -87,7 +86,7 @@ def _iterate_universe_graphs(
                 normalize_graph_names(graph, KEGG)
 
         elif file in reactome_pickles:
-            graph = from_pickle(os.path.join(reactome_path, file))
+            graph = from_pickle(os.path.join(reactome_path, file), check_version=False)
 
             if flatten:
                 flatten_complex_nodes(graph)
@@ -96,7 +95,7 @@ def _iterate_universe_graphs(
                 normalize_graph_names(graph, REACTOME)
 
         elif file in wp_pickles:
-            graph = from_pickle(os.path.join(wikipathways_path, file))
+            graph = from_pickle(os.path.join(wikipathways_path, file), check_version=False)
 
             if flatten:
                 flatten_complex_nodes(graph)
