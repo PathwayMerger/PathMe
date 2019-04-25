@@ -308,7 +308,7 @@ def statistics(connection, verbose, only_canonical, export):
 @click.option('-r', '--reactome_path', help='Reactome BEL folder.', default=REACTOME_BEL, show_default=True)
 @click.option('-w', '--wikipathways_path', help='WikiPathways BEL folder', default=WIKIPATHWAYS_BEL, show_default=True)
 @click.option('-o', '--output', help='Output directory', default=SPIA_DIR, show_default=True)
-def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
+def spia(kegg_path, reactome_path, wikipathways_path, output):
     """Export BEL Pickles to SPIA Excel."""
     click.echo(f'Results will be exported to {output}')
 
@@ -362,8 +362,8 @@ def export_to_spia(kegg_path, reactome_path, wikipathways_path, output):
 @click.option('-o', '--output', help='Output directory', default=UNIVERSE_DIR, show_default=True)
 @click.option('--no-flatten', is_flag=True, help='Do not flatten complex/reactions nodes')
 @click.option('--no-normalize-names', is_flag=True, help='Do not normalize names')
-def export_harmonized_universe(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no_normalize_names):
-    """Return harmonized universe BELGraph of all the databases included in PathMe."""
+def universe(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no_normalize_names):
+    """Export harmonized PathMe universe."""
     logging.basicConfig(level=logging.info, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     logger.setLevel(logging.INFO)
 
