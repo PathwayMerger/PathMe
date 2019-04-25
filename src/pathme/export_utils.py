@@ -6,20 +6,16 @@ import logging
 import os
 from typing import List
 
-from tqdm import tqdm
-
-from pathme.constants import KEGG, REACTOME, WIKIPATHWAYS
 import networkx as nx
 import pybel
+from pybel import BELGraph, from_pickle
+from pybel.constants import RELATION
+from pybel.struct.utils import update_metadata
+from tqdm import tqdm
+
 from pathme.constants import KEGG, REACTOME, WIKIPATHWAYS, PATHME_DIR
 from pathme.normalize_names import normalize_graph_names
 from pathme.pybel_utils import flatten_complex_nodes
-from pybel import BELGraph, from_pickle, union
-from pybel import BELGraph, from_pickle
-from pybel.struct.utils import update_metadata
-from pybel.constants import RELATION
-
-from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +77,7 @@ def left_full_data_join(g, h) -> None:
     g.warnings.extend(h.warnings)
 
 
-def union_data(graphs):
+def union_data(graphs, use_tqdm: bool = False):
     """Wrapper around PyBEL's union to instate left_full_data_join function.
 
     Assumes iterator is longer than 2, but not infinite.
@@ -92,22 +88,29 @@ def union_data(graphs):
 
     Example usage:
     """
-    graphs = tuple(graphs)
+    it = iter(graphs)
 
-    n_graphs = len(graphs)
+    if use_tqdm:
+        it = tqdm(it, desc='taking union')
 
-    if n_graphs == 0:
-        raise ValueError('no graphs given')
+    try:
+        target = next(it)
+    except StopIteration as e:
+        raise ValueError('no graphs given') from e
 
-    if n_graphs == 1:
-        return graphs[0]
+    try:
+        graph = next(it)
+    except StopIteration as e:
+        return target
+    else:
+        target = target.copy()
+        left_full_data_join(target, graph)
 
-    target = graphs[0].copy()
-
-    for graph in graphs[1:]:
+    for graph in it:
         left_full_data_join(target, graph)
 
     return target
+
 
 def get_universe_graph(
         kegg_path: str,
@@ -124,7 +127,7 @@ def get_universe_graph(
         normalize_names=normalize_names
     )
     logger.info('Merging all into a hairball...')
-    return union(universe_graphs)
+    return union_data(universe_graphs)
 
 
 def _iterate_universe_graphs(
@@ -144,8 +147,6 @@ def _iterate_universe_graphs(
 
     iterator = tqdm(all_pickles, desc='Loading of the graph pickles')
 
-    universe_list = []
-
     # Export KEGG
     for file in iterator:
         if not file.endswith('.pickle'):
@@ -160,8 +161,7 @@ def _iterate_universe_graphs(
             if normalize_names:
                 normalize_graph_names(graph, KEGG)
 
-            set_graph_resource(graph, 'kegg')
-
+            set_graph_resource(graph, KEGG)
 
         elif file in reactome_pickles:
             graph = from_pickle(os.path.join(reactome_path, file), check_version=False)
@@ -172,8 +172,7 @@ def _iterate_universe_graphs(
             if normalize_names:
                 normalize_graph_names(graph, REACTOME)
 
-            set_graph_resource(graph, 'reactome')
-
+            set_graph_resource(graph, REACTOME)
 
         elif file in wp_pickles:
             graph = from_pickle(os.path.join(wikipathways_path, file), check_version=False)
@@ -182,22 +181,19 @@ def _iterate_universe_graphs(
                 flatten_complex_nodes(graph)
 
             if normalize_names:
-                normalize_grget_set_databaseaph_names(graph, WIKIPATHWAYS)
+                normalize_graph_names(graph, WIKIPATHWAYS)
 
-            set_graph_resource(graph, 'wikipathways')
+            set_graph_resource(graph, WIKIPATHWAYS)
 
         else:
             logger.warning(f'Unknown pickle file: {file}')
             continue
 
-        universe_list.append(graph)
-
-    logger.info('Merging all into a hairball...')
-
-    return union_data(universe_list)
+        yield graph
 
 
-def munge_node_attribute(node, attribute='name'):
+def _munge_node_attribute(node, attribute='name'):
+    """Munge node attribute."""
     if node.get(attribute) == None:
         return str(node)
     else:
@@ -208,22 +204,22 @@ def to_gml(graph: pybel.BELGraph, path: str = PATHME_DIR) -> None:
     """Write this graph to GML  file using :func:`networkx.write_gml`.
     """
     rv = nx.MultiDiGraph()
-        yield graph
 
     for node in graph:
-        rv.add_node(munge_node_attribute(node, 'name'), namespace=str(node.get('namespace')),
+        rv.add_node(_munge_node_attribute(node, 'name'), namespace=str(node.get('namespace')),
                     function=node.get('function'))
 
     for u, v, key, edge_data in graph.edges(data=True, keys=True):
         rv.add_edge(
-            munge_node_attribute(u),
-            munge_node_attribute(v),
+            _munge_node_attribute(u),
+            _munge_node_attribute(v),
             interaction=str(edge_data[RELATION]),
             bel=str(edge_data),
             key=str(key),
         )
 
     nx.write_gml(rv, path)
+
 
 def get_files_in_folder(path: str) -> List[str]:
     """Return the files in a given folder.
