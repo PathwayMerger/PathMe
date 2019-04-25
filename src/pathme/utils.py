@@ -16,7 +16,7 @@ import click
 import pandas as pd
 import rdflib
 
-from pathme.constants import UNKNOWN, BEL_STATS_COLUMN_NAMES
+from pathme.constants import UNKNOWN, BEL_STATS_COLUMN_NAMES, PATHME_DIR
 
 import pybel
 from pathme.export_utils import get_files_in_folder
@@ -62,7 +62,6 @@ def check_multiple(element, element_name):
             log.warning('Empty list/set %s', element)
 
     return element
-
 
 def parse_id_uri(uri):
     """Get the components of a given uri (with identifier at the last position).
