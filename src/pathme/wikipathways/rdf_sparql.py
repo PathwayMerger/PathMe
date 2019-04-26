@@ -4,16 +4,16 @@
 
 import os
 from collections import defaultdict
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 
 import tqdm
-from rdflib.namespace import Namespace, RDFS, RDF, DCTERMS, DC
+from pybel import BELGraph, to_pickle
+from rdflib.namespace import DC, DCTERMS, Namespace, RDF, RDFS
 
 from pathme.constants import WIKIPATHWAYS_BEL
-from pathme.utils import get_pathway_statitics, query_result_to_dict, parse_rdf
+from pathme.utils import get_pathway_statitics, parse_rdf, query_result_to_dict
 from pathme.wikipathways.convert_to_bel import convert_to_bel
 from pathme.wikipathways.utils import debug_pathway_info
-from pybel import BELGraph, to_pickle
 
 """SPARQL string queries"""
 

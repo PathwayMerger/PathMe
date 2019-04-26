@@ -141,7 +141,7 @@ def download():
 @click.option('-c', '--connection', help="Defaults to {}".format(DEFAULT_CACHE_CONNECTION))
 @click.option('-d', '--debug', is_flag=True, default=False, help='Debug mode')
 @click.option('-x', '--only-canonical', default=True, help='Parse only canonical pathways')
-def bel(connection, debug, only_canonical):
+def bel(connection: str, debug: bool, only_canonical: bool):
     """Convert WikiPathways to BEL."""
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
 
@@ -166,7 +166,7 @@ def bel(connection, debug, only_canonical):
     wikipathways_to_pickles(resource_files, resource_folder, hgnc_manager)
 
     logger.info(
-        'WikiPathways exported in %.2f seconds. A total of {} warnings regarding entities that could not be converted '
+        'WikiPathways exported in %.2f seconds. A total of %d warnings regarding entities that could not be converted '
         'to standard identifiers were found.',
         time.time() - t, logging.debug.counter
     )

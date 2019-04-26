@@ -6,24 +6,20 @@ import collections
 import itertools as itt
 import logging
 import os
-import re
 import pickle
-from typing import Dict, List, Optional, Set
+from typing import Dict, Iterable, List, Optional, Set, Tuple
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
 import click
 import pandas as pd
-import rdflib
-
-from pathme.constants import UNKNOWN, BEL_STATS_COLUMN_NAMES, PATHME_DIR
-
 import pybel
+import rdflib
+from pybel import BELGraph, from_pickle
+from pybel.struct.summary import count_functions, count_relations
+
+from pathme.constants import BEL_STATS_COLUMN_NAMES, UNKNOWN
 from pathme.export_utils import get_files_in_folder
-from pybel import from_pickle
-from pybel import union
-from pybel.struct.summary import count_functions, edge_summary
-from pybel_tools import summary
 
 log = logging.getLogger(__name__)
 
@@ -40,38 +36,14 @@ class CallCounted:
         return self.method(*args, **kwargs)
 
 
-def check_multiple(element, element_name):
-    """Check whether element is iterable.
-
-    :param element: variable to check
-    :param element_name: name to print
-    :return:
-    """
-    if isinstance(element, set) or isinstance(element, list):
-        log.warning('Multiple {}: {}'.format(element_name, element))
-        # TODO: print the wikipathways bps that return a set because they are probably wrong.
-        if len(element) == 1:
-            return list(element)[0]
-        elif len(element) > 1:
-            for subelement in element:
-                if bool(re.match('^[A-Z0-9]+$', subelement)):
-                    return subelement
-
-            return list(element)[0]
-        else:
-            log.warning('Empty list/set %s', element)
-
-    return element
-
 def parse_id_uri(uri):
     """Get the components of a given uri (with identifier at the last position).
 
-    :param str uri: URI
+    :param uri: URI
     :returns: prefix (ex: http://rdf.wikipathways.org/...)
     :returns: prefix_namespaces: if there are many namespaces, until the penultimate (ex: .../Pathway/WP22_r97775/...)
     :returns: namespace: if there are many namespaces, the last (ex: .../Interaction/)
     :returns: identifier (ex: .../c562c/)
-    :rtype: tuple[str,str,str,str]
     """
     parsed_url = urlparse(uri)
     uri_suffix = parsed_url.path.split('/')
@@ -82,18 +54,21 @@ def parse_id_uri(uri):
     # namespace (Interaction),
     # identifier (id61b0d9c7) in the given example ->
     # (http://rdf.wikipathways.org/Pathway/WP2118_r97625/WP/Interaction/id61b0d9c7)
-    return parsed_url.netloc, '/'.join(uri_suffix[0:-2]), uri_suffix[-2], uri_suffix[-1]
+    return (
+        parsed_url.netloc,
+        '/'.join(uri_suffix[0:-2]),
+        uri_suffix[-2],
+        uri_suffix[-1],
+    )
 
 
-def parse_namespace_uri(uri):
+def parse_namespace_uri(uri: str) -> Tuple[str, str, str]:
     """Get the prefix and namespace of a given URI (without identifier, only with a namspace at last position).
 
-    :param str uri: URI
+    :param uri: URI
     :returns: prefix (ex: http://purl.org/dc/terms/...)
     :returns: namespace (ex: .../isPartOf)
-    :rtype: tuple[str,str]
     """
-
     # Split the uri str by '/'.
     splited_uri = uri.split('/')
 
@@ -137,7 +112,6 @@ def parse_rdf(path: str, format: Optional[str] = None) -> rdflib.Graph:
 def entry_result_to_dict(entry, **kwargs):
     """Export to a dictionary a SPARQL query result data structure.
 
-    :param str rdflib.plugins.sparql.processor.SPARQLResult: SPARQL query result data structure, with all the arguments queried for all entries of a certain primary type.
     :returns: entries_dict: Dictionary with all the entries id as keys and the entries arguments as values.
     :rtype: dict
     """
@@ -184,7 +158,6 @@ def entries_dict_ids_argument(entries_dict):
 def query_result_to_dict(entries, **kwargs) -> Dict[str, Dict[str, Dict[str, str]]]:
     """Export to a dictionary a SPARQL query result data structure.
 
-    :param str rdflib.plugins.sparql.processor.SPARQLResult: SPARQL query result data structure, with all the arguments queried for all entries of a certain primary type.
     :returns: entries_dict: Dictionary with all the entries id as keys and the entries arguments as values.
     :rtype: dict
     """
@@ -276,8 +249,8 @@ def get_pathway_statitics(nodes_types, edges_types, bel_graph, **kwargs):
     pathway_statistics = {
         'RDF nodes': rdf_nodes_statistics,
         'RDF interactions': rdf_edges_statistics,
-        'BEL imported nodes': pybel.struct.summary.count_functions(bel_graph),
-        'BEL imported edges': summary.edge_summary.count_relations(bel_graph),
+        'BEL imported nodes': count_functions(bel_graph),
+        'BEL imported edges': count_relations(bel_graph),
         'bel_vs_rdf': {
             'RDF nodes': rdf_total_nodes,
             'RDF interactions': rdf_total_edges,
@@ -338,10 +311,10 @@ def statistics_to_df(all_pathways_statistics):
     return df
 
 
-def get_bel_types(path):
+def get_bel_types(path: str):
     """Get BEL node and edge type statistics.
 
-    :param str path: path to pickle
+    :param path: path to pickle
     :return: count of all nodes and edges in a BEL graph
     :rtype: dict
     """
@@ -357,16 +330,16 @@ def get_bel_types(path):
     bel_stats.update(bel_functions_dict)
 
     # Get count of all BEL edge types
-    bel_edges_dict = edge_summary.count_relations(bel_graph)
+    bel_edges_dict = count_relations(bel_graph)
     bel_stats.update(bel_edges_dict)
 
     return bel_stats
 
 
-def get_bel_stats(resource_folder):
+def get_bel_stats(resource_folder: str):
     """Get all BEL node and edge type statistics.
 
-    :param str resource_folder: path to BEL pickles folder
+    :param resource_folder: path to BEL pickles folder
     :return: count of all nodes and edges in all BEL graphs from one resource
     :rtype: dict
     """
@@ -401,7 +374,7 @@ def get_bel_stats(resource_folder):
 def get_genes_from_pickles(resource_folder: str, files: List[str], manager) -> Dict[str, set]:
     """Get BEL graph gene set for all pathways in resource.
 
-    :param str resource_folder: path to resource folder
+    :param resource_folder: path to resource folder
     :param list files: list of BEL graph pickles
     :param bio2bel Manager manager: Manager
     :return: BEL graph gene sets for each pathway in resource
@@ -452,9 +425,8 @@ def get_kegg_genes_from_pickles(resource_folder, files: List[str], manager) -> D
 def get_genes_in_graph(graph: pybel.BELGraph) -> Set[str]:
     """Get BEL graph gene set for a pathway.
 
-    :param pybel.BELGraph graph: BEL Graph
+    :param graph: BEL Graph
     :return: BEL graph gene set
-    :rtype: set
     """
     gene_set = set()
 
@@ -495,10 +467,10 @@ def jaccard_similarity(database_gene_set, bel_genes_set):
             count_no_similarity += 1
 
     print('Jaccard index for gene sets in database vs gene sets in BEL:')
-    print('{} of {} gene sets in the database and BEL graphs have a similarity of 100%.'.format(count, len(
-        jaccard_similarities)))
-    print('{} of {} gene sets in the database and BEL graphs have a similarity of 0%.'.format(count_no_similarity, len(
-        jaccard_similarities)))
+    print('{} of {} gene sets in the database and BEL '
+          'graphs have a similarity of 100%.'.format(count, len(jaccard_similarities)))
+    print('{} of {} gene sets in the database and '
+          'BEL graphs have a similarity of 0%.'.format(count_no_similarity, len(jaccard_similarities)))
 
     return jaccard_similarities
 
@@ -537,13 +509,10 @@ def make_downloader(url, path, export_path, decompress_file):
     decompress_file(data, export_path)
 
 
-def summarize_helper(graphs):
-    """Print in console summary of graphs.
-
-    :param iter[graphs] graphs: BEL Graphs
-    """
+def summarize_helper(graphs: Iterable[BELGraph]):
+    """Print in console summary of graphs."""
     click.echo('joining graphs')
-    graph = union(graphs)
+    graph = pybel.union(graphs)
 
     click.echo('generating summary')
     summary_str = graph.summary_str()

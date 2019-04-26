@@ -8,11 +8,11 @@ from typing import Dict
 from bio2bel_hgnc import Manager
 from pybel import BELGraph
 from pybel.constants import REGULATES
-from pybel.dsl import abundance, activity, BaseEntity, bioprocess, complex_abundance, gene, protein, reaction, rna
+from pybel.dsl import BaseEntity, abundance, activity, bioprocess, complex_abundance, gene, protein, reaction, rna
 
-from pathme.constants import HGNC
-from pathme.utils import parse_id_uri, check_multiple
-from pathme.wikipathways.utils import evaluate_wikipathways_metadata, get_valid_gene_identifier
+from .utils import check_multiple, evaluate_wikipathways_metadata, get_valid_gene_identifier
+from ..constants import HGNC
+from ..utils import parse_id_uri
 
 log = logging.getLogger(__name__)
 
@@ -33,8 +33,12 @@ def _check_empty_complex(complex: Dict[str, Dict], nodes: Dict[str, BaseEntity])
     return True
 
 
-def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interactions: Dict[str, Dict],
-                   pathway_info, hgnc_manager: Manager) -> BELGraph:
+def convert_to_bel(
+        nodes: Dict[str, Dict],
+        complexes: Dict[str, Dict],
+        interactions: Dict[str, Dict],
+        pathway_info, hgnc_manager: Manager,
+) -> BELGraph:
     """Convert  RDF graph info to BEL."""
     graph = BELGraph(
         name=pathway_info['title'],
@@ -44,9 +48,12 @@ def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interacti
         contact='daniel.domingo.fernandez@scai.fraunhofer.de',
     )
 
-    graph.graph['pathway_id'] = pathway_info['pathway_id']
+    pathway_id = graph.graph['pathway_id'] = pathway_info['pathway_id']
 
-    nodes = nodes_to_bel(nodes, hgnc_manager)
+    nodes = {
+        node_id: node_to_bel(node, hgnc_manager, pathway_id)
+        for node_id, node in nodes.items()
+    }
     nodes.update(complexes_to_bel(complexes, nodes, graph))
 
     for interaction_key, interaction in interactions.items():
@@ -56,15 +63,7 @@ def convert_to_bel(nodes: Dict[str, Dict], complexes: Dict[str, Dict], interacti
     return graph
 
 
-def nodes_to_bel(nodes: Dict[str, Dict], hgnc_manager: Manager) -> Dict[str, BaseEntity]:
-    """Convert node to Bel"""
-    return {
-        node_id: node_to_bel(node_att, hgnc_manager)
-        for node_id, node_att in nodes.items()
-    }
-
-
-def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
+def node_to_bel(node: Dict, hgnc_manager: Manager, pathway_id) -> BaseEntity:
     """Create a BEL node."""
     node_types = node['node_types']
     uri_id = node['uri_id']
@@ -75,12 +74,12 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
     else:
         identifier = uri_id
 
-    identifier = check_multiple(identifier, 'identifier')
+    identifier = check_multiple(identifier, 'identifier', pathway_id)
 
-    uri_id = check_multiple(uri_id, 'uri_id')
+    uri_id = check_multiple(uri_id, 'uri_id', pathway_id)
     _, _, namespace, _ = parse_id_uri(uri_id)
 
-    name = check_multiple(node['name'], 'name')
+    name = check_multiple(node['name'], 'name', pathway_id)
 
     # Get dictinoary of multiple identifiers
     if 'identifiers' in node:
@@ -88,17 +87,14 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
     else:
         node_ids_dict = node
 
-    if 'Protein' in node_types:
-        namespace, name, identifier = get_valid_gene_identifier(node_ids_dict, hgnc_manager)
-        return protein(namespace=namespace.upper(), name=name, identifier=identifier)
-
-    elif 'Rna' in node_types:
-        namespace, name, identifier = get_valid_gene_identifier(node_ids_dict, hgnc_manager)
-        return rna(namespace=namespace.upper(), name=name, identifier=identifier)
-
-    elif 'GeneProduct' in node_types:
-        namespace, name, identifier = get_valid_gene_identifier(node_ids_dict, hgnc_manager)
-        return gene(namespace=HGNC, name=name, identifier=identifier)
+    if any(node_type in node_types for node_type in ('Protein', 'Rna', 'GeneProduct')):
+        namespace, name, identifier = get_valid_gene_identifier(node_ids_dict, hgnc_manager, pathway_id)
+        if 'Protein' in node_types:
+            return protein(namespace=namespace.upper(), name=name, identifier=identifier)
+        elif 'Rna' in node_types:
+            return rna(namespace=namespace.upper(), name=name, identifier=identifier)
+        else:  # 'GeneProduct' in node_types
+            return gene(namespace=HGNC, name=name, identifier=identifier)
 
     elif 'Metabolite' in node_types:
         # Parse URI to get namespace
@@ -116,12 +112,15 @@ def node_to_bel(node: Dict, hgnc_manager: Manager) -> BaseEntity:
         return abundance(namespace=namespace.upper(), name=name, identifier=identifier)
 
     else:
-        log.debug('Unknown %s', node_types)
+        log.debug('Unknown %s [pathway=%s]', node_types, pathway_id)
 
 
-def complexes_to_bel(complexes: Dict[str, Dict], nodes: Dict[str, BaseEntity], graph: BELGraph) -> Dict[
-    str, BaseEntity]:
-    """Convert node to Bel"""
+def complexes_to_bel(
+        complexes: Dict[str, Dict],
+        nodes: Dict[str, BaseEntity],
+        graph: BELGraph,
+) -> Dict[str, BaseEntity]:
+    """Convert node to BEL."""
     return {
         complex_id: complex_to_bel(complex, nodes, graph)
         for complex_id, complex in complexes.items()
@@ -130,7 +129,7 @@ def complexes_to_bel(complexes: Dict[str, Dict], nodes: Dict[str, BaseEntity], g
 
 
 def complex_to_bel(complex, nodes, graph: BELGraph):
-    """Convert complex abundance to BEL"""
+    """Convert complex abundance to BEL."""
     members = {
         nodes[member_id]
         for member_id in complex['participants']
@@ -162,17 +161,15 @@ def get_reaction_node(participants, nodes, interactions):
 
 
 def get_node(node, nodes, interactions):
-    if node not in nodes:
-        if '/Interaction/' in str(node):
-            _, _, _, identifier = parse_id_uri(node)
-
-            if identifier in interactions:
-                return get_reaction_node(interactions[identifier]['participants'], nodes, interactions)
-
-        log.debug('No valid id for node %s', node)
-        return None
-    else:
+    if node in nodes:
         return nodes[node]
+
+    if '/Interaction/' in str(node):
+        _, _, _, identifier = parse_id_uri(node)
+        if identifier in interactions:
+            return get_reaction_node(interactions[identifier]['participants'], nodes, interactions)
+
+    log.debug('No valid id for node %s', node)
 
 
 def add_edges(graph: BELGraph, participants, nodes, interactions: Dict, att: Dict):
@@ -203,13 +200,13 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
     :param uri_id: citation URI
     """
     if 'Stimulation' in edge_types:
-        graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity(), annotations={})
+        graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity())
 
     elif 'Inhibition' in edge_types:
-        graph.add_decreases(u, v, citation=uri_id, evidence='', object_modifier=activity(), annotations={})
+        graph.add_decreases(u, v, citation=uri_id, evidence='', object_modifier=activity())
 
     elif 'Catalysis' in edge_types:
-        graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity(), annotations={})
+        graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity())
 
     elif 'DirectedInteraction' in edge_types:
         graph.add_qualified_edge(
@@ -217,7 +214,9 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
             relation=REGULATES,
             citation=uri_id,
             evidence='',
-            annotations={'EdgeTypes': edge_types}
+            annotations={
+                'EdgeTypes': edge_types,
+            },
         )
 
     elif 'Interaction' in edge_types:

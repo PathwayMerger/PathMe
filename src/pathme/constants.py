@@ -6,18 +6,41 @@ import os
 
 from bio2bel.utils import get_connection
 
+MODULE_NAME = 'pathme'
+DEFAULT_PATHME_DIR = os.path.join(os.path.expanduser('~'), '.pathme')
+PATHME_DIR = os.environ.get('PATHME_DIRECTORY', DEFAULT_PATHME_DIR)
 
-def get_data_dir():
-    """Ensures the appropriate PathMe data directory exists for the given module, then returns the file path.
 
-    :return: The module's data directory
-    :rtype: str
-    """
+def get_data_dir() -> str:
+    """Ensure the appropriate PathMe data directory exists for the given module, then returns the file path."""
     os.makedirs(PATHME_DIR, exist_ok=True)
     return PATHME_DIR
 
 
-def ensure_pathme_folders():
+DATA_DIR = get_data_dir()
+DEFAULT_CACHE_CONNECTION = get_connection(MODULE_NAME)
+
+KEGG = 'kegg'
+KEGG_DIR = os.path.join(DATA_DIR, KEGG)
+KEGG_BEL = os.path.join(KEGG_DIR, 'bel')
+KEGG_FILES = os.path.join(KEGG_DIR, 'xml')
+KEGG_CACHE = os.path.join(KEGG_DIR, 'cache')
+
+REACTOME = 'reactome'
+REACTOME_DIR = os.path.join(DATA_DIR, REACTOME)
+REACTOME_BEL = os.path.join(REACTOME_DIR, 'bel')
+REACTOME_FILES = os.path.join(REACTOME_DIR, 'rdf')
+
+WIKIPATHWAYS = 'wikipathways'
+WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
+WIKIPATHWAYS_BEL = os.path.join(WIKIPATHWAYS_DIR, 'bel')
+WIKIPATHWAYS_FILES = os.path.join(WIKIPATHWAYS_DIR, 'rdf')
+
+SPIA_DIR = os.path.join(DATA_DIR, 'spia')
+UNIVERSE_DIR = os.path.join(DATA_DIR, 'universe')
+
+
+def ensure_pathme_folders(): # TODO why is this a function?
     """Ensure data folders are created."""
     os.makedirs(KEGG_DIR, exist_ok=True)
     os.makedirs(REACTOME_DIR, exist_ok=True)
@@ -35,38 +58,16 @@ def ensure_pathme_folders():
     os.makedirs(WIKIPATHWAYS_FILES, exist_ok=True)
 
 
-MODULE_NAME = 'pathme'
-PATHME_DIR = os.environ.get('PATHME_DIRECTORY', os.path.join(os.path.expanduser('~'), '.pathme'))
-DATA_DIR = get_data_dir()
-DEFAULT_CACHE_CONNECTION = get_connection(MODULE_NAME)
-
-KEGG = 'kegg'
-INTERPRO = 'interpro'
-PFAM = 'pfam'
-BRENDA = 'brenda'
-
-REACTOME = 'reactome'
-WIKIPATHWAYS = 'wikipathways'
-
-KEGG_DIR = os.path.join(DATA_DIR, KEGG)
-REACTOME_DIR = os.path.join(DATA_DIR, REACTOME)
-WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
-SPIA_DIR = os.path.join(DATA_DIR, 'spia')
-UNIVERSE_DIR = os.path.join(DATA_DIR, 'universe')
-
-KEGG_BEL = os.path.join(KEGG_DIR, 'bel')
-REACTOME_BEL = os.path.join(REACTOME_DIR, 'bel')
-WIKIPATHWAYS_BEL = os.path.join(WIKIPATHWAYS_DIR, 'bel')
-
-KEGG_FILES = os.path.join(KEGG_DIR, 'xml')
-REACTOME_FILES = os.path.join(REACTOME_DIR, 'rdf')
-WIKIPATHWAYS_FILES = os.path.join(WIKIPATHWAYS_DIR, 'rdf')
-
-KEGG_CACHE = os.path.join(DATA_DIR, KEGG, 'cache')
-
 ensure_pathme_folders()
 
 UNKNOWN = 'unknown'
+
+# Other namespaces
+INTERPRO = 'interpro'
+PFAM = 'pfam'
+BRENDA = 'brenda'
+CHEMBL = 'chembl'
+MIRBASE = 'mirbase'
 
 KEGG_ID = 'kegg_id'
 KEGG_NAME = 'kegg_name'
@@ -86,10 +87,11 @@ KEGG_MODIFICATIONS = {
     'phosphorylation': 'Ph',
     'glycosylation': 'Glyco',
     'ubiquitination': 'Ub',
-    'methylation': 'Me'
+    'methylation': 'Me',
 }
 KEGG_CITATION = '10592173'
 
+# FIXME why doesn't this just import the compath_resources package?
 KEGG_WIKIPATHWAYS_MAPPINGS = 'https://github.com/ComPath/curation/raw/master/mappings/kegg_wikipathways.xlsx'
 KEGG_REACTOME_MAPPINGS = 'https://github.com/ComPath/curation/raw/master/mappings/kegg_reactome.xlsx'
 WIKIPATHWAYS_REACTOME_MAPPINGS = 'https://github.com/ComPath/curation/raw/master/mappings/wikipathways_reactome.xlsx'
@@ -140,7 +142,7 @@ KEGG_STATS_COLUMN_NAMES = {
     'hidden compound': 'XML Hidden Compound Relations',
     'missing interaction': 'XML Missing Interaction Relations',
     'state change': 'XML State Change Relations',
-    'brite': 'XML Brite Hierarchy'
+    'brite': 'XML Brite Hierarchy',
 }
 
 BEL_STATS_COLUMN_NAMES = {
@@ -162,5 +164,5 @@ BEL_STATS_COLUMN_NAMES = {
     'hasVariant': 'BEL Variant Edges',
     'hasReactant': 'BEL Reactants Edges',
     'hasProduct': 'BEL Products Edges',
-    'translatedTo': 'BEL Translation Edges'
+    'translatedTo': 'BEL Translation Edges',
 }
