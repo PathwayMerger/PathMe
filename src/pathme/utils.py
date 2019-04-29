@@ -19,7 +19,7 @@ from pybel import BELGraph, from_pickle
 from pybel.struct.summary import count_functions, count_relations
 
 from pathme.constants import BEL_STATS_COLUMN_NAMES, UNKNOWN
-from pathme.export_utils import get_files_in_folder
+from pathme.export_utils import get_paths_in_folder
 
 log = logging.getLogger(__name__)
 
@@ -345,13 +345,10 @@ def get_bel_stats(resource_folder: str):
     """
     df = pd.DataFrame()
 
-    pickles = get_files_in_folder(resource_folder)
+    for file_name in get_paths_in_folder(resource_folder):
+        pathway_names = [file_name.strip('.pickle')]
 
-    for file in pickles:
-        pathway_names = []
-        pathway_names.append(file.strip('.pickle'))
-
-        bel_statistics_dict = get_bel_types(os.path.join(resource_folder, file))
+        bel_statistics_dict = get_bel_types(os.path.join(resource_folder, file_name))
 
         all_bel_statistics = {
             BEL_STATS_COLUMN_NAMES[key]: value
@@ -363,7 +360,7 @@ def get_bel_stats(resource_folder: str):
             all_bel_statistics,
             index=pathway_names,
             columns=BEL_STATS_COLUMN_NAMES.values(),
-            dtype=int
+            dtype=int,
         )
 
         df = df.append(pathway_data.fillna(0).astype(int))

@@ -17,7 +17,7 @@ from ..constants import (
     BRENDA, CHEMBL, DATA_DIR, ENSEMBL, ENTREZ, EXPASY, HGNC, INTERPRO, KEGG, MIRBASE, PFAM, UNIPROT, WIKIPATHWAYS,
     WIKIPEDIA,
 )
-from ..export_utils import get_files_in_folder
+from ..export_utils import get_paths_in_folder
 
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
 
@@ -327,17 +327,21 @@ def filter_wikipathways_files(file_names: Iterable[str]) -> List[str]:
     ]
 
 
-def get_wikipathways_files(path: str, connection: Optional[str] = None, only_canonical: bool = True):
+def iterate_wikipathways_paths(
+        directory: str,
+        connection: Optional[str] = None,
+        only_canonical: bool = True,
+) -> List[str]:
     """Get WikiPathways RDF files in folder.
 
-    :param path: folder path
+    :param directory: folder path
     :param connection: database connection
     :param only_canonical: only identifiers present in WP bio2bel db
     """
-    resource_files = get_files_in_folder(path)
+    paths = get_paths_in_folder(directory)
 
     # Filter files in folder that have no turtle extension or do not start with 'WP'
-    resource_files = filter_wikipathways_files(resource_files)
+    paths = filter_wikipathways_files(paths)
 
     # Skip files not present in wikipathways bio2bel db -> stuffs from reactome and so on...
     if only_canonical:
@@ -354,10 +358,10 @@ def get_wikipathways_files(path: str, connection: Optional[str] = None, only_can
                 '(please run: python3 -m bio2bel_wikipathways populate)'
             )
 
-        resource_files = [
-            file
-            for file in resource_files
-            if file.split('.')[0] in wikipathways_identifiers
+        paths = [
+            path
+            for path in paths
+            if path.split('.')[0] in wikipathways_identifiers
         ]
 
-    return resource_files
+    return paths

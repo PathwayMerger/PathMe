@@ -9,11 +9,11 @@ from typing import List
 import networkx as nx
 import pybel
 from pybel import BELGraph, from_pickle, union
-from pybel.constants import RELATION, ANNOTATIONS
+from pybel.constants import ANNOTATIONS, RELATION
 from pybel.struct import add_annotation_value
 from tqdm import tqdm
 
-from pathme.constants import KEGG, REACTOME, WIKIPATHWAYS, PATHME_DIR
+from pathme.constants import KEGG, PATHME_DIR, REACTOME, WIKIPATHWAYS
 from pathme.normalize_names import normalize_graph_names
 from pathme.pybel_utils import flatten_complex_nodes
 
@@ -32,17 +32,17 @@ def add_annotation_key(graph):
 
 def get_all_pickles(kegg_path, reactome_path, wikipathways_path):
     """Return a list with all pickle paths."""
-    kegg_pickles = get_files_in_folder(kegg_path)
+    kegg_pickles = get_paths_in_folder(kegg_path)
 
     if not kegg_pickles:
         logger.warning('No KEGG files found. Please create the BEL KEGG files')
 
-    reactome_pickles = get_files_in_folder(reactome_path)
+    reactome_pickles = get_paths_in_folder(reactome_path)
 
     if not reactome_pickles:
         logger.warning('No Reactome files found. Please create the BEL Reactome files')
 
-    wp_pickles = get_files_in_folder(wikipathways_path)
+    wp_pickles = get_paths_in_folder(wikipathways_path)
 
     if not wp_pickles:
         logger.warning('No WikiPathways files found. Please create the BEL WikiPathways files')
@@ -167,14 +167,14 @@ def to_gml(graph: pybel.BELGraph, path: str = PATHME_DIR) -> None:
     nx.write_gml(rv, path)
 
 
-def get_files_in_folder(path: str) -> List[str]:
+def get_paths_in_folder(directory: str) -> List[str]:
     """Return the files in a given folder.
 
-    :param path: folder path
+    :param directory: folder path
     :return: file names in folder
     """
     return [
-        file
-        for file in os.listdir(path)
-        if os.path.isfile(os.path.join(path, file))
+        path
+        for path in os.listdir(directory)
+        if os.path.isfile(os.path.join(directory, path))
     ]

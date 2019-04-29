@@ -4,8 +4,9 @@
 
 import os
 from collections import defaultdict
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Iterable
 
+import bio2bel_hgnc
 import tqdm
 from pybel import BELGraph, to_pickle
 from rdflib.namespace import DC, DCTERMS, Namespace, RDF, RDFS
@@ -277,16 +278,20 @@ def wikipathways_to_bel(file_path, hgnc_manager):
     return rdf_wikipathways_to_bel(rdf_graph, hgnc_manager)
 
 
-def wikipathways_to_pickles(resource_files, resource_folder, hgnc_manager, export_folder=WIKIPATHWAYS_BEL):
+def wikipathways_to_pickles(
+        resource_files: Iterable[str],
+        resource_folder: str,
+        hgnc_manager: bio2bel_hgnc.Manager,
+        export_folder: str,
+) -> None:
     """Export WikiPathways to Pickles.
 
-    :param iter[str] resource_files: iterator with file names
-    :param str resource_folder: path folder
-    :param bio2bel_hgnc.Manager: HGNC manager
-    :param Optional[str] export_folder: export folder
+    :param resource_files: iterator with file names
+    :param resource_folder: path folder
+    :param hgnc_manager: HGNC manager
+    :param export_folder: export folder
     """
     for rdf_file in tqdm.tqdm(resource_files, desc='Exporting WikiPathways to BEL'):
-
         pickle_path = os.path.join(export_folder, '{}.pickle'.format(rdf_file.strip('.ttl')))
 
         # Skip if BEL file already exists

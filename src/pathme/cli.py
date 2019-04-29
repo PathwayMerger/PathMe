@@ -9,10 +9,15 @@ import click
 import networkx as nx
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
+from pybel import from_pickle, to_pickle
+from pybel.dsl import ListAbundance
+from pybel.struct.mutation import collapse_all_variants, collapse_to_genes, remove_isolated_list_abundances
+from pybel.struct.summary import count_functions
+from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
 from tqdm import tqdm
 
 from pathme.constants import *
-from pathme.export_utils import get_all_pickles, get_files_in_folder, get_universe_graph
+from pathme.export_utils import get_all_pickles, get_paths_in_folder, get_universe_graph
 from pathme.kegg.convert_to_bel import kegg_to_pickles
 from pathme.kegg.utils import download_kgml_files, get_kegg_pathway_ids
 from pathme.pybel_utils import flatten_complex_nodes
@@ -20,12 +25,7 @@ from pathme.reactome.rdf_sparql import get_reactome_statistics, reactome_to_bel
 from pathme.reactome.utils import untar_file
 from pathme.utils import CallCounted, make_downloader, statistics_to_df, summarize_helper
 from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pickles
-from pathme.wikipathways.utils import get_file_name_from_url, get_wikipathways_files, unzip_file
-from pybel import from_pickle, to_pickle
-from pybel.dsl import ListAbundance
-from pybel.struct.mutation import collapse_to_genes, collapse_all_variants, remove_isolated_list_abundances
-from pybel.struct.summary import count_functions
-from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
+from pathme.wikipathways.utils import get_file_name_from_url, iterate_wikipathways_paths, unzip_file
 
 logger = logging.getLogger(__name__)
 
@@ -85,13 +85,13 @@ def bel(flatten, export_folder):
     if flatten:
         logger.info('Flattening mode activated')
 
-    resource_files = [
-        file
-        for file in get_files_in_folder(KEGG_FILES)
+    resource_paths = [
+        path
+        for path in get_paths_in_folder(KEGG_FILES)
     ]
 
     kegg_to_pickles(
-        resource_files=resource_files,
+        resource_files=resource_paths,
         resource_folder=KEGG_FILES,
         hgnc_manager=hgnc_manager,
         chebi_manager=chebi_manager,
@@ -109,7 +109,7 @@ def summarize(export_folder):
     click.echo('loading KEGG graphs')
     graphs = [
         from_pickle(os.path.join(export_folder, fname))
-        for fname in tqdm(get_files_in_folder(export_folder))
+        for fname in tqdm(get_paths_in_folder(export_folder))
     ]
 
     if graphs:
@@ -139,9 +139,11 @@ def download():
 
 @wikipathways.command()
 @click.option('-c', '--connection', help="Defaults to {}".format(DEFAULT_CACHE_CONNECTION))
-@click.option('-d', '--debug', is_flag=True, default=False, help='Debug mode')
+@click.option('-r', '--resource-folder')
+@click.option('-d', '--export-folder', default=WIKIPATHWAYS_BEL)
+@click.option('-v', '--debug', is_flag=True, default=False, help='Debug mode')
 @click.option('-x', '--only-canonical', default=True, help='Parse only canonical pathways')
-def bel(connection: str, debug: bool, only_canonical: bool):
+def bel(connection: str, resource_folder: str, export_folder: str, debug: bool, only_canonical: bool):
     """Convert WikiPathways to BEL."""
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
 
@@ -158,12 +160,13 @@ def bel(connection: str, debug: bool, only_canonical: bool):
 
     t = time.time()
 
-    # TODO: Allow for an optional parameter giving the folder of the files
-    resource_folder = os.path.join(WIKIPATHWAYS_FILES, 'wp', 'Human')
+    if resource_folder is None:
+        resource_folder = os.path.join(WIKIPATHWAYS_FILES, 'wp', 'Human')
 
-    resource_files = get_wikipathways_files(resource_folder, connection, only_canonical)
+    resource_files = iterate_wikipathways_paths(resource_folder, connection, only_canonical)
 
-    wikipathways_to_pickles(resource_files, resource_folder, hgnc_manager)
+    os.makedirs(export_folder, exist_ok=True)
+    wikipathways_to_pickles(resource_files, resource_folder, hgnc_manager, export_folder)
 
     logger.info(
         'WikiPathways exported in %.2f seconds. A total of %d warnings regarding entities that could not be converted '
@@ -179,7 +182,7 @@ def summarize(export_folder):
     click.echo('loading WikiPathways graphs')
     graphs = [
         from_pickle(os.path.join(export_folder, fname))
-        for fname in tqdm(get_files_in_folder(export_folder))
+        for fname in tqdm(get_paths_in_folder(export_folder))
     ]
 
     if graphs:
@@ -205,7 +208,7 @@ def statistics(connection, verbose, only_canonical, export):
     # TODO: Allow for an optional parameter giving the folder of the files
     resource_folder = os.path.join(WIKIPATHWAYS_DIR, 'wp', 'Human')
 
-    resource_files = get_wikipathways_files(resource_folder, connection, only_canonical)
+    resource_files = iterate_wikipathways_paths(resource_folder, connection, only_canonical)
 
     global_statistics, all_pathways_statistics = get_wp_statistics(resource_files, resource_folder, hgnc_manager)
 
@@ -269,7 +272,7 @@ def summarize(export_folder):
     click.echo('loading Reactome graphs')
     graphs = [
         from_pickle(os.path.join(export_folder, fname))
-        for fname in tqdm(get_files_in_folder(export_folder))
+        for fname in tqdm(get_paths_in_folder(export_folder))
     ]
 
     if graphs:

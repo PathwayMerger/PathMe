@@ -11,7 +11,7 @@ from bio2bel_kegg.manager import Manager as KeggManager
 
 from pathme.kegg.convert_to_bel import get_bel_types
 from pathme.kegg.kegg_xml_parser import import_xml_etree, get_xml_types
-from pathme.export_utils import get_files_in_folder
+from pathme.export_utils import get_paths_in_folder
 from pathme.constants import KEGG_FILES, KEGG_KGML_URL, KEGG_STATS_COLUMN_NAMES
 
 __all__ = [
@@ -66,7 +66,7 @@ def get_kegg_statistics(path, hgnc_manager, chebi_manager, flatten=None):
     export_file_name = 'KEGG_pathway_stats_{}.csv'.format('flatten' if flatten else 'non_flatten')
 
     # Get list of all files in folder
-    files = get_files_in_folder(path)
+    files = get_paths_in_folder(path)
 
     for file_name in tqdm.tqdm(files, desc='Parsing KGML files and BEL graphs for entities and relation stats'):
         pathway_names = []
