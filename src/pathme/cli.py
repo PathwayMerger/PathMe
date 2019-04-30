@@ -396,11 +396,6 @@ def universe(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no
     remove_isolated_list_abundances(universe_graph)
 
     if flatten:
-        universe_graph.remove_nodes_from({
-            node
-            for node in universe_graph.nodes()
-            if isinstance(node, ListAbundance)
-        })
         click.echo(f'Number of isolates after flattening: {nx.number_of_isolates(universe_graph)}')
 
     click.echo("Merging variants and genes")
