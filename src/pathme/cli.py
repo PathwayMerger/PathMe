@@ -9,23 +9,22 @@ import click
 import networkx as nx
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
-from pybel import from_pickle, to_pickle
-from pybel.dsl import ListAbundance
-from pybel.struct.mutation import collapse_all_variants, collapse_to_genes, remove_isolated_list_abundances
-from pybel.struct.summary import count_functions
-from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
-from tqdm import tqdm
-
 from pathme.constants import *
 from pathme.export_utils import get_all_pickles, get_paths_in_folder, get_universe_graph
 from pathme.kegg.convert_to_bel import kegg_to_pickles
 from pathme.kegg.utils import download_kgml_files, get_kegg_pathway_ids
+from pathme.normalize_names import normalize_graph_names
 from pathme.pybel_utils import flatten_complex_nodes
 from pathme.reactome.rdf_sparql import get_reactome_statistics, reactome_to_bel
 from pathme.reactome.utils import untar_file
 from pathme.utils import CallCounted, make_downloader, statistics_to_df, summarize_helper
 from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pickles
 from pathme.wikipathways.utils import get_file_name_from_url, iterate_wikipathways_paths, unzip_file
+from pybel import from_pickle, to_pickle
+from pybel.struct.mutation import collapse_all_variants, collapse_to_genes, remove_isolated_list_abundances
+from pybel.struct.summary import count_functions
+from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -331,12 +330,15 @@ def spia(kegg_path, reactome_path, wikipathways_path, output):
 
         if file in kegg_pickles:
             pathway_graph = from_pickle(os.path.join(kegg_path, file))
+            normalize_graph_names(pathway_graph, KEGG)
 
         elif file in reactome_pickles:
             pathway_graph = from_pickle(os.path.join(reactome_path, file))
+            normalize_graph_names(pathway_graph, REACTOME)
 
         elif file in wp_pickles:
             pathway_graph = from_pickle(os.path.join(wikipathways_path, file))
+            normalize_graph_names(pathway_graph, WIKIPATHWAYS)
 
         else:
             logger.warning(f'Unknown pickle file: {file}')
