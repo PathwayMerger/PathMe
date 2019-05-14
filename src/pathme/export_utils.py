@@ -9,9 +9,6 @@ from typing import List
 import click
 import networkx as nx
 import pybel
-from pathme.constants import KEGG, PATHME_DIR, REACTOME, WIKIPATHWAYS
-from pathme.normalize_names import normalize_graph_names
-from pathme.pybel_utils import flatten_complex_nodes
 from pybel import BELGraph, union
 from pybel import from_pickle
 from pybel.constants import ANNOTATIONS, RELATION
@@ -19,6 +16,10 @@ from pybel.struct import add_annotation_value
 from pybel.struct.mutation import collapse_all_variants, collapse_to_genes
 from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
 from tqdm import tqdm
+
+from pathme.constants import KEGG, PATHME_DIR, REACTOME, WIKIPATHWAYS
+from pathme.normalize_names import normalize_graph_names
+from pathme.pybel_utils import flatten_complex_nodes
 
 logger = logging.getLogger(__name__)
 
@@ -190,6 +191,9 @@ def _iterate_universe_graphs(
         else:
             logger.warning(f'Unknown pickle file: {file}')
             continue
+
+        graph.annotation_pattern['PathwayID'] = '.*'
+        add_annotation_value(graph, 'PathwayID', file.strip(".pickle"))
 
         yield graph
 
