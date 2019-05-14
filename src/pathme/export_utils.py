@@ -6,16 +6,19 @@ import logging
 import os
 from typing import List
 
+import click
 import networkx as nx
 import pybel
-from pybel import BELGraph, from_pickle, union
-from pybel.constants import ANNOTATIONS, RELATION
-from pybel.struct import add_annotation_value
-from tqdm import tqdm
-
 from pathme.constants import KEGG, PATHME_DIR, REACTOME, WIKIPATHWAYS
 from pathme.normalize_names import normalize_graph_names
 from pathme.pybel_utils import flatten_complex_nodes
+from pybel import BELGraph, union
+from pybel import from_pickle
+from pybel.constants import ANNOTATIONS, RELATION
+from pybel.struct import add_annotation_value
+from pybel.struct.mutation import collapse_all_variants, collapse_to_genes
+from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +69,59 @@ def get_universe_graph(
     )
     logger.info('Merging all into a hairball...')
     return union(universe_graphs)
+
+
+def spia_export_helper(
+        kegg_path: str,
+        reactome_path: str,
+        wikipathways_path: str,
+        output: str
+):
+    kegg_pickles, reactome_pickles, wp_pickles = get_all_pickles(kegg_path, reactome_path, wikipathways_path)
+
+    all_pickles = kegg_pickles + reactome_pickles + wp_pickles
+
+    click.echo(f'A total of {len(all_pickles)} will be exported')
+
+    iterator = tqdm(all_pickles, desc='Exporting SPIA excel files')
+
+    # Export KEGG
+    for file in iterator:
+        if not file.endswith('.pickle'):
+            continue
+
+        if file in kegg_pickles:
+            pathway_graph = from_pickle(os.path.join(kegg_path, file))
+            normalize_graph_names(pathway_graph, KEGG)
+
+        elif file in reactome_pickles:
+            pathway_graph = from_pickle(os.path.join(reactome_path, file))
+            normalize_graph_names(pathway_graph, REACTOME)
+
+        elif file in wp_pickles:
+            pathway_graph = from_pickle(os.path.join(wikipathways_path, file))
+            normalize_graph_names(pathway_graph, WIKIPATHWAYS)
+
+        else:
+            logger.warning(f'Unknown pickle file: {file}')
+            continue
+
+        # Explode complex nodes
+        flatten_complex_nodes(pathway_graph)
+
+        # Collapse nodes
+        collapse_all_variants(pathway_graph)
+        collapse_to_genes(pathway_graph)
+
+        spia_matrices = bel_to_spia_matrices(pathway_graph)
+
+        output_file = os.path.join(output, f"{file.strip('.pickle')}.xlsx")
+
+        if os.path.isfile(output_file):
+            continue
+
+        # Export excel file representing the connectivity matrix of the BEL Graph
+        spia_matrices_to_excel(spia_matrices, output_file)
 
 
 def _iterate_universe_graphs(

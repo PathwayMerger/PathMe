@@ -10,11 +10,9 @@ import networkx as nx
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
 from pathme.constants import *
-from pathme.export_utils import get_all_pickles, get_paths_in_folder, get_universe_graph
+from pathme.export_utils import spia_export_helper, get_paths_in_folder, get_universe_graph
 from pathme.kegg.convert_to_bel import kegg_to_pickles
 from pathme.kegg.utils import download_kgml_files, get_kegg_pathway_ids
-from pathme.normalize_names import normalize_graph_names
-from pathme.pybel_utils import flatten_complex_nodes
 from pathme.reactome.rdf_sparql import get_reactome_statistics, reactome_to_bel
 from pathme.reactome.utils import untar_file
 from pathme.utils import CallCounted, make_downloader, statistics_to_df, summarize_helper
@@ -23,7 +21,6 @@ from pathme.wikipathways.utils import get_file_name_from_url, iterate_wikipathwa
 from pybel import from_pickle, to_pickle
 from pybel.struct.mutation import collapse_all_variants, collapse_to_genes, remove_isolated_list_abundances
 from pybel.struct.summary import count_functions
-from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
 from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
@@ -306,7 +303,12 @@ def statistics(connection, verbose, only_canonical, export):
         df.to_csv(os.path.join(DATA_DIR, 'reactome_statistics.csv'))
 
 
-@main.command()
+@main.group()
+def export():
+    """Export commands."""
+
+
+@export.command()
 @click.option('-k', '--kegg_path', help='KEGG BEL folder', default=KEGG_BEL, show_default=True)
 @click.option('-r', '--reactome_path', help='Reactome BEL folder.', default=REACTOME_BEL, show_default=True)
 @click.option('-w', '--wikipathways_path', help='WikiPathways BEL folder', default=WIKIPATHWAYS_BEL, show_default=True)
@@ -314,54 +316,10 @@ def statistics(connection, verbose, only_canonical, export):
 def spia(kegg_path, reactome_path, wikipathways_path, output):
     """Export BEL Pickles to SPIA Excel."""
     click.echo(f'Results will be exported to {output}')
-
-    kegg_pickles, reactome_pickles, wp_pickles = get_all_pickles(kegg_path, reactome_path, wikipathways_path)
-
-    all_pickles = kegg_pickles + reactome_pickles + wp_pickles
-
-    click.echo(f'A total of {len(all_pickles)} will be exported')
-
-    iterator = tqdm(all_pickles, desc='Exporting SPIA excel files')
-
-    # Export KEGG
-    for file in iterator:
-        if not file.endswith('.pickle'):
-            continue
-
-        if file in kegg_pickles:
-            pathway_graph = from_pickle(os.path.join(kegg_path, file))
-            normalize_graph_names(pathway_graph, KEGG)
-
-        elif file in reactome_pickles:
-            pathway_graph = from_pickle(os.path.join(reactome_path, file))
-            normalize_graph_names(pathway_graph, REACTOME)
-
-        elif file in wp_pickles:
-            pathway_graph = from_pickle(os.path.join(wikipathways_path, file))
-            normalize_graph_names(pathway_graph, WIKIPATHWAYS)
-
-        else:
-            logger.warning(f'Unknown pickle file: {file}')
-            continue
-
-        # Explode complex nodes
-        flatten_complex_nodes(pathway_graph)
-
-        # Collapse nodes
-        collapse_all_variants(pathway_graph)
-        collapse_to_genes(pathway_graph)
-
-        spia_matrices = bel_to_spia_matrices(pathway_graph)
-
-        output_file = os.path.join(output, f"{file.strip('.pickle')}.xlsx")
-
-        if os.path.isfile(output_file):
-            continue
-
-        spia_matrices_to_excel(spia_matrices, output_file)
+    spia_export_helper(kegg_path, reactome_path, wikipathways_path, output)
 
 
-@main.command()
+@export.command()
 @click.option('-k', '--kegg-path', help='KEGG BEL folder', default=KEGG_BEL, show_default=True)
 @click.option('-r', '--reactome-path', help='Reactome BEL folder.', default=REACTOME_BEL, show_default=True)
 @click.option('-w', '--wikipathways-path', help='WikiPathways BEL folder', default=WIKIPATHWAYS_BEL, show_default=True)
