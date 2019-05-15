@@ -4,11 +4,13 @@
 
 import logging
 import os
-from typing import List
+from typing import List, Iterable
 
 import click
 import networkx as nx
 import pybel
+from bio2bel_reactome import Manager as ReactomeManager
+from bio2bel_reactome.models import Pathway
 from pybel import BELGraph, union
 from pybel import from_pickle
 from pybel.constants import ANNOTATIONS, RELATION
@@ -86,7 +88,12 @@ def spia_export_helper(
 
     iterator = tqdm(all_pickles, desc='Exporting SPIA excel files')
 
-    # Export KEGG
+    reactome_manager = ReactomeManager()
+
+    if not reactome_manager.is_populated():
+        logger.warning('Reactome Manager is not populated')
+
+    # Load each pickle and export it as excel file
     for file in iterator:
         if not file.endswith('.pickle'):
             continue
@@ -96,7 +103,33 @@ def spia_export_helper(
             normalize_graph_names(pathway_graph, KEGG)
 
         elif file in reactome_pickles:
+
+            # Load BELGraph
             pathway_graph = from_pickle(os.path.join(reactome_path, file))
+
+            # Check if pathway has children to build the merge graph
+            pathway_id = file.strip('.pickle')
+
+            # Look up in Bio2BEL Reactome
+            pathway = reactome_manager.get_pathway_by_id(pathway_id)
+
+            # Log if it is not present
+            if not pathway:
+                logger.warning(f'{pathway_id} not found in database')
+
+            # Check if there are children and merge them on the fly
+            for child in yield_all_children(pathway):
+
+                child_file_path = os.path.join(reactome_path, f"{child.resource_id}.pickle")
+                if not os.path.exists(child_file_path):
+                    logger.warning(f'{child.resource_id} pickle does not exist')
+                    continue
+
+                # Load the pickle and union it
+                child_graph = pybel.from_pickle(child_file_path)
+                pathway_graph += child_graph
+
+            # Normalize graph names
             normalize_graph_names(pathway_graph, REACTOME)
 
         elif file in wp_pickles:
@@ -238,3 +271,11 @@ def get_paths_in_folder(directory: str) -> List[str]:
         for path in os.listdir(directory)
         if os.path.isfile(os.path.join(directory, path))
     ]
+
+
+def yield_all_children(pathway: Pathway) -> Iterable[Pathway]:
+    """Transverse recursively reactome hierarchy and return all children for a given pathway."""
+    if pathway.children:
+        for child in pathway.children:
+            yield child
+            yield from yield_all_children(child)
