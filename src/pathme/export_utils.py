@@ -80,6 +80,15 @@ def spia_export_helper(
         wikipathways_path: str,
         output: str
 ):
+    """Export PathMe pickles to SPIA excel like file.
+
+    :param kegg_path: directory to KEGG pickles
+    :param reactome_path: directory to Reactome pickles
+    :param wikipathways_path: directory to WikiPathways pickles
+    :param output: output directory
+    :param merge: merge equivalent pathways (default False)
+    :return:
+    """
     kegg_pickles, reactome_pickles, wp_pickles = get_all_pickles(kegg_path, reactome_path, wikipathways_path)
 
     all_pickles = kegg_pickles + reactome_pickles + wp_pickles
@@ -88,6 +97,7 @@ def spia_export_helper(
 
     iterator = tqdm(all_pickles, desc='Exporting SPIA excel files')
 
+    # Call Reactome manager and check that is populated
     reactome_manager = ReactomeManager()
 
     if not reactome_manager.is_populated():
