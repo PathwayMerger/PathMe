@@ -12,7 +12,7 @@ from pybel.dsl import BaseEntity, abundance, activity, bioprocess, complex_abund
 
 from .utils import check_multiple, evaluate_wikipathways_metadata, get_valid_gene_identifier
 from ..constants import HGNC
-from ..utils import parse_id_uri
+from ..utils import add_bel_metadata, parse_id_uri
 
 log = logging.getLogger(__name__)
 
@@ -47,6 +47,8 @@ def convert_to_bel(
         authors="Sarah Mubeen, Daniel Domingo-Fernández & Josep Marín-Llaó",
         contact='daniel.domingo.fernandez@scai.fraunhofer.de',
     )
+
+    add_bel_metadata(graph)
 
     pathway_id = graph.graph['pathway_id'] = pathway_info['pathway_id']
 

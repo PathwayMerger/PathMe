@@ -5,7 +5,6 @@
 import collections
 import itertools as itt
 import logging
-import os
 import pickle
 from typing import Dict, Iterable, List, Optional, Set, Tuple
 from urllib.parse import urlparse
@@ -16,9 +15,10 @@ import pandas as pd
 import pybel
 import rdflib
 from pybel import BELGraph, from_pickle
+from pybel.constants import GRAPH_NAMESPACE_URL
 from pybel.struct.summary import count_functions, count_relations
 
-from pathme.constants import BEL_STATS_COLUMN_NAMES, UNKNOWN
+from pathme.constants import *
 from pathme.export_utils import get_paths_in_folder
 
 log = logging.getLogger(__name__)
@@ -515,3 +515,31 @@ def summarize_helper(graphs: Iterable[BELGraph]):
     summary_str = graph.summary_str()
 
     click.echo(summary_str)
+
+
+def add_bel_metadata(graph: BELGraph) -> None:
+    """Add namespaces and annotations to a given bel graph."""
+    graph.graph[GRAPH_NAMESPACE_URL] = {
+        CHEBI.upper(): "https://raw.githubusercontent.com/pharmacome/terminology/b46b65c3da259b6e86026514dfececab7c22a11b/external/chebi-names.belns",
+        HGNC: "https://raw.githubusercontent.com/pharmacome/terminology/b46b65c3da259b6e86026514dfececab7c22a11b/external/hgnc-names.belns",
+        "GO": "https://raw.githubusercontent.com/pharmacome/terminology/b46b65c3da259b6e86026514dfececab7c22a11b/external/go-names.belns",
+    }
+
+    graph.namespace_pattern["NCBIGENE"] = "^\d+$"
+    graph.namespace_pattern[UNIPROT.upper()] = \
+        "^([A-N,R-Z][0-9]([A-Z][A-Z, 0-9][A-Z, 0-9][0-9]){1,2})|([O,P,Q][0-9][A-Z, 0-9][A-Z, 0-9][A-Z, 0-9][0-9])(\.\d+)?$"
+    graph.namespace_pattern[PUBCHEM.upper()] = ".*"
+    graph.namespace_pattern[EXPASY] = ".*"
+    graph.namespace_pattern[ENTREZ] = ".*"
+    graph.namespace_pattern[ENSEMBL] = ".*"
+    graph.namespace_pattern[WIKIPEDIA] = ".*"
+    graph.namespace_pattern[MIRBASE.upper()] = ".*"
+    graph.namespace_pattern[INTERPRO.upper()] = ".*"
+    graph.namespace_pattern[PFAM.upper()] = ".*"
+    graph.namespace_pattern[BRENDA.upper()] = ".*"
+
+    graph.namespace_pattern[KEGG.upper()] = ".*"
+    graph.namespace_pattern[REACTOME.upper()] = ".*"
+    graph.namespace_pattern[WIKIPATHWAYS.upper()] = ".*"
+
+    graph.annotation_list['database'] = {KEGG, REACTOME, WIKIPATHWAYS}

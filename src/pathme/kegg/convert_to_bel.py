@@ -18,6 +18,7 @@ from pathme.kegg.kegg_xml_parser import (
     get_all_reactions, get_all_relationships, get_complex_components, get_entity_nodes, get_reaction_pathway_edges,
     import_xml_etree,
 )
+from pathme.utils import add_bel_metadata
 
 __all__ = [
     'kegg_to_bel',
@@ -48,6 +49,8 @@ def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False):
         authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
         contact='daniel.domingo.fernandez@scai.fraunhofer.de'
     )
+
+    add_bel_metadata(graph)
 
     graph.graph['pathway_id'] = root.attrib['name']
 

@@ -24,7 +24,7 @@ from pybel.dsl import (
 
 from pathme.constants import UNKNOWN, REACTOME_CITATION
 from pathme.reactome.utils import get_valid_node_parameters, process_multiple_proteins
-from pathme.utils import parse_id_uri
+from pathme.utils import add_bel_metadata, parse_id_uri
 
 log = logging.getLogger(__name__)
 
@@ -55,6 +55,8 @@ def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Di
         authors="Josep Marín-Llaó, Daniel Domingo-Fernández & Sarah Mubeen",
         contact='daniel.domingo.fernandez@scai.fraunhofer.de',
     )
+
+    add_bel_metadata(graph)
 
     graph.graph['pathway_id'] = identifier
 
