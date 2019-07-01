@@ -90,6 +90,7 @@ KEGG_MODIFICATIONS = {
     'methylation': 'Me',
 }
 KEGG_CITATION = '10592173'
+REACTOME_CITATION = '29145629'
 
 # FIXME why doesn't this just import the compath_resources package?
 KEGG_WIKIPATHWAYS_MAPPINGS = 'https://github.com/ComPath/curation/raw/master/mappings/kegg_wikipathways.xlsx'
