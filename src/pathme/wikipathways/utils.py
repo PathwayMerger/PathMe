@@ -14,7 +14,20 @@ from bio2bel_wikipathways import Manager as WikiPathwaysManager
 from pybel import BELGraph
 
 from ..constants import (
-    BRENDA, CHEMBL, DATA_DIR, ENSEMBL, ENTREZ, EXPASY, HGNC, INTERPRO, KEGG, MIRBASE, PFAM, UNIPROT, WIKIPATHWAYS,
+    BRENDA,
+    CHEMBL,
+    DATA_DIR,
+    ENSEMBL,
+    ENTREZ,
+    EXPASY,
+    HGNC,
+    INTERPRO,
+    KEGG,
+    MIRBASE,
+    PFAM,
+    REACTOME,
+    UNIPROT,
+    WIKIPATHWAYS,
     WIKIPEDIA,
 )
 from ..export_utils import get_paths_in_folder
@@ -175,7 +188,7 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager: HgncManager, pathway_
         log.debug('Adding Pfam node %s ', pfam_id)
         return PFAM, pfam_name, pfam_id
 
-    elif 'mirbase.mature' in node_ids_dict['uri_id']:  # FIXME what about normal mirbase?
+    elif 'mirbase.mature' in node_ids_dict['uri_id']:
         mirbase_id = check_multiple(node_ids_dict['identifier'], 'mirbase_id', pathway_id)
         mirbase_name = check_multiple(node_ids_dict['name'], 'mirbase_name', pathway_id)
         log.debug('Adding miRBase node %s ', mirbase_id)
@@ -198,6 +211,10 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager: HgncManager, pathway_
         indsc_name = check_multiple(node_ids_dict['name'], 'insdc', pathway_id)
         return HGNC, indsc_name, indsc_id
 
+    # Nodes from reactome pointing to a gene
+    elif 'reactome' in node_ids_dict['uri_id']:
+        return REACTOME, node_ids_dict['name'], node_ids_dict['identifier']
+
     raise Exception('Unknown identifier for node %s', node_ids_dict)
 
 
@@ -212,7 +229,7 @@ def check_multiple(element, element_name, pathway_id):
     :return:
     """
     if isinstance(element, (set, list)):
-        log.warning('Multiple values for "{}": {} [{}]'.format(element_name, element, pathway_id.split('/')[-1]))
+        log.debug('Multiple values for "{}": {} [{}]'.format(element_name, element, pathway_id.split('/')[-1]))
         # TODO: print the WikiPathways bps that return a set because they are probably wrong.
         if len(element) == 1:
             return list(element)[0]
@@ -224,7 +241,7 @@ def check_multiple(element, element_name, pathway_id):
 
             return list(element)[0]
 
-        log.warning('Empty list/set %s', element)
+        log.debug('Empty list/set %s', element)
 
     return element
 
@@ -338,6 +355,12 @@ def iterate_wikipathways_paths(
     :param connection: database connection
     :param only_canonical: only identifiers present in WP bio2bel db
     """
+    if not os.path.exists(directory):
+        raise FileNotFoundError(
+            f'{directory} does not exist. Please ensure you have downloaded WikiPathways using '
+            f'the "pathme wikipathways download" command or you have passed the right argument.'
+        )
+
     paths = get_paths_in_folder(directory)
 
     # Filter files in folder that have no turtle extension or do not start with 'WP'

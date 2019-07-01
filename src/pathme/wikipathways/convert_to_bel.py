@@ -200,20 +200,35 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
     :param uri_id: citation URI
     """
     if 'Stimulation' in edge_types:
-        graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity())
+        graph.add_increases(
+            u, v,
+            citation=uri_id, evidence='Extracted from WikiPathways',
+            object_modifier=activity() if v in {protein, complex_abundance, rna} else None,
+            annotations={},
+        )
 
     elif 'Inhibition' in edge_types:
-        graph.add_decreases(u, v, citation=uri_id, evidence='', object_modifier=activity())
+        graph.add_decreases(
+            u, v,
+            citation=uri_id, evidence='Extracted from WikiPathways',
+            object_modifier=activity() if v in {protein, complex_abundance, rna} else None,
+            annotations={},
+        )
 
     elif 'Catalysis' in edge_types:
-        graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity())
+        graph.add_increases(
+            u, v,
+            citation=uri_id, evidence='Extracted from WikiPathways',
+            object_modifier=activity() if v in {protein, complex_abundance, rna} else None,
+            annotations={},
+        )
 
     elif 'DirectedInteraction' in edge_types:
         graph.add_qualified_edge(
             u, v,
             relation=REGULATES,
             citation=uri_id,
-            evidence='',
+            evidence='Extracted from WikiPathways',
             annotations={
                 'EdgeTypes': edge_types,
             },

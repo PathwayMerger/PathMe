@@ -7,7 +7,6 @@ from typing import Dict, List, Tuple
 
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
-
 from pybel import BELGraph
 from pybel.dsl import (
     abundance,
@@ -23,7 +22,7 @@ from pybel.dsl import (
     NamedComplexAbundance
 )
 
-from pathme.constants import UNKNOWN
+from pathme.constants import UNKNOWN, REACTOME_CITATION
 from pathme.reactome.utils import get_valid_node_parameters, process_multiple_proteins
 from pathme.utils import parse_id_uri
 
@@ -36,6 +35,7 @@ __all__ = [
 
 def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]], pathway_info: Dict,
                    hgnc_manager: HgncManager, chebi_manager: ChebiManager) -> BELGraph:
+    """Convert RDF graph dictionary into BEL graph."""
     uri_id = pathway_info['uri_reactome_id']
 
     if uri_id != UNKNOWN:
@@ -69,7 +69,8 @@ def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Di
     return graph
 
 
-def nodes_to_bel(nodes: Dict[str, Dict], graph: BELGraph, hgnc_manager: HgncManager, chebi_manager: ChebiManager) -> Dict[str, BaseEntity]:
+def nodes_to_bel(nodes: Dict[str, Dict], graph: BELGraph, hgnc_manager: HgncManager, chebi_manager: ChebiManager) -> \
+        Dict[str, BaseEntity]:
     """Convert dictionary values to BEL nodes."""
     return {
         node_id: node_to_bel(node_att, graph, hgnc_manager, chebi_manager)
@@ -125,18 +126,16 @@ def node_to_bel(node: Dict, graph, hgnc_manager: HgncManager, chebi_manager: Che
                 namespace=namespace.upper()
             )
 
-
     elif 'Pathway' in node_types:
         bioprocess_node = bioprocess(identifier=identifier, name=name, namespace=namespace.upper())
         graph.add_node_from_data(bioprocess_node)
         return bioprocess_node
-
     else:
         log.warning('Entity type not recognized', node_types)
 
 
 def add_edges(graph: BELGraph, participants, nodes, att: Dict):
-    uri_id = att['uri_id']
+    """Add edges into the graph."""
     edge_types = att['interaction_type']
 
     if isinstance(participants, dict):
@@ -157,17 +156,25 @@ def add_edges(graph: BELGraph, participants, nodes, att: Dict):
     elif isinstance(participants, tuple):
         u = nodes[participants[0]]
         v = nodes[participants[1]]
-        add_simple_edge(graph, u, v, edge_types, uri_id)
+        add_simple_edge(graph, u, v, edge_types)
 
 
-def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
+def add_simple_edge(graph: BELGraph, u, v, edge_types):
+    """Add a simple edge into the graph."""
     if 'ACTIVATION' in edge_types:
-        # TODO anadir pubmed y descripcion
-        graph.add_increases(u, v, citation=uri_id, evidence='', object_modifier=activity(), annotations={})
+        graph.add_increases(
+            u, v,
+            citation=REACTOME_CITATION, evidence='Extracted from Reactome',
+            object_modifier=activity() if v in {protein, complex_abundance, rna} else None,
+            annotations={},
+        )
 
     elif 'INHIBITION' in edge_types:
-        # TODO anadir pubmed y descripcion
-        graph.add_decreases(u, v, citation=uri_id, evidence='', object_modifier=activity(), annotations={})
-
+        graph.add_decreases(
+            u, v,
+            citation=REACTOME_CITATION, evidence='Extracted from Reactome',
+            object_modifier=activity() if v in {protein, complex_abundance, rna} else None,
+            annotations={},
+        )
     else:
         log.warning('edge type %s', edge_types)

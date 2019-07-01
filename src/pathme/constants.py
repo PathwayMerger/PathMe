@@ -90,6 +90,7 @@ KEGG_MODIFICATIONS = {
     'methylation': 'Me',
 }
 KEGG_CITATION = '10592173'
+REACTOME_CITATION = '29145629'
 
 # FIXME why doesn't this just import the compath_resources package?
 KEGG_WIKIPATHWAYS_MAPPINGS = 'https://github.com/ComPath/curation/raw/master/mappings/kegg_wikipathways.xlsx'
@@ -97,8 +98,8 @@ KEGG_REACTOME_MAPPINGS = 'https://github.com/ComPath/curation/raw/master/mapping
 WIKIPATHWAYS_REACTOME_MAPPINGS = 'https://github.com/ComPath/curation/raw/master/mappings/wikipathways_reactome.xlsx'
 
 KEGG_KGML_URL = 'http://rest.kegg.jp/get/{}/kgml'
-RDF_REACTOME = ' ftp://ftp.ebi.ac.uk/pub/databases/RDF/reactome/r67/reactome-biopax.tar.bz2'
-RDF_WIKIPATHWAYS = 'http://data.wikipathways.org/20190310/rdf/wikipathways-20190310-rdf-wp.zip'
+RDF_REACTOME = 'ftp://ftp.ebi.ac.uk/pub/databases/RDF/reactome/r67/reactome-biopax.tar.bz2'
+RDF_WIKIPATHWAYS = 'http://data.wikipathways.org/20190610/rdf/wikipathways-20190610-rdf-wp.zip'
 
 KEGG_STATS_COLUMN_NAMES = {
     'nodes': 'BEL Nodes',

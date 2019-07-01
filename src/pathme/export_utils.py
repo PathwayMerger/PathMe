@@ -4,7 +4,7 @@
 
 import logging
 import os
-from typing import List, Iterable
+from typing import Iterable, List, Tuple
 
 import click
 import networkx as nx
@@ -36,7 +36,7 @@ def add_annotation_key(graph):
             graph[u][v][k][ANNOTATIONS] = {}
 
 
-def get_all_pickles(kegg_path, reactome_path, wikipathways_path):
+def get_all_pickles(kegg_path: str, reactome_path: str, wikipathways_path: str) -> Tuple[List, List, List]:
     """Return a list with all pickle paths."""
     kegg_pickles = get_paths_in_folder(kegg_path)
 
