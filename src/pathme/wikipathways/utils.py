@@ -175,7 +175,7 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager: HgncManager, pathway_
         log.debug('Adding Pfam node %s ', pfam_id)
         return PFAM, pfam_name, pfam_id
 
-    elif 'mirbase.mature' in node_ids_dict['uri_id']:  # FIXME what about normal mirbase?
+    elif 'mirbase.mature' in node_ids_dict['uri_id']:
         mirbase_id = check_multiple(node_ids_dict['identifier'], 'mirbase_id', pathway_id)
         mirbase_name = check_multiple(node_ids_dict['name'], 'mirbase_name', pathway_id)
         log.debug('Adding miRBase node %s ', mirbase_id)
