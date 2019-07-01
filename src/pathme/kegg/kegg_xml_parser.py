@@ -6,8 +6,8 @@ import itertools as itt
 import json
 import logging
 import os
-from xml.etree.ElementTree import parse
 from collections import defaultdict
+from xml.etree.ElementTree import parse
 
 import requests
 from bio2bel_kegg.constants import API_KEGG_GET
@@ -92,10 +92,12 @@ def _post_process_api_query(node_meta_data, hgnc_manager, chebi_manager):
                     for chebi_id in identifier.split(' '):
                         chebi_entry = chebi_manager.get_chemical_by_chebi_id(chebi_id)
 
-                        if not chebi_entry:
-                            continue
-
-                        node_dict[CHEBI_NAME] = chebi_entry.name
+                        # If the id is found in the database stick the name
+                        if chebi_entry:
+                            node_dict[CHEBI_NAME] = chebi_entry.name
+                        # Else use the default name by KEGG to ensure the name makes it into the graph
+                        elif "ENTRY_NAME" in node_meta_data:
+                            node_dict[CHEBI_NAME] = node_meta_data["ENTRY_NAME"]
 
     return node_dict
 
