@@ -22,7 +22,7 @@ from pybel.dsl import (
     NamedComplexAbundance
 )
 
-from pathme.constants import UNKNOWN, REACTOME_CITATION
+from pathme.constants import ACTIVITY_ALLOWED_MODIFIERS, UNKNOWN, REACTOME_CITATION
 from pathme.reactome.utils import get_valid_node_parameters, process_multiple_proteins
 from pathme.utils import add_bel_metadata, parse_id_uri
 
@@ -167,7 +167,7 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types):
         graph.add_increases(
             u, v,
             citation=REACTOME_CITATION, evidence='Extracted from Reactome',
-            object_modifier=activity() if v in {protein, complex_abundance, rna} else None,
+            object_modifier=activity() if v in ACTIVITY_ALLOWED_MODIFIERS else None,
             annotations={},
         )
 
@@ -175,7 +175,7 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types):
         graph.add_decreases(
             u, v,
             citation=REACTOME_CITATION, evidence='Extracted from Reactome',
-            object_modifier=activity() if v in {protein, complex_abundance, rna} else None,
+            object_modifier=activity() if v in ACTIVITY_ALLOWED_MODIFIERS else None,
             annotations={},
         )
     else:

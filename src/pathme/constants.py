@@ -5,6 +5,7 @@
 import os
 
 from bio2bel.utils import get_connection
+from pybel.dsl.nodes import abundance, complex_abundance, protein, rna
 
 MODULE_NAME = 'pathme'
 DEFAULT_PATHME_DIR = os.path.join(os.path.expanduser('~'), '.pathme')
@@ -40,7 +41,7 @@ SPIA_DIR = os.path.join(DATA_DIR, 'spia')
 UNIVERSE_DIR = os.path.join(DATA_DIR, 'universe')
 
 
-def ensure_pathme_folders(): # TODO why is this a function?
+def ensure_pathme_folders():  # TODO why is this a function?
     """Ensure data folders are created."""
     os.makedirs(KEGG_DIR, exist_ok=True)
     os.makedirs(REACTOME_DIR, exist_ok=True)
@@ -89,6 +90,14 @@ KEGG_MODIFICATIONS = {
     'ubiquitination': 'Ub',
     'methylation': 'Me',
 }
+
+ACTIVITY_ALLOWED_MODIFIERS = {
+    abundance,
+    protein,
+    complex_abundance,
+    rna
+}
+
 KEGG_CITATION = '10592173'
 REACTOME_CITATION = '29145629'
 

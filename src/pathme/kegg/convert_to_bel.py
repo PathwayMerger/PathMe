@@ -10,7 +10,7 @@ import tqdm
 from pybel import BELGraph, to_pickle
 from pybel.dsl.edges import activity
 from pybel.dsl.node_classes import CentralDogma
-from pybel.dsl.nodes import abundance, bioprocess, complex_abundance, composite_abundance, pmod, protein, reaction, rna
+from pybel.dsl.nodes import bioprocess, composite_abundance, pmod, reaction
 from pybel.struct.summary import count_functions, edge_summary
 
 from pathme.constants import *
@@ -512,7 +512,7 @@ def add_simple_edge(graph, u, v, relation_type):
                     graph.add_increases(
                         u, v_modified,
                         citation=KEGG_CITATION, evidence='Extracted from KEGG',
-                        subject_modifier=activity() if u in {protein, complex_abundance, rna} else None,
+                        subject_modifier=activity() if u in ACTIVITY_ALLOWED_MODIFIERS else None,
                         # Add the activity function if subject is one of the following nodes (BEL 2.0 specifications)
                         annotations={},
                     )
@@ -522,7 +522,7 @@ def add_simple_edge(graph, u, v, relation_type):
                     graph.add_decreases(
                         u, v_modified,
                         citation=KEGG_CITATION, evidence='Extracted from KEGG',
-                        subject_modifier=activity() if u in {protein, complex_abundance, rna} else None,
+                        subject_modifier=activity() if u in ACTIVITY_ALLOWED_MODIFIERS else None,
                         # Add the activity function if subject is one of the following nodes (BEL 2.0 specifications)
                         annotations={},
                     )
@@ -539,7 +539,7 @@ def add_simple_edge(graph, u, v, relation_type):
             graph.add_increases(
                 u, v_modified,
                 citation=KEGG_CITATION, evidence='Extracted from KEGG',
-                subject_modifier=activity() if u in {protein, complex_abundance, rna} else None,
+                subject_modifier=activity() if u in ACTIVITY_ALLOWED_MODIFIERS else None,
                 annotations={},
             )
 
@@ -552,7 +552,7 @@ def add_simple_edge(graph, u, v, relation_type):
         graph.add_decreases(
             u, v,
             citation=KEGG_CITATION, evidence='Extracted from KEGG',
-            subject_modifier=activity() if u in {protein, complex_abundance, rna} else None,
+            subject_modifier=activity() if u in ACTIVITY_ALLOWED_MODIFIERS else None,
             annotations={},
         )
 
@@ -561,7 +561,7 @@ def add_simple_edge(graph, u, v, relation_type):
         graph.add_increases(
             u, v,
             citation=KEGG_CITATION, evidence='Extracted from KEGG',
-            object_modifier=activity() if v in {protein, complex_abundance, rna} else None,
+            object_modifier=activity() if v in ACTIVITY_ALLOWED_MODIFIERS else None,
             annotations={},
         )
 
@@ -570,7 +570,7 @@ def add_simple_edge(graph, u, v, relation_type):
         graph.add_increases(
             u, v,
             citation=KEGG_CITATION, evidence='Extracted from KEGG',
-            subject_modifier=activity('cat') if u in {protein, complex_abundance, rna} else None,
+            subject_modifier=activity('cat') if u in ACTIVITY_ALLOWED_MODIFIERS else None,
             annotations={},
         )
 
@@ -579,7 +579,7 @@ def add_simple_edge(graph, u, v, relation_type):
         graph.add_decreases(
             u, v,
             citation=KEGG_CITATION, evidence='Extracted from KEGG',
-            object_modifier=activity() if v in {protein, complex_abundance, rna} else None,
+            object_modifier=activity() if v in ACTIVITY_ALLOWED_MODIFIERS else None,
             annotations={},
         )
 

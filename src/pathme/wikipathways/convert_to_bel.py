@@ -11,7 +11,7 @@ from pybel.constants import REGULATES
 from pybel.dsl import BaseEntity, abundance, activity, bioprocess, complex_abundance, gene, protein, reaction, rna
 
 from .utils import check_multiple, evaluate_wikipathways_metadata, get_valid_gene_identifier
-from ..constants import HGNC
+from ..constants import HGNC, ACTIVITY_ALLOWED_MODIFIERS
 from ..utils import add_bel_metadata, parse_id_uri
 
 log = logging.getLogger(__name__)
@@ -205,7 +205,7 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
         graph.add_increases(
             u, v,
             citation=uri_id, evidence='Extracted from WikiPathways',
-            object_modifier=activity() if v in {protein, complex_abundance, rna} else None,
+            object_modifier=activity() if v in ACTIVITY_ALLOWED_MODIFIERS else None,
             annotations={},
         )
 
@@ -213,7 +213,7 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
         graph.add_decreases(
             u, v,
             citation=uri_id, evidence='Extracted from WikiPathways',
-            object_modifier=activity() if v in {protein, complex_abundance, rna} else None,
+            object_modifier=activity() if v in ACTIVITY_ALLOWED_MODIFIERS else None,
             annotations={},
         )
 
@@ -221,7 +221,7 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
         graph.add_increases(
             u, v,
             citation=uri_id, evidence='Extracted from WikiPathways',
-            object_modifier=activity() if v in {protein, complex_abundance, rna} else None,
+            object_modifier=activity() if v in ACTIVITY_ALLOWED_MODIFIERS else None,
             annotations={},
         )
 
