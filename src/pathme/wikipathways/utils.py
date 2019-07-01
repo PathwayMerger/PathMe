@@ -14,7 +14,20 @@ from bio2bel_wikipathways import Manager as WikiPathwaysManager
 from pybel import BELGraph
 
 from ..constants import (
-    BRENDA, CHEMBL, DATA_DIR, ENSEMBL, ENTREZ, EXPASY, HGNC, INTERPRO, KEGG, MIRBASE, PFAM, UNIPROT, WIKIPATHWAYS,
+    BRENDA,
+    CHEMBL,
+    DATA_DIR,
+    ENSEMBL,
+    ENTREZ,
+    EXPASY,
+    HGNC,
+    INTERPRO,
+    KEGG,
+    MIRBASE,
+    PFAM,
+    REACTOME,
+    UNIPROT,
+    WIKIPATHWAYS,
     WIKIPEDIA,
 )
 from ..export_utils import get_paths_in_folder
@@ -197,6 +210,10 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager: HgncManager, pathway_
         indsc_id = check_multiple(node_ids_dict['identifier'], 'insdc', pathway_id)
         indsc_name = check_multiple(node_ids_dict['name'], 'insdc', pathway_id)
         return HGNC, indsc_name, indsc_id
+
+    # Nodes from reactome pointing to a gene
+    elif 'reactome' in node_ids_dict['uri_id']:
+        return REACTOME, node_ids_dict['name'], node_ids_dict['identifier']
 
     raise Exception('Unknown identifier for node %s', node_ids_dict)
 
