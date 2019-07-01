@@ -212,7 +212,7 @@ def check_multiple(element, element_name, pathway_id):
     :return:
     """
     if isinstance(element, (set, list)):
-        log.warning('Multiple values for "{}": {} [{}]'.format(element_name, element, pathway_id.split('/')[-1]))
+        log.debug('Multiple values for "{}": {} [{}]'.format(element_name, element, pathway_id.split('/')[-1]))
         # TODO: print the WikiPathways bps that return a set because they are probably wrong.
         if len(element) == 1:
             return list(element)[0]
@@ -224,7 +224,7 @@ def check_multiple(element, element_name, pathway_id):
 
             return list(element)[0]
 
-        log.warning('Empty list/set %s', element)
+        log.debug('Empty list/set %s', element)
 
     return element
 
@@ -338,6 +338,12 @@ def iterate_wikipathways_paths(
     :param connection: database connection
     :param only_canonical: only identifiers present in WP bio2bel db
     """
+    if not os.path.exists(directory):
+        raise FileNotFoundError(
+            f'{directory} does not exist. Please ensure you have downloaded WikiPathways using '
+            f'the "pathme wikipathways download" command or you have passed the right argument.'
+        )
+
     paths = get_paths_in_folder(directory)
 
     # Filter files in folder that have no turtle extension or do not start with 'WP'
