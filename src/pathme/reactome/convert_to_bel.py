@@ -130,8 +130,8 @@ def node_to_bel(node: Dict, graph, hgnc_manager: HgncManager, chebi_manager: Che
         bioprocess_node = bioprocess(identifier=identifier, name=name, namespace=namespace.upper())
         graph.add_node_from_data(bioprocess_node)
         return bioprocess_node
-
-    log.warning('Entity type not recognized', node_types)
+    else:
+        log.warning('Entity type not recognized', node_types)
 
 
 def add_edges(graph: BELGraph, participants, nodes, att: Dict):
@@ -176,5 +176,5 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types):
             object_modifier=activity() if v in {protein, complex_abundance, rna} else None,
             annotations={},
         )
-
-    log.warning('edge type %s', edge_types)
+    else:
+        log.warning('edge type %s', edge_types)
