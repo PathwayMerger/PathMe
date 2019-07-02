@@ -167,7 +167,7 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types):
         graph.add_increases(
             u, v,
             citation=REACTOME_CITATION, evidence='Extracted from Reactome',
-            object_modifier=activity() if v in ACTIVITY_ALLOWED_MODIFIERS else None,
+            object_modifier=activity() if type(v) in ACTIVITY_ALLOWED_MODIFIERS else None,
             annotations={},
         )
 
@@ -175,7 +175,7 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types):
         graph.add_decreases(
             u, v,
             citation=REACTOME_CITATION, evidence='Extracted from Reactome',
-            object_modifier=activity() if v in ACTIVITY_ALLOWED_MODIFIERS else None,
+            object_modifier=activity() if type(v) in ACTIVITY_ALLOWED_MODIFIERS else None,
             annotations={},
         )
     else:
