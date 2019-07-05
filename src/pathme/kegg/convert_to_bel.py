@@ -19,6 +19,7 @@ from pathme.kegg.kegg_xml_parser import (
     get_all_reactions, get_all_relationships, get_complex_components, get_entity_nodes, get_reaction_pathway_edges,
     import_xml_etree,
 )
+from pathme.export_utils import add_annotation_key
 from pathme.utils import add_bel_metadata
 
 __all__ = [
@@ -80,6 +81,7 @@ def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False):
     add_reaction_edges(graph, reactions_dict, nodes)
 
     graph.annotation_pattern['PathwayID'] = '.*'
+    add_annotation_key(graph)
     add_annotation_value(graph, 'PathwayID', f'{root.attrib["org"]}{root.attrib["number"]}')
 
     return graph
