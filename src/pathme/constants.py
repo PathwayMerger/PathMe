@@ -91,12 +91,12 @@ KEGG_MODIFICATIONS = {
     'methylation': 'Me',
 }
 
-ACTIVITY_ALLOWED_MODIFIERS = {
+ACTIVITY_ALLOWED_MODIFIERS = (
     abundance,
     protein,
     complex_abundance,
     rna
-}
+)
 
 KEGG_CITATION = '10592173'
 REACTOME_CITATION = '29145629'
