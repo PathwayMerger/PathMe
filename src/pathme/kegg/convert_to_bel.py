@@ -512,7 +512,7 @@ def add_simple_edge(graph, u, v, relation_type):
                     graph.add_increases(
                         u, v_modified,
                         citation=KEGG_CITATION, evidence='Extracted from KEGG',
-                        subject_modifier=activity() if type(u) in ACTIVITY_ALLOWED_MODIFIERS else None,
+                        subject_modifier=activity() if isinstance(u, ACTIVITY_ALLOWED_MODIFIERS) else None,
                         # Add the activity function if subject is one of the following nodes (BEL 2.0 specifications)
                         annotations={},
                     )
@@ -522,7 +522,7 @@ def add_simple_edge(graph, u, v, relation_type):
                     graph.add_decreases(
                         u, v_modified,
                         citation=KEGG_CITATION, evidence='Extracted from KEGG',
-                        subject_modifier=activity() if type(u) in ACTIVITY_ALLOWED_MODIFIERS else None,
+                        subject_modifier=activity() if isinstance(u, ACTIVITY_ALLOWED_MODIFIERS) else None,
                         # Add the activity function if subject is one of the following nodes (BEL 2.0 specifications)
                         annotations={},
                     )
@@ -539,7 +539,7 @@ def add_simple_edge(graph, u, v, relation_type):
             graph.add_increases(
                 u, v_modified,
                 citation=KEGG_CITATION, evidence='Extracted from KEGG',
-                subject_modifier=activity() if type(u) in ACTIVITY_ALLOWED_MODIFIERS else None,
+                subject_modifier=activity() if isinstance(u, ACTIVITY_ALLOWED_MODIFIERS) else None,
                 annotations={},
             )
 
@@ -552,7 +552,7 @@ def add_simple_edge(graph, u, v, relation_type):
         graph.add_decreases(
             u, v,
             citation=KEGG_CITATION, evidence='Extracted from KEGG',
-            subject_modifier=activity() if type(u) in ACTIVITY_ALLOWED_MODIFIERS else None,
+            subject_modifier=activity() if isinstance(u, ACTIVITY_ALLOWED_MODIFIERS) else None,
             annotations={},
         )
 
@@ -561,7 +561,7 @@ def add_simple_edge(graph, u, v, relation_type):
         graph.add_increases(
             u, v,
             citation=KEGG_CITATION, evidence='Extracted from KEGG',
-            object_modifier=activity() if type(v) in ACTIVITY_ALLOWED_MODIFIERS else None,
+            object_modifier=activity() if isinstance(v, ACTIVITY_ALLOWED_MODIFIERS) else None,
             annotations={},
         )
 
@@ -570,7 +570,7 @@ def add_simple_edge(graph, u, v, relation_type):
         graph.add_increases(
             u, v,
             citation=KEGG_CITATION, evidence='Extracted from KEGG',
-            subject_modifier=activity('cat') if type(u) in ACTIVITY_ALLOWED_MODIFIERS else None,
+            subject_modifier=activity('cat') if isinstance(u, ACTIVITY_ALLOWED_MODIFIERS) else None,
             annotations={},
         )
 
@@ -579,7 +579,7 @@ def add_simple_edge(graph, u, v, relation_type):
         graph.add_decreases(
             u, v,
             citation=KEGG_CITATION, evidence='Extracted from KEGG',
-            object_modifier=activity() if type(v) in ACTIVITY_ALLOWED_MODIFIERS else None,
+            object_modifier=activity() if isinstance(v, ACTIVITY_ALLOWED_MODIFIERS) else None,
             annotations={},
         )
 
