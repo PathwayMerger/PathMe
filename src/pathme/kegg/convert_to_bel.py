@@ -11,6 +11,7 @@ from pybel import BELGraph, to_pickle
 from pybel.dsl.edges import activity
 from pybel.dsl.node_classes import CentralDogma
 from pybel.dsl.nodes import bioprocess, composite_abundance, pmod, reaction
+from pybel.struct import add_annotation_value
 from pybel.struct.summary import count_functions, edge_summary
 
 from pathme.constants import *
@@ -77,6 +78,9 @@ def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False):
     # Add edges to graph
     add_edges(graph, relations_list, nodes)
     add_reaction_edges(graph, reactions_dict, nodes)
+
+    graph.annotation_pattern['PathwayID'] = '.*'
+    add_annotation_value(graph, 'PathwayID', f'{root.attrib["org"]}{root.attrib["number"]}')
 
     return graph
 
