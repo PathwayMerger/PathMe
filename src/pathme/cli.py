@@ -9,6 +9,11 @@ import click
 import networkx as nx
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
+from pybel import from_pickle, to_pickle
+from pybel.struct.mutation import collapse_all_variants, collapse_to_genes, remove_isolated_list_abundances
+from pybel.struct.summary import count_functions
+from tqdm import tqdm
+
 from pathme.constants import *
 from pathme.export_utils import spia_export_helper, get_paths_in_folder, get_universe_graph
 from pathme.kegg.convert_to_bel import kegg_to_pickles
@@ -18,10 +23,6 @@ from pathme.reactome.utils import untar_file
 from pathme.utils import CallCounted, make_downloader, statistics_to_df, summarize_helper
 from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pickles
 from pathme.wikipathways.utils import get_file_name_from_url, iterate_wikipathways_paths, unzip_file
-from pybel import from_pickle, to_pickle
-from pybel.struct.mutation import collapse_all_variants, collapse_to_genes, remove_isolated_list_abundances
-from pybel.struct.summary import count_functions
-from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -59,10 +60,15 @@ def download(connection):
 @kegg.command()
 @click.option('-f', '--flatten', is_flag=True, default=False)
 @click.option('-e', '--export-folder', default=KEGG_BEL, show_default=True)
-def bel(flatten, export_folder):
+@click.option('-v', '--debug', is_flag=True, default=False, help='Debug mode')
+def bel(flatten, export_folder, debug):
     """Convert KEGG to BEL."""
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     logger.setLevel(logging.INFO)
+
+    if debug:
+        click.echo("Debug mode on")
+        logger.setLevel(logging.DEBUG)
 
     t = time.time()
 

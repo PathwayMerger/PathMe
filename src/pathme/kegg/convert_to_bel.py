@@ -359,6 +359,10 @@ def map_to_bel_node(graph, node):
         name = attribute['map_name']
         identifier = attribute[KEGG_ID]
 
+        if not name:
+            log.debug(f"KEGG API does not provide information about {node}. Using identifier.")
+            name = identifier
+
         if name.startswith('TITLE:'):
             name = name.strip('TITLE:')
 
@@ -514,43 +518,60 @@ def add_simple_edge(graph, u, v, relation_type):
 
             # If the object is a gene, miRNA, RNA, or protein, add protein modification
             if isinstance(v, CentralDogma):
-                v_modified = v.with_variants(pmod(KEGG_MODIFICATIONS[relation_type[1]]))
+                v = v.with_variants(pmod(KEGG_MODIFICATIONS[relation_type[1]]))
 
-                # Add increases edge if pmod subtype is coupled with activation subtype
-                if relation_type[0] == 'activation':
-                    graph.add_increases(
-                        u, v_modified,
-                        citation=KEGG_CITATION, evidence='Extracted from KEGG',
-                        subject_modifier=activity() if isinstance(u, ACTIVITY_ALLOWED_MODIFIERS) else None,
-                        # Add the activity function if subject is one of the following nodes (BEL 2.0 specifications)
-                        annotations={},
-                    )
+            # Add increases edge if pmod subtype is coupled with activation subtype
+            if relation_type[0] == 'activation':
+                graph.add_increases(
+                    u, v,
+                    citation=KEGG_CITATION, evidence='Extracted from KEGG',
+                    subject_modifier=activity() if isinstance(u, ACTIVITY_ALLOWED_MODIFIERS) else None,
+                    # Add the activity function if subject is one of the following nodes (BEL 2.0 specifications)
+                    annotations={},
+                )
+                return
 
-                # Add decreases edge if pmod subtype is coupled with inhibition subtype
-                elif relation_type[0] == 'inhibition':
-                    graph.add_decreases(
-                        u, v_modified,
-                        citation=KEGG_CITATION, evidence='Extracted from KEGG',
-                        subject_modifier=activity() if isinstance(u, ACTIVITY_ALLOWED_MODIFIERS) else None,
-                        # Add the activity function if subject is one of the following nodes (BEL 2.0 specifications)
-                        annotations={},
-                    )
+            # Add decreases edge if pmod subtype is coupled with inhibition subtype
+            elif relation_type[0] == 'inhibition':
+                graph.add_decreases(
+                    u, v,
+                    citation=KEGG_CITATION, evidence='Extracted from KEGG',
+                    subject_modifier=activity() if isinstance(u, ACTIVITY_ALLOWED_MODIFIERS) else None,
+                    # Add the activity function if subject is one of the following nodes (BEL 2.0 specifications)
+                    annotations={},
+                )
+                return
 
-        # TODO: add pmod of v activates v
-        # TODO: how to represent abundance modification in BEL?
+            # Found multiple relationship which cannot be combined into one logic (e.g., ['inhibition', 'indirect effect'])
+            else:
+                # Create all relationships in the list
+                for relation in relation_type:
+                    add_simple_edge(graph, u, v, relation)
 
+                return
+
+        # Found multiple relationship which cannot be combined into one logic (e.g., ['inhibition', 'indirect effect'])
+        else:
+            # Create all relationships in the list
+            for relation in relation_type:
+                add_simple_edge(graph, u, v, relation)
+
+            return
+
+    """Handle differently the relationships"""
     # If only one pmod relation subtype
-    elif relation_type in {'phosphorylation', 'glycosylation', 'ubiquitination', 'methylation'}:
+    if relation_type in {'phosphorylation', 'glycosylation', 'ubiquitination', 'methylation'}:
 
         # If the object is a gene, miRNA, RNA, or protein, add protein modification
         if isinstance(v, CentralDogma):
-            v_modified = v.with_variants(pmod(KEGG_MODIFICATIONS[relation_type]))
-            graph.add_increases(
-                u, v_modified,
-                citation=KEGG_CITATION, evidence='Extracted from KEGG',
-                subject_modifier=activity() if isinstance(u, ACTIVITY_ALLOWED_MODIFIERS) else None,
-                annotations={},
-            )
+            v = v.with_variants(pmod(KEGG_MODIFICATIONS[relation_type]))
+        graph.add_increases(
+            u, v,
+            citation=KEGG_CITATION, evidence='Extracted from KEGG',
+            subject_modifier=activity() if isinstance(u, ACTIVITY_ALLOWED_MODIFIERS) else None,
+            annotations={},
+        )
+        return
 
     # Subject activity decreases protein modification (i.e. dephosphorylation) of object
     elif relation_type == 'dephosphorylation':
@@ -564,6 +585,7 @@ def add_simple_edge(graph, u, v, relation_type):
             subject_modifier=activity() if isinstance(u, ACTIVITY_ALLOWED_MODIFIERS) else None,
             annotations={},
         )
+        return
 
     # Subject increases activity of object
     elif relation_type == 'activation':
@@ -573,6 +595,7 @@ def add_simple_edge(graph, u, v, relation_type):
             object_modifier=activity() if isinstance(v, ACTIVITY_ALLOWED_MODIFIERS) else None,
             annotations={},
         )
+        return
 
     # Catalytic activity of subject increases transformation of reactant(s) to product(s)
     elif relation_type in {'reversible', 'irreversible'}:
@@ -582,6 +605,7 @@ def add_simple_edge(graph, u, v, relation_type):
             subject_modifier=activity('cat') if isinstance(u, ACTIVITY_ALLOWED_MODIFIERS) else None,
             annotations={},
         )
+        return
 
     # Subject decreases activity of object
     elif relation_type == 'inhibition':
@@ -591,10 +615,12 @@ def add_simple_edge(graph, u, v, relation_type):
             object_modifier=activity() if isinstance(v, ACTIVITY_ALLOWED_MODIFIERS) else None,
             annotations={},
         )
+        return
 
     # Indirect effect and binding/association are noted to be equivalent relation types
-    elif relation_type in {'indirect effect', 'binding/association'}:
+    elif relation_type in {'indirect effect', 'binding/association', 'compound'}:
         graph.add_association(u, v, citation=KEGG_CITATION, evidence='Extracted from KEGG', annotations={})
+        return
 
     # Subject increases expression of object
     elif relation_type == 'expression':
@@ -603,6 +629,7 @@ def add_simple_edge(graph, u, v, relation_type):
         if isinstance(v, CentralDogma):
             v = v.get_rna()
         graph.add_increases(u, v, citation=KEGG_CITATION, evidence='Extracted from KEGG', annotations={})
+        return
 
     # Subject decreases expression of object
     elif relation_type == 'repression':
@@ -611,12 +638,12 @@ def add_simple_edge(graph, u, v, relation_type):
         if isinstance(v, CentralDogma):
             v = v.get_rna()
         graph.add_decreases(u, v, citation=KEGG_CITATION, evidence='Extracted from KEGG', annotations={})
+        return
 
     elif relation_type in {'dissociation', 'hidden compound', 'missing interaction', 'state change'}:
-        pass
+        return
 
-    else:
-        raise ValueError('Unexpected relation type {}'.format(relation_type))
+    raise ValueError(f'Unexpected relation type {relation_type} between {u} and {v}')
 
 
 def get_bel_types(path, hgnc_manager, chebi_manager, flatten=None):
