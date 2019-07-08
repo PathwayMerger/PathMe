@@ -520,8 +520,8 @@ def summarize_helper(graphs: Iterable[BELGraph]):
 def add_bel_metadata(graph: BELGraph) -> None:
     """Add namespaces and annotations to a given bel graph."""
     graph.graph[GRAPH_NAMESPACE_URL] = {
-        CHEBI.upper(): "https://raw.githubusercontent.com/pharmacome/terminology/b46b65c3da259b6e86026514dfececab7c22a11b/external/chebi-names.belns",
-        HGNC: "https://raw.githubusercontent.com/pharmacome/terminology/b46b65c3da259b6e86026514dfececab7c22a11b/external/hgnc-names.belns",
+        CHEBI.upper(): "https://arty.scai.fraunhofer.de/artifactory/bel/namespace/chebi/chebi-20190708.belns",
+        HGNC: "https://arty.scai.fraunhofer.de/artifactory/bel/namespace/hgnc/hgnc-20190708.belns",
         "GO": "https://raw.githubusercontent.com/pharmacome/terminology/b46b65c3da259b6e86026514dfececab7c22a11b/external/go-names.belns",
     }
 
