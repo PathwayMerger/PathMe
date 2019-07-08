@@ -15,11 +15,11 @@ from pybel.struct import add_annotation_value
 from pybel.struct.summary import count_functions, edge_summary
 
 from pathme.constants import *
+from pathme.export_utils import add_annotation_key
 from pathme.kegg.kegg_xml_parser import (
     get_all_reactions, get_all_relationships, get_complex_components, get_entity_nodes, get_reaction_pathway_edges,
     import_xml_etree,
 )
-from pathme.export_utils import add_annotation_key
 from pathme.utils import add_bel_metadata
 
 __all__ = [
@@ -358,6 +358,9 @@ def map_to_bel_node(graph, node):
     for attribute in node:
         name = attribute['map_name']
         identifier = attribute[KEGG_ID]
+
+        if name.startswith('TITLE:'):
+            name = name.strip('TITLE:')
 
         bio_process = bioprocess(namespace=KEGG.upper(), name=name, identifier=identifier)
         graph.add_node_from_data(bio_process)
