@@ -369,17 +369,13 @@ def iterate_wikipathways_paths(
     # Skip files not present in wikipathways bio2bel db -> stuffs from reactome and so on...
     if only_canonical:
         wikipathways_manager = WikiPathwaysManager(connection)
+        if not wikipathways_manager.is_populated():
+            wikipathways_manager.populate()
 
         wikipathways_identifiers = {
             pathway.resource_id
             for pathway in wikipathways_manager.get_all_pathways()
         }
-
-        if not wikipathways_identifiers:
-            log.warning(
-                'Your WikiPathays Bio2BEL Database is empty! '
-                '(please run: python3 -m bio2bel_wikipathways populate)'
-            )
 
         paths = [
             path
