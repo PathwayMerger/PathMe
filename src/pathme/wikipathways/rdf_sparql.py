@@ -49,73 +49,71 @@ GET_ENTRIES_SUBTYPES_SPARQL = """
 
 #: SPARQL query to get all data nodes in a pathway network with some arguments.
 GET_ALL_DATA_NODES_SPARQL = """
-    SELECT DISTINCT 
-    ?uri_id
-    ?name
-    (STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types) 
+SELECT DISTINCT 
+?uri_id
+?name
+(STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types)
+(?uri_id AS ?identifier)
+(?dc_identifier AS ?identifier)
+(STRAFTER(STR(?ncbigene_uri), str(ncbigene:)) AS ?identifier)
+(STRAFTER(STR(?chebi_uri), str(chebi:)) AS ?identifier)
+(STRAFTER(STR(?hgnc_uri), str(hgnc:)) AS ?bdb_hgncsymbol)
+(STRAFTER(STR(?ensembl_uri), str(ensembl:)) AS ?bdb_ensembl)
+(STRAFTER(STR(?ncbigene_uri), str(ncbigene:)) AS ?bdb_ncbigene)
+(STRAFTER(STR(?uniprot_uri), str(uniprot:)) AS ?bdb_uniprot)
+(STRAFTER(STR(?chebi_uri), str(chebi:)) AS ?bdb_chebi)
+(STRAFTER(STR(?chemspider_uri), str(chemspider:)) AS ?bdb_chemspider)
+(STRAFTER(STR(?pubchem_uri), str(pubchem:)) AS ?bdb_pubchem)
+(STRAFTER(STR(?wikidata_uri), str(wikidata:)) AS ?bdb_wikidata)
+(STRAFTER(STR(?hmdb_uri), str(hmdb:)) AS ?bdb_hmdb)
+WHERE {
+   ?pathway a wp:Pathway .
+   ?uri_id dcterms:isPartOf ?pathway .
 
-    (?uri_id AS ?identifier) 
-    (?dc_identifier AS ?identifier) 
-    (STRAFTER(STR(?ncbigene_uri), str(ncbigene:)) AS ?identifier )
-    (STRAFTER(STR(?chebi_uri), str(chebi:)) AS ?identifier )
+   ?uri_id a wp:DataNode .
+   ?uri_id rdf:type ?uri_type .
 
-    (STRAFTER(STR(?hgnc_uri), str(hgnc:)) AS ?bdb_hgncsymbol) 
-    (STRAFTER(STR(?ensembl_uri), str(ensembl:)) AS ?bdb_ensembl) 
-    (STRAFTER(STR(?ncbigene_uri), str(ncbigene:)) AS ?bdb_ncbigene) 
-    (STRAFTER(STR(?uniprot_uri), str(uniprot:)) AS ?bdb_uniprot) 
-    (STRAFTER(STR(?chebi_uri), str(chebi:)) AS ?bdb_chebi) 
-    (STRAFTER(STR(?chemspider_uri), str(chemspider:)) AS ?bdb_chemspider) 
-    (STRAFTER(STR(?pubchem_uri), str(pubchem:)) AS ?bdb_pubchem) 
-    (STRAFTER(STR(?wikidata_uri), str(wikidata:)) AS ?bdb_wikidata) 
-    (STRAFTER(STR(?hmdb_uri), str(hmdb:)) AS ?bdb_hmdb) 
-    WHERE {
-       ?pathway a wp:Pathway .
-       ?uri_id dcterms:isPartOf ?pathway .
+   optional {?uri_id dcterms:identifier ?dc_identifier .}
+   
+   optional {?uri_id wp:bdbHgncSymbol ?hgnc_uri .}
+   optional {?uri_id wp:bdbEnsembl ?ensembl_uri .}
+   optional {?uri_id wp:bdbEntrezGene ?ncbigene_uri .}
+   optional {?uri_id wp:bdbUniprot ?uniprot_uri .}
+   
+   optional {?uri_id wp:bdbChEBI ?chebi_uri .}
+   optional {?uri_id wp:bdbChemspider ?chemspider_uri .}
+   optional {?uri_id wp:bdbPubChem ?pubchem_uri .}
+   optional {?uri_id wp:bdbWikidata ?wikidata_uri .}
+   optional {?uri_id wp:bdbHmdb ?hmdba_uri .}
 
-       ?uri_id a wp:DataNode .
-       ?uri_id rdf:type ?uri_type .
-    
-       optional {?uri_id dcterms:identifier ?dc_identifier .}
-       
-       optional {?uri_id wp:bdbHgncSymbol ?hgnc_uri .}
-       optional {?uri_id wp:bdbEnsembl ?ensembl_uri .}
-       optional {?uri_id wp:bdbEntrezGene ?ncbigene_uri .}
-       optional {?uri_id wp:bdbUniprot ?uniprot_uri .}
-       
-       optional {?uri_id wp:bdbChEBI ?chebi_uri .}
-       optional {?uri_id wp:bdbChemspider ?chemspider_uri .}
-       optional {?uri_id wp:bdbPubChem ?pubchem_uri .}
-       optional {?uri_id wp:bdbWikidata ?wikidata_uri .}
-       optional {?uri_id wp:bdbHmdb ?hmdba_uri .}
-
-       ?uri_id rdfs:label ?name .
-    }
-    """
+   ?uri_id rdfs:label ?name .
+}
+"""
 
 #: SPARQL query to get all data nodes in a pathway network with some arguments.
 GET_ALL_COMPLEXES_SPARQL = """
-    SELECT DISTINCT 
+SELECT DISTINCT 
     ?uri_id 
-    (STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types) 
-    (?participants_entry AS ?participants) 
-    (?participants_id AS ?participants) 
-    ?name 
-    (STRAFTER(STR(?ncbigene_participants), str(ncbigene:)) AS ?participants )
-    WHERE {
-       ?pathway a wp:Pathway .
-       ?uri_id dcterms:isPartOf ?pathway .
-       ?uri_id a wp:Complex .
-       ?uri_id rdf:type ?uri_type .
-       ?uri_id wp:participants ?participants_entry .
-       optional {?participants_entry dcterms:identifier ?participants_id .}
-       optional {?participants_entry wp:bdbEntrezGene ?ncbigene_participants .}
-    }
-    """
+    (STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types)
+    (?participants_entry AS ?participants)
+    (?participants_id AS ?participants)
+    ?name
+    (STRAFTER(STR(?ncbigene_participants), str(ncbigene:)) AS ?participants)
+WHERE {
+   ?pathway a wp:Pathway .
+   ?uri_id dcterms:isPartOf ?pathway .
+   ?uri_id a wp:Complex .
+   ?uri_id rdf:type ?uri_type .
+   ?uri_id wp:participants ?participants_entry .
+   optional {?participants_entry dcterms:identifier ?participants_id .}
+   optional {?participants_entry wp:bdbEntrezGene ?ncbigene_participants .}
+}
+"""
 
 # TODO: Check interaction complexes.
 #: SPARQL query to get all directed interactions in a pathway network with source and target.
 GET_ALL_DIRECTED_INTERACTIONS_SPARQL = """
-    SELECT DISTINCT 
+SELECT DISTINCT 
     (?source_entry AS ?source) 
     (?dc_source AS ?source) 
     (?target_entry AS ?target) 
@@ -125,30 +123,30 @@ GET_ALL_DIRECTED_INTERACTIONS_SPARQL = """
     (STRAFTER(STR(?uri_type), str(wp:)) AS ?interaction_types) 
     (STRAFTER(STR(?ncbigene_source), str(ncbigene:)) AS ?source ) 
     (STRAFTER(STR(?ncbigene_target), str(ncbigene:)) AS ?target )
-    WHERE {
-       ?pathway a wp:Pathway .
-       ?uri_id dcterms:isPartOf ?pathway .
-       ?uri_id a wp:DirectedInteraction .
-       ?uri_id rdf:type ?uri_type .
-       ?uri_id wp:source ?source_entry .
-       ?uri_id wp:target ?target_entry .
-       optional {?source_entry dcterms:identifier ?dc_source .}
-       optional {?target_entry dcterms:identifier ?dc_target .}
-       optional {?source_entry wp:bdbEntrezGene ?ncbigene_source .}
-       optional {?target_entry wp:bdbEntrezGene ?ncbigene_target .}
-    }
-    """
+WHERE {
+   ?pathway a wp:Pathway .
+   ?uri_id dcterms:isPartOf ?pathway .
+   ?uri_id a wp:DirectedInteraction .
+   ?uri_id rdf:type ?uri_type .
+   ?uri_id wp:source ?source_entry .
+   ?uri_id wp:target ?target_entry .
+   optional {?source_entry dcterms:identifier ?dc_source .}
+   optional {?target_entry dcterms:identifier ?dc_target .}
+   optional {?source_entry wp:bdbEntrezGene ?ncbigene_source .}
+   optional {?target_entry wp:bdbEntrezGene ?ncbigene_target .}
+}
+"""
 
 #: SPARQL query to get all interactions in a pathway network.
 GET_PATHWAY_INFO_SPARQL = """
-        SELECT DISTINCT ?title ?identifier ?description ?pathway_id
-        WHERE {
-       ?pathway_id a wp:Pathway .
-       ?pathway_id dc:title ?title .
-       ?pathway_id dcterms:description ?description .
-       ?pathway_id dcterms:identifier ?identifier .
-       }
-       """
+SELECT DISTINCT ?title ?identifier ?description ?pathway_id
+WHERE {
+    ?pathway_id a wp:Pathway .
+    ?pathway_id dc:title ?title .
+    ?pathway_id dcterms:description ?description .
+    ?pathway_id dcterms:identifier ?identifier .
+}
+"""
 
 """Queries managers"""
 

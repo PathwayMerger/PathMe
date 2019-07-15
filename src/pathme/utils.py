@@ -36,7 +36,7 @@ class CallCounted:
         return self.method(*args, **kwargs)
 
 
-def parse_id_uri(uri):
+def parse_id_uri(uri: str) -> Tuple[str, str, str, str]:
     """Get the components of a given uri (with identifier at the last position).
 
     :param uri: URI

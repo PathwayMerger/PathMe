@@ -5,17 +5,17 @@
 import logging
 import os
 from collections import defaultdict
-from typing import Set, Dict, Union, Tuple, List, Any
+from typing import Any, Dict, List, Set, Tuple, Union
 
 import rdflib
 import tqdm
 from pybel import to_pickle
 from rdflib import URIRef
-from rdflib.namespace import Namespace, RDFS, RDF, DCTERMS, DC, OWL, XSD, SKOS
+from rdflib.namespace import DC, DCTERMS, Namespace, OWL, RDF, RDFS, SKOS, XSD
 
 from pathme.constants import REACTOME_BEL
 from pathme.reactome.convert_to_bel import convert_to_bel
-from pathme.utils import query_result_to_dict, parse_rdf, get_pathway_statitics
+from pathme.utils import get_pathway_statitics, parse_rdf, query_result_to_dict
 
 log = logging.getLogger(__name__)
 
@@ -36,82 +36,73 @@ PREFIXES = {
     'biopax3': Namespace('http://www.biopax.org/release/biopax-level3.owl#'),
 }
 
-#: SPARQL query string to get all the  primary types of entries (Pathway,  BiochemicalReaction) in a pathway network.
+#: SPARQL query string to get all the  primary types of entries (Pathway, BiochemicalReaction) in a pathway network.
 GET_ALL_TYPES = """
 SELECT DISTINCT (STRAFTER(STR(?rdf_type), str(biopax3:)) AS ?entry_type)
-WHERE
-    {
-        ?uri_id rdf:type ?rdf_type .
+WHERE {
+    ?uri_id rdf:type ?rdf_type .
 }
 """
 
 #: SPARQL query string to get pathway URIs and names in the RDF file.
 GET_ALL_PATHWAYS = """
 SELECT DISTINCT ?uri_id ?name
-WHERE
-    {
-        ?uri_id rdf:type biopax3:Pathway .
-        ?uri_id biopax3:displayName ?name .
-    }
+WHERE {
+    ?uri_id rdf:type biopax3:Pathway .
+    ?uri_id biopax3:displayName ?name .
+}
 """
 
 #: SPARQL query string to get all components of a pathway (predicate biopax3:pathwayComponent).
 GET_ALL_PATHWAY_COMPONENTS = """
 SELECT DISTINCT ?uri_id ?name ?comment (STRAFTER(STR(?uri_type), str(biopax3:)) AS ?component_type)
-WHERE
-    {
-        ?pathway biopax3:pathwayComponent ?uri_id .
-        ?uri_id rdf:type ?uri_type .
-        optional {?uri_id biopax3:displayName ?name .}
-        optional {?uri_id biopax3:comment ?comment .}
-    }
+WHERE {
+    ?pathway biopax3:pathwayComponent ?uri_id .
+    ?uri_id rdf:type ?uri_type .
+    optional {?uri_id biopax3:displayName ?name .}
+    optional {?uri_id biopax3:comment ?comment .}
+}
 """
 
 #: SPARQL query string to get all participants in an interaction and its controlType (ACTIVATION or INHIBITION).
 GET_INTERACTION_PARTICIPANTS_AND_TYPE = """
-SELECT DISTINCT (STRAFTER(STR(?component), '#') AS ?identifier) ?reactant ?product (STR(?control_type) AS ?interaction_type)
-WHERE
-    {
-        ?component biopax3:left ?reactant .
-        ?component biopax3:right ?product .
-        optional {?control biopax3:controlled ?component .}
-        optional {?control biopax3:controlType ?control_type }
-    }
+SELECT DISTINCT 
+    (STRAFTER(STR(?component), '#') AS ?identifier) 
+    ?reactant 
+    ?product 
+    (STR(?control_type) AS ?interaction_type)
+WHERE {
+    ?component biopax3:left ?reactant .
+    ?component biopax3:right ?product .
+    optional {?control biopax3:controlled ?component .}
+    optional {?control biopax3:controlType ?control_type }
+}
 """
 
 #: SPARQL query to get all the possible metadate (optional statements) of an entity (Protein, Dna, Pathway...).
 GET_ENTITY_METADATA = """
-SELECT DISTINCT 
-(STRAFTER (STR(?uri_type), str(biopax3:)) AS ?entity_type) 
-
-(STRAFTER(STR(?entity), '#') AS ?identifier)
-(STR(?entity) AS ?uri_id) 
-
-(STRAFTER(STR(?entity), '#') AS ?reactome_id)
-(STR(?entity) AS ?uri_reactome_id) 
-
-(STR(?entity_reference) AS ?uri_id) 
-
-?name 
-?cell_locat 
-?display_name 
-?complex_components 
-?comment 
-
-WHERE
-    {        
-        ?entity rdf:type ?uri_type .
-        optional {?entity biopax3:comment ?comment .}
-        
-        optional {?entity biopax3:entityReference ?entity_reference .}
-   
-        optional {?entity biopax3:name ?name .}
-        optional {?entity biopax3:displayName ?display_name .}
-        
-        optional {?entity biopax3:cellularLocation ?cell_locat .}
-        optional {?entity biopax3:organism ?organism .}
-        optional {?entity biopax3:component ?complex_components .}
-    }
+SELECT DISTINCT
+    (STRAFTER (STR(?uri_type), str(biopax3:)) AS ?entity_type)
+    (STRAFTER(STR(?entity), '#') AS ?identifier)
+    (STR(?entity) AS ?uri_id)
+    (STRAFTER(STR(?entity), '#') AS ?reactome_id)
+    (STR(?entity) AS ?uri_reactome_id)
+    (STR(?entity_reference) AS ?uri_id)
+    ?name
+    ?cell_locat
+    ?display_name
+    ?complex_components
+    ?comment
+WHERE {        
+    ?entity rdf:type ?uri_type .
+    optional {?entity biopax3:comment ?comment .}
+    optional {?entity biopax3:entityReference ?entity_reference .}
+    optional {?entity biopax3:name ?name .}
+    optional {?entity biopax3:displayName ?display_name .}
+    optional {?entity biopax3:cellularLocation ?cell_locat .}
+    optional {?entity biopax3:organism ?organism .}
+    optional {?entity biopax3:component ?complex_components .}
+}
 """
 
 """Queries managers"""

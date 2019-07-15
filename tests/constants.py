@@ -1,7 +1,19 @@
 # -*- coding: utf-8 -*-
 
 """Tests constants."""
-import os
+
+import tempfile
+
+from bio2bel.testing import TemporaryConnectionMixin
+from bio2bel_chebi import Manager as ChebiManager
+from bio2bel_hgnc import Manager as HgncManager
+from bio2bel_kegg.manager import Manager
+from pybel import BELGraph
+
+from pathme.kegg.convert_to_bel import kegg_to_bel
+from pathme.kegg.kegg_xml_parser import *
+
+log = logging.getLogger(__name__)
 
 TEST_FOLDER = os.path.dirname(os.path.realpath(__file__))
 KEGG_TEST_RESOURCES = os.path.join(TEST_FOLDER, 'resources', 'kegg')
@@ -17,17 +29,6 @@ WP706 = os.path.join(WP_TEST_RESOURCES, 'WP706.ttl')
 WP1871 = os.path.join(WP_TEST_RESOURCES, 'WP1871.ttl')
 WP2799 = os.path.join(WP_TEST_RESOURCES, 'WP2799.ttl')
 WP2359 = os.path.join(WP_TEST_RESOURCES, 'WP2359_mod.ttl')
-
-from pathme.kegg.convert_to_bel import kegg_to_bel
-from pathme.kegg.kegg_xml_parser import *
-from pybel import BELGraph
-from bio2bel.testing import TemporaryConnectionMixin
-from bio2bel_hgnc import Manager as HgncManager
-from bio2bel_chebi import Manager as ChebiManager
-from bio2bel_kegg.manager import Manager
-import tempfile
-
-log = logging.getLogger(__name__)
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 resources_path = os.path.join(dir_path, 'resources')

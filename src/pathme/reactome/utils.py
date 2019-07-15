@@ -1,31 +1,37 @@
 # -*- coding: utf-8 -*-
 
-"""This module has utilities method for parsing, handling wikipathways RDF and data."""
+"""This module has utilities method for parsing, handling WikiPathways RDF and data."""
 
 import logging
 import tarfile
-from typing import List
+from typing import List, Tuple
 
+from bio2bel_chebi import Manager as ChebiManager
+from bio2bel_hgnc import Manager as HgncManager
+from bio2bel_hgnc.models import HumanGene
 from pybel.dsl import protein
 
 from pathme.utils import parse_id_uri
-from ..constants import HGNC, UNKNOWN, UNIPROT, ENSEMBL
+from ..constants import ENSEMBL, HGNC, UNIPROT, UNKNOWN
 
 log = logging.getLogger(__name__)
 
 """Download utilities"""
 
 
-def get_hgnc_node_info(gene):
+def get_hgnc_node_info(gene: HumanGene) -> Tuple[str, str, str]:
     """Return HGNC identifier, symbol and namespace from HGNC entry.
 
     :param bio2bel_hgnc.manager.models.HGNC gene:
-    :rtype: tuple[str,str,str]
     """
-    return gene.identifier, gene.symbol, HGNC
+    return str(gene.identifier), gene.symbol, HGNC
 
 
-def get_valid_node_parameters(node, hgnc_manager, chebi_manager):
+def get_valid_node_parameters(
+        node,
+        hgnc_manager: HgncManager,
+        chebi_manager: ChebiManager,
+) -> Tuple[str, str, str]:
     namespace = None
 
     if 'uri_id' in node:
@@ -106,22 +112,17 @@ def process_multiple_proteins(hgnc_entries: List) -> List:
     :param hgnc_entries: Results from query
     :return: List of Protein BEL nodes
     """
-    protein_group = list()
-
-    for hgnc_entry in hgnc_entries:
-        protein_group.append(
-            protein(namespace='HGNC', name=hgnc_entry.symbol, identifier=hgnc_entry.id)
-        )
-
-    return protein_group
+    return [
+        protein(namespace='HGNC', name=hgnc_entry.symbol, identifier=hgnc_entry.id)
+        for hgnc_entry in hgnc_entries
+    ]
 
 
-def untar_file(file_path, export_folder):
+def untar_file(file_path: str, export_folder: str) -> None:
     """Unzip file into a destination folder.
 
-    :param str file_path: name of the file
-    :param str export_folder: name of the file
-
+    :param file_path: name of the file
+    :param export_folder: name of the file
     """
     tar_ref = tarfile.open(file_path, 'r:bz2')
     tar_ref.extractall(export_folder)

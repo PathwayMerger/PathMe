@@ -9,11 +9,11 @@ from bio2bel_hgnc import Manager as HgncManager
 from bio2bel_kegg.manager import Manager
 from pybel import BELGraph
 from pybel_tools.summary.edge_summary import count_relations
+from tests.constants import WP1871, WP22, WP2359, WP2799, WP706
 
 from pathme.kegg.kegg_xml_parser import *
 from pathme.utils import parse_rdf
-from pathme.wikipathways.rdf_sparql import wikipathways_to_bel, _get_nodes, _get_interactions
-from tests.constants import WP22, WP2359, WP706, WP1871, WP2799
+from pathme.wikipathways.rdf_sparql import _get_interactions, _get_nodes, wikipathways_to_bel
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 resources_path = os.path.join(dir_path, 'resources')
@@ -26,10 +26,7 @@ class WikipathwaysTest(TemporaryConnectionMixin):
 
     @classmethod
     def setUpClass(cls):
-        """Create temporary file"""
-
-        """Create temporary file"""
-
+        """Create a temporary file."""
         cls.fd, cls.path = tempfile.mkstemp()
         cls.connection = 'sqlite:///' + cls.path
 
