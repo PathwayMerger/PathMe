@@ -76,13 +76,15 @@ def bel(flatten, export_folder, debug):
     hgnc_manager = HgncManager()
 
     if not hgnc_manager.is_populated():
-        raise EnvironmentError('Your HGNC database is not populated. Please run python3 -m bio2bel_hgnc populate')
+        click.echo('bio2bel_hgnc was not populated. Populating now.')
+        hgnc_manager.populate()
 
     logger.info('Initiating ChEBI Manager')
     chebi_manager = ChebiManager()
 
     if not chebi_manager.is_populated():
-        raise EnvironmentError('Your CHEBI database is not populated. Please run python3 -m bio2bel_chebi populate')
+        click.echo('bio2bel_chebi was not populated. Populating now.')
+        chebi_manager.populate()
 
     if flatten:
         logger.info('Flattening mode activated')
@@ -158,7 +160,8 @@ def bel(connection: str, resource_folder: str, export_folder: str, debug: bool, 
     hgnc_manager = HgncManager()
 
     if not hgnc_manager.is_populated():
-        raise EnvironmentError('Your HGNC database is not populated. Please run python3 -m bio2bel_hgnc populate')
+        click.echo('bio2bel_hgnc was not populated. Populating now.')
+        hgnc_manager.populate()
 
     t = time.time()
 
@@ -258,7 +261,8 @@ def bel(verbose):
     chebi_manager = ChebiManager()
 
     if not hgnc_manager.is_populated():
-        raise EnvironmentError('Your HGNC database is not populated. Please run python3 -m bio2bel_hgnc populate')
+        click.echo('bio2bel_hgnc was not populated. Populating now.')
+        hgnc_manager.populate()
 
     resource_file = os.path.join(REACTOME_FILES, 'Homo_sapiens.owl')
 
@@ -304,7 +308,6 @@ def statistics(connection, verbose, only_canonical, export):
 
     if export:
         df = statistics_to_df(all_pathways_statistics)
-
         df.to_excel(os.path.join(DATA_DIR, 'reactome_statistics.xlsx'))
         df.to_csv(os.path.join(DATA_DIR, 'reactome_statistics.csv'))
 
