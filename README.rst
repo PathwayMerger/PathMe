@@ -24,13 +24,13 @@ Installation |pypi_version| |python_versions| |pypi_license|
 
 .. code-block:: sh
 
-    $ python3 -m pip install git+https://github.com/ComPath/PathMe.git@master
+    $ python3 -m pip install git+https://github.com/PathwayMerger/PathMe.git
 
 2. or in editable mode with:
 
 .. code-block:: sh
 
-    $ git clone https://github.com/ComPath/PathMe.git
+    $ git clone https://github.com/PathwayMerger/PathMe.git
     $ cd pathme
     $ python3 -m pip install -e .
 
