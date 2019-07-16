@@ -3,22 +3,22 @@
 """This module contains the methods to convert a WikiPathways RDF network into a BELGraph."""
 
 import logging
-from typing import Dict
+from typing import Dict, Iterable, Mapping, Optional, Tuple, Any
 
+import pybel
 from bio2bel_hgnc import Manager
 from pybel import BELGraph
-from pybel.constants import REGULATES
-from pybel.dsl import BaseEntity, abundance, activity, bioprocess, complex_abundance, gene, protein, reaction, rna
-
+from pybel.dsl import BaseEntity, abundance, activity, bioprocess, complex_abundance, gene, protein, rna
+from typing import Collection
 from .utils import check_multiple, evaluate_wikipathways_metadata, get_valid_gene_identifier
-from ..constants import HGNC, ACTIVITY_ALLOWED_MODIFIERS
+from ..constants import ACTIVITY_ALLOWED_MODIFIERS, HGNC
 from ..utils import add_bel_metadata, parse_id_uri
-
-log = logging.getLogger(__name__)
 
 __all__ = [
     'convert_to_bel',
 ]
+
+log = logging.getLogger(__name__)
 
 
 def _check_empty_complex(complex: Dict[str, Dict], nodes: Dict[str, BaseEntity]):
@@ -124,19 +124,19 @@ def complexes_to_bel(
 ) -> Dict[str, BaseEntity]:
     """Convert node to BEL."""
     return {
-        complex_id: complex_to_bel(complex, nodes, graph)
-        for complex_id, complex in complexes.items()
-        if _check_empty_complex(complex, nodes)
+        complex_id: complex_to_bel(complex_dict, nodes, graph)
+        for complex_id, complex_dict in complexes.items()
+        if _check_empty_complex(complex_dict, nodes)
     }
 
 
 def complex_to_bel(complex, nodes, graph: BELGraph):
     """Convert complex abundance to BEL."""
-    members = {
+    members = list({
         nodes[member_id]
         for member_id in complex['participants']
         if member_id in nodes
-    }
+    })
 
     _, _, _, identifier = parse_id_uri(complex['uri_id'])
 
@@ -146,7 +146,11 @@ def complex_to_bel(complex, nodes, graph: BELGraph):
     return complex_bel_node
 
 
-def get_reaction_node(participants, nodes, interactions):
+def get_reaction_node(
+        participants: Iterable[Tuple[str, str]],
+        nodes,
+        interactions,
+) -> pybel.dsl.Reaction:
     reactants = set()
     products = set()
 
@@ -154,15 +158,23 @@ def get_reaction_node(participants, nodes, interactions):
         source = get_node(source, nodes, interactions)
         if source:
             reactants.add(source)
+        else:
+            logging.debug(f'Could not find source for reaction: {source}')
 
         target = get_node(target, nodes, interactions)
         if target:
             products.add(target)
+        else:
+            logging.debug(f'Could not find target for reaction: {target}')
 
-    return reaction(reactants=reactants, products=products)
+    return pybel.dsl.Reaction(reactants=reactants, products=products)
 
 
-def get_node(node, nodes, interactions):
+def get_node(
+        node: str,
+        nodes: Mapping[str, BaseEntity],
+        interactions: Mapping[str, Any],
+) -> Optional[BaseEntity]:
     if node in nodes:
         return nodes[node]
 
@@ -190,9 +202,13 @@ def add_edges(graph: BELGraph, participants, nodes, interactions: Dict, att: Dic
 
             if u and v:
                 add_simple_edge(graph, u, v, edge_types, uri_id)
+            if u is None:
+                log.debug(f'Source is none: {source}')
+            if v is None:
+                log.debug(f'Target is none: {target}')
 
 
-def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
+def add_simple_edge(graph: BELGraph, u: BaseEntity, v: BaseEntity, edge_types, uri_id):
     """Add simple edge to graph.
 
     :param graph: BEL Graph
@@ -226,9 +242,8 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types, uri_id):
         )
 
     elif 'DirectedInteraction' in edge_types:
-        graph.add_qualified_edge(
+        graph.add_regulates(
             u, v,
-            relation=REGULATES,
             citation=uri_id,
             evidence='Extracted from WikiPathways',
             annotations={
