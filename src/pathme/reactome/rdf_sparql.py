@@ -8,14 +8,13 @@ from collections import defaultdict
 from typing import Any, Dict, List, Set, Tuple, Union
 
 import rdflib
-import tqdm
-from pybel import to_pickle
-from rdflib import URIRef
-from rdflib.namespace import DC, DCTERMS, Namespace, OWL, RDF, RDFS, SKOS, XSD
-
 from pathme.constants import REACTOME_BEL
 from pathme.reactome.convert_to_bel import convert_to_bel
 from pathme.utils import get_pathway_statitics, parse_rdf, query_result_to_dict
+from pybel import to_pickle
+from rdflib import URIRef
+from rdflib.namespace import DC, DCTERMS, Namespace, OWL, RDF, RDFS, SKOS, XSD
+from tqdm import tqdm
 
 log = logging.getLogger(__name__)
 
@@ -275,7 +274,7 @@ def get_reactome_statistics(resource_file, hgnc_manager, chebi_manager):
 
     global_statistics = defaultdict(lambda: defaultdict(int))
 
-    for pathway_uri, pathway_title in tqdm.tqdm(spaqrl_all_pathways, desc='Generating Reactome Statistics'):
+    for pathway_uri, pathway_title in tqdm(spaqrl_all_pathways, desc='Generating Reactome Statistics'):
         nodes, edges = _get_pathway_components(pathway_uri, rdf_graph)
         pathway_metadata = _get_pathway_metadata(pathway_uri, rdf_graph)
 
@@ -321,7 +320,7 @@ def reactome_to_bel(resource_file, hgnc_manager, chebi_manager, export_folder=RE
 
     pathways_uris_to_names = rdf_graph.query(GET_ALL_PATHWAYS, initNs=PREFIXES)
 
-    for pathway_uri, pathway_name in tqdm.tqdm(pathways_uris_to_names, desc='Creating Reactome BELGraphs'):
+    for pathway_uri, pathway_name in tqdm(pathways_uris_to_names, desc=f'Exporting Reactome BEL to {export_folder}'):
 
         # Take the identifier of the pathway which is placed at the end of the URL and also strip the number
         # next to it. (probably version of pathway)

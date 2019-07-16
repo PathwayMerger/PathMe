@@ -684,7 +684,7 @@ def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager
     if export_folder is None:
         export_folder = resource_folder
 
-    for kgml_file in tqdm.tqdm(resource_files, desc='Exporting KEGG to BEL'):
+    for kgml_file in tqdm.tqdm(resource_files, desc=f'Exporting KEGG to BEL in {export_folder}'):
 
         # Name of file created will be: "hsaXXX_unflatten.pickle" or "hsaXXX_flatten.pickle"
         pickle_path = os.path.join(

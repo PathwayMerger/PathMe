@@ -2,21 +2,21 @@
 
 """This module contains the methods that run SPARQL queries to create the WikiPathways Graphs."""
 
+import logging
 import os
 from collections import defaultdict
-from typing import Dict, Tuple, Iterable
+from typing import Dict, Iterable, Tuple
 
 import bio2bel_hgnc
+import rdflib
 import tqdm
-from pybel import BELGraph, to_pickle
-from rdflib.namespace import DC, DCTERMS, Namespace, RDF, RDFS
-
-from pathme.constants import WIKIPATHWAYS_BEL
 from pathme.utils import get_pathway_statitics, parse_rdf, query_result_to_dict
 from pathme.wikipathways.convert_to_bel import convert_to_bel
 from pathme.wikipathways.utils import debug_pathway_info
+from pybel import BELGraph, to_pickle
+from rdflib.namespace import DC, DCTERMS, Namespace, RDF, RDFS
 
-"""SPARQL string queries"""
+logger = logging.getLogger(__name__)
 
 #: SPARQL prefixes.
 PREFIXES = {
@@ -33,39 +33,39 @@ PREFIXES = {
     'chemspider': Namespace('http://identifiers.org/chemspider/'),
     'pubchem': Namespace('http://rdf.ncbi.nlm.nih.gov/pubchem/compound/'),
     'wikidata': Namespace('http://www.wikidata.org/entity/'),
-    'hmdb': Namespace('http://identifiers.org/hmdb/')
+    'hmdb': Namespace('http://identifiers.org/hmdb/'),
 }
 
 #: SPARQL query to get all the subtypes for a specific primary {type} (DataNode or Interaction) in a pathway network.
 GET_ENTRIES_SUBTYPES_SPARQL = """
-    SELECT DISTINCT ?uri_id ?uri_type
-    WHERE {{
-       ?pathway a wp:Pathway .
-       ?uri_id dcterms:isPartOf ?pathway .
-       ?uri_id a wp:{rdf_type} .
-       ?uri_id rdf:type ?uri_type .
-    }}
-    """
+SELECT DISTINCT ?uri_id ?uri_type
+WHERE {{
+   ?pathway a wp:Pathway .
+   ?uri_id dcterms:isPartOf ?pathway .
+   ?uri_id a wp:{rdf_type} .
+   ?uri_id rdf:type ?uri_type .
+}}
+"""
 
 #: SPARQL query to get all data nodes in a pathway network with some arguments.
 GET_ALL_DATA_NODES_SPARQL = """
 SELECT DISTINCT 
-?uri_id
-?name
-(STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types)
-(?uri_id AS ?identifier)
-(?dc_identifier AS ?identifier)
-(STRAFTER(STR(?ncbigene_uri), str(ncbigene:)) AS ?identifier)
-(STRAFTER(STR(?chebi_uri), str(chebi:)) AS ?identifier)
-(STRAFTER(STR(?hgnc_uri), str(hgnc:)) AS ?bdb_hgncsymbol)
-(STRAFTER(STR(?ensembl_uri), str(ensembl:)) AS ?bdb_ensembl)
-(STRAFTER(STR(?ncbigene_uri), str(ncbigene:)) AS ?bdb_ncbigene)
-(STRAFTER(STR(?uniprot_uri), str(uniprot:)) AS ?bdb_uniprot)
-(STRAFTER(STR(?chebi_uri), str(chebi:)) AS ?bdb_chebi)
-(STRAFTER(STR(?chemspider_uri), str(chemspider:)) AS ?bdb_chemspider)
-(STRAFTER(STR(?pubchem_uri), str(pubchem:)) AS ?bdb_pubchem)
-(STRAFTER(STR(?wikidata_uri), str(wikidata:)) AS ?bdb_wikidata)
-(STRAFTER(STR(?hmdb_uri), str(hmdb:)) AS ?bdb_hmdb)
+    ?uri_id
+    ?name
+    (STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types)
+    (?uri_id AS ?identifier)
+    (?dc_identifier AS ?identifier)
+    (STRAFTER(STR(?ncbigene_uri), str(ncbigene:)) AS ?identifier)
+    (STRAFTER(STR(?chebi_uri), str(chebi:)) AS ?identifier)
+    (STRAFTER(STR(?hgnc_uri), str(hgnc:)) AS ?bdb_hgncsymbol)
+    (STRAFTER(STR(?ensembl_uri), str(ensembl:)) AS ?bdb_ensembl)
+    (STRAFTER(STR(?ncbigene_uri), str(ncbigene:)) AS ?bdb_ncbigene)
+    (STRAFTER(STR(?uniprot_uri), str(uniprot:)) AS ?bdb_uniprot)
+    (STRAFTER(STR(?chebi_uri), str(chebi:)) AS ?bdb_chebi)
+    (STRAFTER(STR(?chemspider_uri), str(chemspider:)) AS ?bdb_chemspider)
+    (STRAFTER(STR(?pubchem_uri), str(pubchem:)) AS ?bdb_pubchem)
+    (STRAFTER(STR(?wikidata_uri), str(wikidata:)) AS ?bdb_wikidata)
+    (STRAFTER(STR(?hmdb_uri), str(hmdb:)) AS ?bdb_hmdb)
 WHERE {
    ?pathway a wp:Pathway .
    ?uri_id dcterms:isPartOf ?pathway .
@@ -151,10 +151,10 @@ WHERE {
 """Queries managers"""
 
 
-def _get_pathway_metadata(rdf_graph) -> Dict[str, Dict[str, Dict[str, str]]]:
+def _get_pathway_metadata(rdf_graph: rdflib.Graph) -> Dict[str, Dict[str, Dict[str, str]]]:
     """Get information from a pathway network.
 
-    :param rdflib.Graph rdf_graph: RDF graph object
+    :param rdf_graph: RDF graph object
     :returns: Metadata of a pathway as a dictionary, if empty 'unknown' will be assigned by default
     """
     return query_result_to_dict(
@@ -164,10 +164,10 @@ def _get_pathway_metadata(rdf_graph) -> Dict[str, Dict[str, Dict[str, str]]]:
     )
 
 
-def _get_nodes(rdf_graph) -> Dict[str, Dict[str, Dict[str, str]]]:
+def _get_nodes(rdf_graph: rdflib.Graph) -> Dict[str, Dict[str, Dict[str, str]]]:
     """Get all nodes from a RDF pathway network.
 
-    :param rdflib.Graph rdf_graph: RDF graph object
+    :param rdf_graph: RDF graph object
     :returns: Nodes dict with nodes ids as keys and their metadata as values
     """
     return query_result_to_dict(
@@ -176,10 +176,10 @@ def _get_nodes(rdf_graph) -> Dict[str, Dict[str, Dict[str, str]]]:
     )
 
 
-def _get_complexes(rdf_graph) -> Dict[str, Dict[str, Dict[str, str]]]:
+def _get_complexes(rdf_graph: rdflib.Graph) -> Dict[str, Dict[str, Dict[str, str]]]:
     """Get all complexes from a pathway RDF network.
 
-    :param rdflib.Graph rdf_graph: RDF graph object
+    :param rdf_graph: RDF graph object
     :returns: Nodes dict with nodes ids as keys and their metadata as values
     """
     return query_result_to_dict(
@@ -187,10 +187,10 @@ def _get_complexes(rdf_graph) -> Dict[str, Dict[str, Dict[str, str]]]:
     )
 
 
-def _get_interactions(rdf_graph) -> Dict[str, Dict]:
+def _get_interactions(rdf_graph: rdflib.Graph) -> Dict[str, Dict]:
     """Get all interactions from a RDF pathway network.
 
-    :param rdflib.Graph rdf_graph: RDF graph object
+    :param rdf_graph: RDF graph object
     :returns: Interactions as a list of dictionaries, where the participants are in an entry and the interaction metadata in other
     """
     return query_result_to_dict(
@@ -254,7 +254,7 @@ def get_wp_statistics(resource_files, resource_folder, hgnc_manager) -> Tuple[
 """Conversion functions"""
 
 
-def rdf_wikipathways_to_bel(rdf_graph, hgnc_manager) -> BELGraph:
+def rdf_wikipathways_to_bel(rdf_graph: rdflib.Graph, hgnc_manager) -> BELGraph:
     """Convert RDF graph to BELGraph.
 
     :param rdf_graph: RDF graph
@@ -265,7 +265,7 @@ def rdf_wikipathways_to_bel(rdf_graph, hgnc_manager) -> BELGraph:
     return convert_to_bel(nodes, complexes, interactions, metadata, hgnc_manager)
 
 
-def wikipathways_to_bel(file_path, hgnc_manager):
+def wikipathways_to_bel(file_path: str, hgnc_manager):
     """Convert WikiPathways RDF file to BEL.
 
     :param str file_path: path to the file
@@ -289,7 +289,7 @@ def wikipathways_to_pickles(
     :param hgnc_manager: HGNC manager
     :param export_folder: export folder
     """
-    for rdf_file in tqdm.tqdm(resource_files, desc='Exporting WikiPathways to BEL'):
+    for rdf_file in tqdm.tqdm(resource_files, desc=f'Exporting WikiPathways to BEL in {export_folder}'):
         pickle_path = os.path.join(export_folder, '{}.pickle'.format(rdf_file.strip('.ttl')))
 
         # Skip if BEL file already exists

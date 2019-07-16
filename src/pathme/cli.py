@@ -14,8 +14,8 @@ from pybel.struct.summary import count_functions
 import pathme.kegg.cli
 import pathme.reactome.cli
 import pathme.wikipathways.cli
-from pathme.constants import KEGG_BEL, REACTOME_BEL, SPIA_DIR, UNIVERSE_DIR, WIKIPATHWAYS_BEL
-from pathme.export_utils import get_universe_graph, spia_export_helper
+from .constants import KEGG_BEL, REACTOME_BEL, SPIA_DIR, UNIVERSE_DIR, WIKIPATHWAYS_BEL
+from .export_utils import get_universe_graph, spia_export_helper
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,12 @@ def export():
 def spia(kegg_path, reactome_path, wikipathways_path, output):
     """Export BEL Pickles to SPIA Excel."""
     click.echo(f'Results will be exported to {output}')
-    spia_export_helper(kegg_path, reactome_path, wikipathways_path, output)
+    spia_export_helper(
+        kegg_path=kegg_path,
+        reactome_path=reactome_path,
+        wikipathways_path=wikipathways_path,
+        output=output,
+    )
 
 
 @export.command()
@@ -73,9 +78,9 @@ def universe(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no
 
     # Not explode will flip the boolean coming from the cli
     universe_graph = get_universe_graph(
-        kegg_path,
-        reactome_path,
-        wikipathways_path,
+        kegg_path=kegg_path,
+        reactome_path=reactome_path,
+        wikipathways_path=wikipathways_path,
         flatten=flatten,
         normalize_names=normalize_names,
     )
