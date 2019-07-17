@@ -4,5 +4,3 @@ PathMe commands.
 
 .. click:: pathme.cli:main
    :prog: pathme
-   :show-nested:
-
