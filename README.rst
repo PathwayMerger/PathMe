@@ -25,7 +25,7 @@ Installation |pypi_version| |python_versions| |pypi_license|
 .. code-block:: sh
 
     $ python3 -m pip install pathme
-    
+
 To use the latest version install directly from GitHub:
 
 .. code-block:: sh
