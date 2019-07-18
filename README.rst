@@ -20,7 +20,13 @@ If you use PathMe in your work, please consider citing:
 
 Installation |pypi_version| |python_versions| |pypi_license|
 ------------------------------------------------------------
-1. ``pathme`` can be installed with the following commands:
+``pathme`` can be directly installed from PyPi with pip:
+
+.. code-block:: sh
+
+    $ python3 -m pip install pathme
+    
+To use the latest version install directly from GitHub:
 
 .. code-block:: sh
 
