@@ -108,7 +108,7 @@ WIKIPATHWAYS_REACTOME_MAPPINGS = 'https://github.com/ComPath/curation/raw/master
 
 KEGG_KGML_URL = 'http://rest.kegg.jp/get/{}/kgml'
 RDF_REACTOME = 'ftp://ftp.ebi.ac.uk/pub/databases/RDF/reactome/r67/reactome-biopax.tar.bz2'
-RDF_WIKIPATHWAYS = 'http://data.wikipathways.org/20190610/rdf/wikipathways-20190610-rdf-wp.zip'
+RDF_WIKIPATHWAYS = 'http://data.wikipathways.org/20190910/rdf/wikipathways-20190910-rdf-wp.zip'
 
 KEGG_STATS_COLUMN_NAMES = {
     'nodes': 'BEL Nodes',
