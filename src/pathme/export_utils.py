@@ -10,9 +10,6 @@ import networkx as nx
 import pybel
 from bio2bel_reactome import Manager as ReactomeManager
 from bio2bel_reactome.models import Pathway
-from pathme.constants import KEGG, PATHME_DIR, REACTOME, WIKIPATHWAYS
-from pathme.normalize_names import normalize_graph_names
-from pathme.pybel_utils import flatten_complex_nodes
 from pybel import BELGraph, from_pickle, union
 from pybel.constants import ANNOTATIONS, RELATION
 from pybel.struct import add_annotation_value
@@ -20,6 +17,9 @@ from pybel.struct.mutation import collapse_all_variants, collapse_to_genes
 from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
 from tqdm import tqdm
 
+from pathme.constants import KEGG, PATHME_DIR, REACTOME, WIKIPATHWAYS
+from pathme.normalize_names import normalize_graph_names
+from pathme.pybel_utils import flatten_complex_nodes
 from .constants import KEGG_BEL, REACTOME_BEL, WIKIPATHWAYS_BEL
 
 logger = logging.getLogger(__name__)
@@ -33,10 +33,10 @@ def add_annotation_key(graph: BELGraph):
 
 
 def get_all_pickles(
-        *,
-        kegg_path: Optional[str] = None,
-        reactome_path: Optional[str] = None,
-        wikipathways_path: Optional[str] = None,
+    *,
+    kegg_path: Optional[str] = None,
+    reactome_path: Optional[str] = None,
+    wikipathways_path: Optional[str] = None,
 ) -> Tuple[List[str], List[str], List[str]]:
     """Return a list with all pickle paths."""
     kegg_pickles = get_paths_in_folder(kegg_path or KEGG_BEL)
@@ -55,12 +55,12 @@ def get_all_pickles(
 
 
 def get_universe_graph(
-        *,
-        kegg_path: str = KEGG_BEL,
-        reactome_path: str = REACTOME_BEL,
-        wikipathways_path: str = WIKIPATHWAYS_BEL,
-        flatten: bool = True,
-        normalize_names: bool = True,
+    *,
+    kegg_path: Optional[str] = None,
+    reactome_path: Optional[str] = None,
+    wikipathways_path: Optional[str] = None,
+    flatten: bool = True,
+    normalize_names: bool = True,
 ) -> BELGraph:
     """Return universe graph."""
     universe_graphs = iterate_universe_graphs(
@@ -70,16 +70,18 @@ def get_universe_graph(
         flatten=flatten,
         normalize_names=normalize_names
     )
+    # Just keep the graph and not the source
+    universe_graphs = (graph for _, _, graph in universe_graphs)
     logger.info('Merging all into a hairball...')
     return union(universe_graphs)
 
 
 def spia_export_helper(
-        *,
-        output: str,
-        kegg_path: Optional[str] = None,
-        reactome_path: Optional[str] = None,
-        wikipathways_path: Optional[str] = None,
+    *,
+    output: str,
+    kegg_path: Optional[str] = None,
+    reactome_path: Optional[str] = None,
+    wikipathways_path: Optional[str] = None,
 ) -> None:
     """Export PathMe pickles to SPIA excel like file.
 
@@ -94,11 +96,11 @@ def spia_export_helper(
         wikipathways_path=wikipathways_path,
     )
 
-    all_pickles = kegg_pickles + reactome_pickles + wp_pickles
+    paths = kegg_pickles + reactome_pickles + wp_pickles
 
-    logger.info(f'A total of {len(all_pickles)} will be exported')
+    logger.info(f'A total of {len(paths)} will be exported')
 
-    iterator = tqdm(all_pickles, desc='Exporting SPIA excel files')
+    paths = tqdm(paths, desc='Exporting SPIA excel files')
 
     # Call Reactome manager and check that is populated
     reactome_manager = ReactomeManager()
@@ -106,20 +108,20 @@ def spia_export_helper(
         logger.warning('Reactome Manager is not populated')
 
     # Load each pickle and export it as excel file
-    for file in iterator:
-        if not file.endswith('.pickle'):
+    for path in paths:
+        if not path.endswith('.pickle'):
             continue
 
-        if file in kegg_pickles:
-            pathway_graph = from_pickle(os.path.join(kegg_path, file))
+        if path in kegg_pickles:
+            pathway_graph = from_pickle(os.path.join(kegg_path, path))
             normalize_graph_names(pathway_graph, KEGG)
 
-        elif file in reactome_pickles:
+        elif path in reactome_pickles:
             # Load BELGraph
-            pathway_graph = from_pickle(os.path.join(reactome_path, file))
+            pathway_graph = from_pickle(os.path.join(reactome_path, path))
 
             # Check if pathway has children to build the merge graph
-            pathway_id = file.strip('.pickle')
+            pathway_id = path.strip('.pickle')
 
             # Look up in Bio2BEL Reactome
             pathway = reactome_manager.get_pathway_by_id(pathway_id)
@@ -143,12 +145,12 @@ def spia_export_helper(
             # Normalize graph names
             normalize_graph_names(pathway_graph, REACTOME)
 
-        elif file in wp_pickles:
-            pathway_graph = from_pickle(os.path.join(wikipathways_path, file))
+        elif path in wp_pickles:
+            pathway_graph = from_pickle(os.path.join(wikipathways_path, path))
             normalize_graph_names(pathway_graph, WIKIPATHWAYS)
 
         else:
-            logger.warning(f'Unknown pickle file: {file}')
+            logger.warning(f'Unknown pickle file: {path}')
             continue
 
         # Explode complex nodes
@@ -160,7 +162,7 @@ def spia_export_helper(
 
         spia_matrices = bel_to_spia_matrices(pathway_graph)
 
-        output_file = os.path.join(output, f"{file.strip('.pickle')}.xlsx")
+        output_file = os.path.join(output, f"{path.strip('.pickle')}.xlsx")
 
         if os.path.isfile(output_file):
             continue
@@ -171,32 +173,39 @@ def spia_export_helper(
 
 def iterate_indra_statements(**kwargs) -> Iterable['indra.statements.Statement']:
     """Iterate over INDRA statements for the universe."""
-    for graph in iterate_universe_graphs(**kwargs):
+    for _, _, graph in iterate_universe_graphs(**kwargs):
         yield from pybel.to_indra_statements(graph)
 
 
 def iterate_universe_graphs(
-        *,
-        kegg_path: Optional[str] = None,
-        reactome_path: Optional[str] = None,
-        wikipathways_path: Optional[str] = None,
-        flatten: bool = True,
-        normalize_names: bool = True,
-) -> Iterable[BELGraph]:
+    *,
+    kegg_path: Optional[str] = None,
+    reactome_path: Optional[str] = None,
+    wikipathways_path: Optional[str] = None,
+    flatten: bool = True,
+    normalize_names: bool = True,
+) -> Iterable[Tuple[str, str, BELGraph]]:
     """Return universe graph."""
-    kegg_pickles, reactome_pickles, wp_pickles = get_all_pickles(
+    kegg_pickle_paths, reactome_pickle_paths, wp_pickle_paths = get_all_pickles(
         kegg_path=kegg_path,
         reactome_path=reactome_path,
         wikipathways_path=wikipathways_path,
     )
 
-    logger.info(f'{len(kegg_pickles) + len(reactome_pickles) + len(wp_pickles)} graphs will be put inthe  universe')
+    n_paths = len(kegg_pickle_paths) + len(reactome_pickle_paths) + len(wp_pickle_paths)
+    logger.info(f'{n_paths} graphs will be put in the universe')
 
-    for file in tqdm(wp_pickles, desc=f'Loading WP pickles from {wikipathways_path}'):
-        if not file.endswith('.pickle'):
+    yield from _iterate_wp(wp_pickle_paths, wikipathways_path, flatten, normalize_names)
+    yield from _iterate_kegg(kegg_pickle_paths, kegg_path, flatten, normalize_names)
+    yield from _iterate_reactome(reactome_pickle_paths, reactome_path, flatten, normalize_names)
+
+
+def _iterate_wp(wp_pickle_paths, wikipathways_path, flatten, normalize_names):
+    for path in tqdm(wp_pickle_paths, desc=f'Loading WP pickles from {wikipathways_path}'):
+        if not path.endswith('.pickle'):
             continue
 
-        graph = from_pickle(os.path.join(wikipathways_path, file), check_version=False)
+        graph = from_pickle(os.path.join(wikipathways_path, path), check_version=False)
 
         if flatten:
             flatten_complex_nodes(graph)
@@ -204,13 +213,15 @@ def iterate_universe_graphs(
         if normalize_names:
             normalize_graph_names(graph, WIKIPATHWAYS)
 
-        _update_graph(graph, file, WIKIPATHWAYS)
-        yield graph
+        _update_graph(graph, path, WIKIPATHWAYS)
+        yield WIKIPATHWAYS, path, graph
 
-    for file in tqdm(kegg_pickles, desc=f'Loading KEGG pickles from {kegg_path}'):
-        if not file.endswith('.pickle'):
+
+def _iterate_kegg(kegg_pickle_paths, kegg_path, flatten, normalize_names):
+    for path in tqdm(kegg_pickle_paths, desc=f'Loading KEGG pickles from {kegg_path}'):
+        if not path.endswith('.pickle'):
             continue
-        graph = from_pickle(os.path.join(kegg_path, file), check_version=False)
+        graph = from_pickle(os.path.join(kegg_path, path), check_version=False)
 
         if flatten:
             flatten_complex_nodes(graph)
@@ -218,10 +229,12 @@ def iterate_universe_graphs(
         if normalize_names:
             normalize_graph_names(graph, KEGG)
 
-        _update_graph(graph, file, KEGG)
-        yield graph
+        _update_graph(graph, path, KEGG)
+        yield KEGG, path, graph
 
-    for file in tqdm(reactome_pickles, desc=f'Loading Reactome pickles from {reactome_path}'):
+
+def _iterate_reactome(reactome_pickle_paths, reactome_path, flatten, normalize_names):
+    for file in tqdm(reactome_pickle_paths, desc=f'Loading Reactome pickles from {reactome_path}'):
         if not file.endswith('.pickle'):
             continue
 
@@ -234,7 +247,7 @@ def iterate_universe_graphs(
             normalize_graph_names(graph, REACTOME)
 
         _update_graph(graph, file, REACTOME)
-        yield graph
+        yield REACTOME,path, graph
 
 
 def _update_graph(graph, file, database):

@@ -4,6 +4,7 @@
 
 import logging
 import os
+import sys
 
 import click
 import networkx as nx
@@ -14,8 +15,8 @@ from pybel.struct.summary import count_functions
 import pathme.kegg.cli
 import pathme.reactome.cli
 import pathme.wikipathways.cli
-from .constants import KEGG_BEL, REACTOME_BEL, SPIA_DIR, UNIVERSE_DIR, WIKIPATHWAYS_BEL
-from .export_utils import get_universe_graph, spia_export_helper
+from .constants import CX_DIR, KEGG_BEL, REACTOME_BEL, SPIA_DIR, UNIVERSE_DIR, WIKIPATHWAYS_BEL
+from .export_utils import get_universe_graph, iterate_universe_graphs, spia_export_helper
 
 logger = logging.getLogger(__name__)
 
@@ -37,10 +38,33 @@ def export():
     """Export commands."""
 
 
+kegg_path_option = click.option(
+    '-k', '--kegg-path',
+    help='KEGG BEL folder',
+    default=KEGG_BEL,
+    show_default=True,
+)
+reactome_path_option = click.option(
+    '-r', '--reactome-path',
+    help='Reactome BEL folder.',
+    default=REACTOME_BEL,
+    show_default=True,
+)
+wikipathways_path_option = click.option(
+    '-w', '--wikipathways-path',
+    help='WikiPathways BEL folder',
+    default=WIKIPATHWAYS_BEL,
+    show_default=True,
+)
+
+no_flatten = click.option('--no-flatten', is_flag=True, help='Do not flatten complex/reactions nodes')
+no_normalize_names = click.option('--no-normalize-names', is_flag=True, help='Do not normalize names')
+
+
 @export.command()
-@click.option('-k', '--kegg_path', help='KEGG BEL folder', default=KEGG_BEL, show_default=True)
-@click.option('-r', '--reactome_path', help='Reactome BEL folder.', default=REACTOME_BEL, show_default=True)
-@click.option('-w', '--wikipathways_path', help='WikiPathways BEL folder', default=WIKIPATHWAYS_BEL, show_default=True)
+@kegg_path_option
+@reactome_path_option
+@wikipathways_path_option
 @click.option('-o', '--output', help='Output directory', default=SPIA_DIR, show_default=True)
 def spia(kegg_path, reactome_path, wikipathways_path, output):
     """Export BEL Pickles to SPIA Excel."""
@@ -54,12 +78,39 @@ def spia(kegg_path, reactome_path, wikipathways_path, output):
 
 
 @export.command()
-@click.option('-k', '--kegg-path', help='KEGG BEL folder', default=KEGG_BEL, show_default=True)
-@click.option('-r', '--reactome-path', help='Reactome BEL folder.', default=REACTOME_BEL, show_default=True)
-@click.option('-w', '--wikipathways-path', help='WikiPathways BEL folder', default=WIKIPATHWAYS_BEL, show_default=True)
+@kegg_path_option
+@reactome_path_option
+@wikipathways_path_option
+@click.option('-o', '--output', help='Output directory', default=CX_DIR, show_default=True)
+@no_flatten
+@no_normalize_names
+def cx(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no_normalize_names):
+    """Export BEL Pickles to CX."""
+    try:
+        from pybel_cx import to_cx_file
+    except ImportError:
+        click.secho('Could not import pybel_cx. Use pip install pybel-cx.')
+        sys.exit(1)
+
+    click.echo(f'Results will be exported to {output}')
+    for source, path, graph in iterate_universe_graphs(
+        kegg_path=kegg_path,
+        reactome_path=reactome_path,
+        wikipathways_path=wikipathways_path,
+        flatten=(not no_flatten),
+        normalize_names=(not no_normalize_names),
+    ):
+        with open(os.path.join(output, f"{path.strip('.pickle')}.cx.json"), 'w') as file:
+            to_cx_file(graph, file)
+
+
+@export.command()
+@kegg_path_option
+@reactome_path_option
+@wikipathways_path_option
 @click.option('-o', '--output', help='Output directory', default=UNIVERSE_DIR, show_default=True)
-@click.option('--no-flatten', is_flag=True, help='Do not flatten complex/reactions nodes')
-@click.option('--no-normalize-names', is_flag=True, help='Do not normalize names')
+@no_flatten
+@no_normalize_names
 def universe(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no_normalize_names):
     """Export harmonized PathMe universe."""
     logging.basicConfig(level=logging.info, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
