@@ -105,9 +105,17 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager: HgncManager, pathway_
     :return: namespace, name, identifier
     """
     # Try to get hgnc symbol
-    if 'bdb_hgncsymbol' in node_ids_dict:
-        hgnc_symbol = check_multiple(node_ids_dict['bdb_hgncsymbol'], 'bdb_hgncsymbol', pathway_id)
-        hgnc_entry = hgnc_manager.get_gene_by_hgnc_symbol(hgnc_symbol)
+    if 'bdb_hgncsymbol' in node_ids_dict or 'hgnc' in node_ids_dict['uri_id']:
+
+        if 'hgnc' in node_ids_dict['uri_id']:
+            hgnc_entry = hgnc_manager.get_gene_by_hgnc_id(node_ids_dict['identifier'])
+            if not hgnc_entry:
+                hgnc_symbol = node_ids_dict['name']
+            else:
+                hgnc_symbol = hgnc_entry.symbol
+        else:
+            hgnc_symbol = check_multiple(node_ids_dict['bdb_hgncsymbol'], 'bdb_hgncsymbol', pathway_id)
+            hgnc_entry = hgnc_manager.get_gene_by_hgnc_symbol(hgnc_symbol)
 
         return _validate_query(hgnc_manager, hgnc_entry, hgnc_symbol, HGNC)
 
