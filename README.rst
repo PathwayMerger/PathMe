@@ -23,7 +23,7 @@ Citation
 --------
 If you use PathMe in your work, please consider citing:
 
-.. [1] Domingo-Fernández, D., *et al.* (2018). `PathMe: Merging and exploring mechanistic pathway knowledge
+.. [1] Domingo-Fernández, D., *et al.* (2019). `PathMe: Merging and exploring mechanistic pathway knowledge
     <https://doi.org/10.1186/s12859-019-2863-9>`_. *BMC Bioinformatics*, 20:243.
 
 Installation |pypi_version| |python_versions| |pypi_license|
