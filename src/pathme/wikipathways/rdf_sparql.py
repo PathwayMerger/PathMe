@@ -76,12 +76,10 @@ WHERE {
    ?uri_id rdf:type ?uri_type .
 
    optional {?uri_id dcterms:identifier ?dc_identifier .}
-   
    optional {?uri_id wp:bdbHgncSymbol ?hgnc_uri .}
    optional {?uri_id wp:bdbEnsembl ?ensembl_uri .}
    optional {?uri_id wp:bdbEntrezGene ?ncbigene_uri .}
    optional {?uri_id wp:bdbUniprot ?uniprot_uri .}
-   
    optional {?uri_id wp:bdbChEBI ?chebi_uri .}
    optional {?uri_id wp:bdbChemspider ?chemspider_uri .}
    optional {?uri_id wp:bdbPubChem ?pubchem_uri .}
@@ -202,7 +200,7 @@ def _get_interactions(rdf_graph: rdflib.Graph) -> Dict[str, Dict]:
 
 
 def _get_pathway_components(graph) -> Tuple[
-    Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]]]:
+        Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]]]:
     """Get all components in data structures from a RDF pathway network.
 
     :param graph: RDF graph object
@@ -215,7 +213,7 @@ def _get_pathway_components(graph) -> Tuple[
 
 
 def get_wp_statistics(resource_files, resource_folder, hgnc_manager) -> Tuple[
-    Dict[str, Dict[str, int]], Dict[str, Dict[str, Dict[str, int]]]]:
+        Dict[str, Dict[str, int]], Dict[str, Dict[str, Dict[str, int]]]]:
     """Load WikiPathways RDF to BELGraph.
 
     :param iter[str] resource_files: RDF file path

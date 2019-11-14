@@ -12,10 +12,10 @@ import rdflib
 from pathme.constants import REACTOME_BEL
 from pathme.reactome.convert_to_bel import convert_to_bel
 from pathme.utils import get_pathway_statitics, parse_rdf, query_result_to_dict
+
 from pybel import to_pickle
 from rdflib import URIRef
 from rdflib.namespace import DC, DCTERMS, Namespace, OWL, RDF, RDFS, SKOS, XSD
-
 from tqdm import tqdm
 
 log = logging.getLogger(__name__)
@@ -232,9 +232,9 @@ def _get_pathway_components(pathway_uri: rdflib.URIRef, rdf_graph: rdflib.Graph)
         Dict[str, Dict[str, Union[str, Set[str]]]], List[Dict[str, Union[str, Set[str]]]]]:
     """Get components (nodes and interactions) for a given pathway.
 
-     :param pathway_uri: URI reference of the queried pathway
-     :param rdf_graph: RDF Reactome Universe graph object
-     :return: returns the pathway components as entities (Proteins, Complex, SmallMolecule...) and proteins (their links)
+    :param pathway_uri: URI reference of the queried pathway
+    :param rdf_graph: RDF Reactome Universe graph object
+    :return: returns the pathway components as entities (Proteins, Complex, SmallMolecule...) and proteins (their links)
     """
     interactions = {}
     nodes = {}

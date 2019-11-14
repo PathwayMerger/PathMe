@@ -7,14 +7,13 @@ from typing import Mapping, Iterable
 
 from pybel import BELGraph
 from pybel.dsl import BaseEntity
-
 from pybel_tools.node_utils import list_abundance_cartesian_expansion, reaction_cartesian_expansion
 
 logger = logging.getLogger(__name__)
 
 
 def flatten_complex_nodes(graph: BELGraph) -> None:
-    """Flatten complex nodes"""
+    """Flatten complex nodes."""
     logger.info("Flat complexes and composites")
     list_abundance_cartesian_expansion(graph)
     reaction_cartesian_expansion(graph)

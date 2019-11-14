@@ -195,7 +195,7 @@ def query_result_to_dict(entries, **kwargs) -> Dict[str, Dict[str, Dict[str, str
                 else:
                     entries_dict[id_key][label] = new_value
 
-    if len(entries_dict) == 1 and kwargs.get('id_dict') == False:
+    if len(entries_dict) == 1 and kwargs.get('id_dict') is False:
         return list(entries_dict.values())[0]
 
     elif not entries and 'attr_empty' in kwargs:
@@ -206,7 +206,7 @@ def query_result_to_dict(entries, **kwargs) -> Dict[str, Dict[str, Dict[str, str
             for attr in attr_empty
         }
 
-    if kwargs.get('ids_argument') == True:
+    if kwargs.get('ids_argument') is True:
         return entries_dict_ids_argument(entries_dict)
 
     else:
