@@ -247,7 +247,7 @@ def _iterate_reactome(reactome_pickle_paths, reactome_path, flatten, normalize_n
             normalize_graph_names(graph, REACTOME)
 
         _update_graph(graph, file, REACTOME)
-        yield REACTOME,path, graph
+        yield REACTOME, file, graph
 
 
 def _update_graph(graph, file, database):
@@ -260,7 +260,7 @@ def _update_graph(graph, file, database):
 
 def _munge_node_attribute(node, attribute='name'):
     """Munge node attribute."""
-    if node.get(attribute) == None:
+    if node.get(attribute) is None:
         return str(node)
     else:
         return node.get(attribute)
