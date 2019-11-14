@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""This module contains the methods that handle the mappings stored in ComPath resources"""
+"""This module contains the methods that handle the mappings stored in ComPath resources."""
 
 import pandas as pd
 

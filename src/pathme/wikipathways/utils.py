@@ -38,7 +38,7 @@ log = logging.getLogger(__name__)
 
 
 def evaluate_wikipathways_metadata(metadata: Union[str, Set[str]]) -> str:
-    """Evaluates metadata in wikipathways and returns the string representation."""
+    """Evaluate metadata in wikipathways and return the string representation."""
     if isinstance(metadata, set):
         return ','.join(metadata)
 

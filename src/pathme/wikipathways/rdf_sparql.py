@@ -10,9 +10,11 @@ from typing import Dict, Iterable, Tuple
 import bio2bel_hgnc
 import rdflib
 import tqdm
+
 from pathme.utils import get_pathway_statitics, parse_rdf, query_result_to_dict
 from pathme.wikipathways.convert_to_bel import convert_to_bel
 from pathme.wikipathways.utils import debug_pathway_info
+
 from pybel import BELGraph, to_pickle
 from rdflib.namespace import DC, DCTERMS, Namespace, RDF, RDFS
 
@@ -49,7 +51,7 @@ WHERE {{
 
 #: SPARQL query to get all data nodes in a pathway network with some arguments.
 GET_ALL_DATA_NODES_SPARQL = """
-SELECT DISTINCT 
+SELECT DISTINCT
     ?uri_id
     ?name
     (STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types)
@@ -92,8 +94,8 @@ WHERE {
 
 #: SPARQL query to get all data nodes in a pathway network with some arguments.
 GET_ALL_COMPLEXES_SPARQL = """
-SELECT DISTINCT 
-    ?uri_id 
+SELECT DISTINCT
+    ?uri_id
     (STRAFTER(STR(?uri_type), str(wp:)) AS ?node_types)
     (?participants_entry AS ?participants)
     (?participants_id AS ?participants)
@@ -113,15 +115,15 @@ WHERE {
 # TODO: Check interaction complexes.
 #: SPARQL query to get all directed interactions in a pathway network with source and target.
 GET_ALL_DIRECTED_INTERACTIONS_SPARQL = """
-SELECT DISTINCT 
-    (?source_entry AS ?source) 
-    (?dc_source AS ?source) 
-    (?target_entry AS ?target) 
-    (?dc_target AS ?target) 
+SELECT DISTINCT
+    (?source_entry AS ?source)
+    (?dc_source AS ?source)
+    (?target_entry AS ?target)
+    (?dc_target AS ?target)
     ?uri_id
-    (STRAFTER(STR(?uri_id), "/Interaction/") AS ?identifier) 
-    (STRAFTER(STR(?uri_type), str(wp:)) AS ?interaction_types) 
-    (STRAFTER(STR(?ncbigene_source), str(ncbigene:)) AS ?source ) 
+    (STRAFTER(STR(?uri_id), "/Interaction/") AS ?identifier)
+    (STRAFTER(STR(?uri_type), str(wp:)) AS ?interaction_types)
+    (STRAFTER(STR(?ncbigene_source), str(ncbigene:)) AS ?source )
     (STRAFTER(STR(?ncbigene_target), str(ncbigene:)) AS ?target )
 WHERE {
    ?pathway a wp:Pathway .
@@ -214,7 +216,7 @@ def _get_pathway_components(graph) -> Tuple[
 
 def get_wp_statistics(resource_files, resource_folder, hgnc_manager) -> Tuple[
     Dict[str, Dict[str, int]], Dict[str, Dict[str, Dict[str, int]]]]:
-    """Load WikiPathways RDF to BELGraph
+    """Load WikiPathways RDF to BELGraph.
 
     :param iter[str] resource_files: RDF file path
     :param str resource_folder: RDF file path

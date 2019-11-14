@@ -32,6 +32,7 @@ def get_valid_node_parameters(
         hgnc_manager: HgncManager,
         chebi_manager: ChebiManager,
 ) -> Tuple[str, str, str]:
+    """Get valid node parameters."""
     namespace = None
 
     if 'uri_id' in node:

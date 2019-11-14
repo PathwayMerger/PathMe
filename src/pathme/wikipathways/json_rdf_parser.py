@@ -343,6 +343,7 @@ def parse_entries(entries):
 
     return graph
 
+
 def convert_json(graph: rdflib.Graph):
     """Convert from rdflib importated graph object to python data structure (list of dicts of each entry).
 
@@ -353,6 +354,7 @@ def convert_json(graph: rdflib.Graph):
     json_wp_pathway = json.loads(serialized_json.decode("utf-8"))
 
     return json_wp_pathway
+
 
 def parse_pathway(pathway_path):
     """After importing the indicated pathway from text file resources into a graph rdflib object(import_pathway), calls the diferent data types transformations (convert_json function) and the first statement of the parser that will return a graph data structure (parse_entries function). This retrieved graph will be converted to a networX graph (convert_to_nx function).

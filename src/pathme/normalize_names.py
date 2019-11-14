@@ -7,9 +7,11 @@ from collections import defaultdict
 from typing import List
 
 from networkx import relabel_nodes
+
 from pathme.constants import REACTOME, WIKIPATHWAYS
 from pathme.pybel_utils import multi_relabel
 from pybel import BELGraph
+
 from pybel.dsl import Abundance, BiologicalProcess, CentralDogma, ListAbundance, Reaction, MicroRna, Protein
 
 logger = logging.getLogger(__name__)
@@ -121,7 +123,6 @@ def munge_reactome_gene(gene):
 
 def normalize_graph_names(graph: BELGraph, database: str) -> None:
     """Normalize graph names."""
-
     # Victim to Survivor (one to one node) mapping
     one_to_one_mapping = {}
     # Victim to Survivors (one to many nodes) mapping

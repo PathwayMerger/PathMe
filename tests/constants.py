@@ -45,8 +45,7 @@ class KeggTest(TemporaryConnectionMixin):
 
     @classmethod
     def setUpClass(cls):
-        """Create temporary file"""
-
+        """Create temporary file."""
         logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
         log.setLevel(logging.INFO)
 

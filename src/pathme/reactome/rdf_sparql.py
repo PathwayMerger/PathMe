@@ -8,12 +8,14 @@ from collections import defaultdict
 from typing import Any, Dict, List, Set, Tuple, Union
 
 import rdflib
+
 from pathme.constants import REACTOME_BEL
 from pathme.reactome.convert_to_bel import convert_to_bel
 from pathme.utils import get_pathway_statitics, parse_rdf, query_result_to_dict
 from pybel import to_pickle
 from rdflib import URIRef
 from rdflib.namespace import DC, DCTERMS, Namespace, OWL, RDF, RDFS, SKOS, XSD
+
 from tqdm import tqdm
 
 log = logging.getLogger(__name__)
@@ -65,10 +67,10 @@ WHERE {
 
 #: SPARQL query string to get all participants in an interaction and its controlType (ACTIVATION or INHIBITION).
 GET_INTERACTION_PARTICIPANTS_AND_TYPE = """
-SELECT DISTINCT 
-    (STRAFTER(STR(?component), '#') AS ?identifier) 
-    ?reactant 
-    ?product 
+SELECT DISTINCT
+    (STRAFTER(STR(?component), '#') AS ?identifier)
+    ?reactant
+    ?product
     (STR(?control_type) AS ?interaction_type)
 WHERE {
     ?component biopax3:left ?reactant .
@@ -92,7 +94,7 @@ SELECT DISTINCT
     ?display_name
     ?complex_components
     ?comment
-WHERE {        
+WHERE {
     ?entity rdf:type ?uri_type .
     optional {?entity biopax3:comment ?comment .}
     optional {?entity biopax3:entityReference ?entity_reference .}
@@ -176,7 +178,7 @@ def _get_entity_metadata(entity: rdflib.URIRef, rdf_graph: rdflib.Graph) -> Dict
 
 
 def _get_reaction_participants(component_uri: str, component, rdf_graph: rdflib.Graph) -> Tuple[
-    Dict[Union[str, Set[str]], Dict[str, Union[str, Set[str]]]], Dict[Any, Dict[str, Any]]]:
+        Dict[Union[str, Set[str]], Dict[str, Union[str, Set[str]]]], Dict[Any, Dict[str, Any]]]:
     """Get reaction participants (nodes and interactions) for a given reaction.
 
     :param component_uri: URI reference of the queried reaction component
@@ -227,13 +229,13 @@ def _get_reaction_participants(component_uri: str, component, rdf_graph: rdflib.
 
 
 def _get_pathway_components(pathway_uri: rdflib.URIRef, rdf_graph: rdflib.Graph) -> Tuple[
-    Dict[str, Dict[str, Union[str, Set[str]]]], List[Dict[str, Union[str, Set[str]]]]]:
+        Dict[str, Dict[str, Union[str, Set[str]]]], List[Dict[str, Union[str, Set[str]]]]]:
     """Get components (nodes and interactions) for a given pathway.
 
      :param pathway_uri: URI reference of the queried pathway
      :param rdf_graph: RDF Reactome Universe graph object
      :return: returns the pathway components as entities (Proteins, Complex, SmallMolecule...) and proteins (their links)
-     """
+    """
     interactions = {}
     nodes = {}
 
