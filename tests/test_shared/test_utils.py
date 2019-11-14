@@ -7,6 +7,7 @@ import unittest
 
 from pathme.wikipathways.utils import merge_two_dicts, get_file_name_from_url
 from pathme.export_utils import get_paths_in_folder
+
 from tests.constants import WP_TEST_RESOURCES, WP22, WP2359
 
 
@@ -14,12 +15,14 @@ class TestUtils(unittest.TestCase):
     """Tests for utils."""
 
     def test_get_wikipathways_files(self):
+        """Test getting WikiPathways files."""
         files = get_paths_in_folder(WP_TEST_RESOURCES)
 
         self.assertEqual(len(files), 7)
         self.assertEqual(os.path.join(WP_TEST_RESOURCES, WP22), WP22)
 
     def test_merge_dict(self):
+        """Test merging of two dictionaries."""
         dict_1 = {1: 'uno'}
         dict_2 = {2: 'dos'}
         merged_dict = merge_two_dicts(dict_1, dict_2)
@@ -27,6 +30,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(merged_dict, {1: 'uno', 2: 'dos'})
 
     def test_url(self):
+        """Test get url."""
         world = get_file_name_from_url('https://hello/world')
 
         self.assertEqual(world, 'world')
