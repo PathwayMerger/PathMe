@@ -78,7 +78,7 @@ def get_universe_graph(
 
 
 @open_file(1, mode='w')
-def export_ppi_tsv(*, graph: BELGraph, path: Union[str, TextIO]):
+def export_ppi_tsv(graph: BELGraph, path: Union[str, TextIO]):
     """Export PPI like tsv-file."""
     for u, v, edge_data in graph.edges(data=True):
         # Only export if both node names are present
@@ -191,7 +191,8 @@ def export_helper(
             spia_matrices_to_excel(spia_matrices, output_file)
 
         elif format == 'ppi':
-            export_ppi_tsv(pathway_graph)
+            output_file = os.path.join(output, f"{path.strip('.pickle')}.tsv")
+            export_ppi_tsv(pathway_graph, output_file)
         else:
             raise ValueError(f'Unknown export format: {format}')
 
