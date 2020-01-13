@@ -14,7 +14,7 @@ import pybel
 from bio2bel_reactome import Manager as ReactomeManager
 from bio2bel_reactome.models import Pathway
 from pybel import BELGraph, from_pickle, union
-from pybel.constants import ANNOTATIONS, RELATION
+from pybel.constants import ANNOTATIONS, RELATION, NAME
 from pybel.struct import add_annotation_value
 from pybel.struct.mutation import collapse_all_variants, collapse_to_genes
 
@@ -82,7 +82,7 @@ def export_ppi_tsv(graph: BELGraph, path: Union[str, TextIO]):
     """Export PPI like tsv-file."""
     for u, v, edge_data in graph.edges(data=True):
         # Only export if both node names are present
-        if not u.name or not v.name:
+        if not NAME in u or not NAME in v:
             continue
         print(
             (u.name, edge_data[RELATION], v.name),
