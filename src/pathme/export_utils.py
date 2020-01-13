@@ -85,7 +85,7 @@ def export_ppi_tsv(graph: BELGraph, path: Union[str, TextIO]):
         if not NAME in u or not NAME in v:
             continue
         print(
-            (u.name, edge_data[RELATION], v.name),
+            (u[NAME], edge_data[RELATION], v[NAME]),
             sep='tsv',
             file=path,
         )
@@ -147,6 +147,7 @@ def export_helper(
             # Log if it is not present
             if not pathway:
                 logger.warning(f'{pathway_id} not found in database')
+                continue
 
             # Check if there are children and merge them on the fly
             for child in yield_all_children(pathway):
