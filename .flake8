@@ -13,6 +13,8 @@ ignore =
 	F403 # imports not used in init
 	F401 # imports not used in init
 	C901 # too complex methods
+	W504
+	W605
 exclude =
     .tox,
     .git,

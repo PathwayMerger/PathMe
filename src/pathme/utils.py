@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Common utils."""
+"""Methods for various purposes."""
 
 import collections
 import itertools as itt
@@ -12,14 +12,14 @@ from urllib.request import urlretrieve
 
 import click
 import pandas as pd
-import pybel
 import rdflib
+import pybel
 from pybel import BELGraph, from_pickle
 from pybel.constants import GRAPH_NAMESPACE_URL
 from pybel.struct.summary import count_functions, count_relations
 
-from pathme.constants import *
-from pathme.export_utils import get_paths_in_folder
+from .constants import *
+from .export_utils import get_paths_in_folder
 
 log = logging.getLogger(__name__)
 
@@ -28,10 +28,12 @@ class CallCounted:
     """Decorator to determine number of calls for a method."""
 
     def __init__(self, method):
+        """Init method."""
         self.method = method
         self.counter = 0
 
     def __call__(self, *args, **kwargs):
+        """Counter method."""
         self.counter += 1
         return self.method(*args, **kwargs)
 
@@ -141,6 +143,7 @@ def entry_result_to_dict(entry, **kwargs):
 
 
 def entries_dict_ids_argument(entries_dict):
+    """Add entries in dictionary."""
     entries_dict_ids = collections.defaultdict(dict)
     for entry_id, entry_att in entries_dict.items():
         entry_identifiers = {}
@@ -243,6 +246,7 @@ def get_entry_statitics(types_list, primary_type=None, **kwargs):
 
 
 def get_pathway_statitics(nodes_types, edges_types, bel_graph, **kwargs):
+    """Calculate pathway statistics."""
     rdf_nodes_statistics, rdf_total_nodes = get_entry_statitics(nodes_types)
     rdf_edges_statistics, rdf_total_edges = get_entry_statitics(edges_types)
 
@@ -522,12 +526,13 @@ def add_bel_metadata(graph: BELGraph) -> None:
     graph.graph[GRAPH_NAMESPACE_URL] = {
         CHEBI.upper(): "https://arty.scai.fraunhofer.de/artifactory/bel/namespace/chebi/chebi-20190708.belns",
         HGNC: "https://arty.scai.fraunhofer.de/artifactory/bel/namespace/hgnc/hgnc-20190708.belns",
-        "GO": "https://raw.githubusercontent.com/pharmacome/terminology/b46b65c3da259b6e86026514dfececab7c22a11b/external/go-names.belns",
+        "GO": "https://raw.githubusercontent.com/pharmacome/terminology/b46b65c3da259b6e86026514dfececab7c22a11b/" +
+              "external/go-names.belns",
     }
 
     graph.namespace_pattern["NCBIGENE"] = "^\d+$"
-    graph.namespace_pattern[UNIPROT.upper()] = \
-        "^([A-N,R-Z][0-9]([A-Z][A-Z, 0-9][A-Z, 0-9][0-9]){1,2})|([O,P,Q][0-9][A-Z, 0-9][A-Z, 0-9][A-Z, 0-9][0-9])(\.\d+)?$"
+    graph.namespace_pattern[UNIPROT.upper()] = "^([A-N,R-Z][0-9]([A-Z][A-Z, 0-9][A-Z, 0-9][0-9]){1,2})|([O,P,Q][0-9]" \
+                                               "[A-Z, 0-9][A-Z, 0-9][A-Z, 0-9][0-9])(\.\d+)?$"
     graph.namespace_pattern[PUBCHEM.upper()] = ".*"
     graph.namespace_pattern[EXPASY] = ".*"
     graph.namespace_pattern[ENTREZ] = ".*"
