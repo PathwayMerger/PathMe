@@ -82,7 +82,7 @@ def export_ppi_tsv(graph: BELGraph, path: Union[str, TextIO]):
     """Export PPI like tsv-file."""
     for u, v, edge_data in graph.edges(data=True):
         # Only export if both node names are present
-        if not NAME in u or not NAME in v:
+        if NAME not in u or NAME not in v:
             continue
         print(
             (u[NAME], edge_data[RELATION], v[NAME]),
