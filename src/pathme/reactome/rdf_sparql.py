@@ -8,15 +8,14 @@ from collections import defaultdict
 from typing import Any, Dict, List, Set, Tuple, Union
 
 import rdflib
-
-from pathme.constants import REACTOME_BEL
-from pathme.reactome.convert_to_bel import convert_to_bel
-from pathme.utils import get_pathway_statitics, parse_rdf, query_result_to_dict
-
 from pybel import to_pickle
 from rdflib import URIRef
 from rdflib.namespace import DC, DCTERMS, Namespace, OWL, RDF, RDFS, SKOS, XSD
 from tqdm import tqdm
+
+from pathme.constants import REACTOME_BEL
+from pathme.reactome.convert_to_bel import convert_to_bel
+from pathme.utils import get_pathway_statitics, parse_rdf, query_result_to_dict
 
 log = logging.getLogger(__name__)
 

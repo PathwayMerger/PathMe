@@ -18,8 +18,8 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 master_doc = 'index'
 project = 'PathMe'
-copyright = '2018, Daniel Domingo-Fernández, Sarah Mubeen, and Josep Marin Llao'
-author = 'Daniel Domingo-Fernández, Sarah Mubeen, and Josep Marin Llao'
+copyright = '2020, Daniel Domingo-Fernández, Sarah Mubeen, Josep Marin Llao, and Charles Tapley Hoyt'
+author = 'Daniel Domingo-Fernández, Sarah Mubeen, Josep Marin Llao, and Charles Tapley Hoyt'
 
 release = '0.1.12-dev'
 
@@ -44,7 +44,7 @@ htmlhelp_basename = 'pathmedoc'
 latex_elements = {}
 latex_documents = [
     (master_doc, 'pathme.tex', 'PathMe Documentation',
-     'Sarah Mubeen, Josep Marin Llao, and Daniel Domingo-Fernández', 'manual'),
+     'Daniel Domingo-Fernández, Sarah Mubeen, Josep Marin Llao, and Charles Tapley Hoyt', 'manual'),
 ]
 man_pages = [
     (master_doc, 'pathme', 'PathMe Documentation', [author], 1)

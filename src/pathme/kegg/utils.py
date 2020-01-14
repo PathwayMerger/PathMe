@@ -9,10 +9,10 @@ import requests
 import tqdm
 from bio2bel_kegg.manager import Manager as KeggManager
 
-from pathme.kegg.convert_to_bel import get_bel_types
-from pathme.kegg.kegg_xml_parser import import_xml_etree, get_xml_types
-from pathme.export_utils import get_paths_in_folder
 from pathme.constants import KEGG_FILES, KEGG_KGML_URL, KEGG_STATS_COLUMN_NAMES
+from pathme.export_utils import get_paths_in_folder
+from pathme.kegg.convert_to_bel import get_bel_types
+from pathme.kegg.kegg_xml_parser import get_xml_types, import_xml_etree
 
 __all__ = [
     'download_kgml_files',

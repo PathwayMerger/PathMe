@@ -4,23 +4,24 @@
 
 import logging
 import os
-from typing import Iterable, List, Optional, Tuple
+from typing import Iterable, List, Optional, TextIO, Tuple, Union
 
 import networkx as nx
 import pybel
 from bio2bel_reactome import Manager as ReactomeManager
 from bio2bel_reactome.models import Pathway
+from networkx.utils import open_file
 from pybel import BELGraph, from_pickle, union
-from pybel.constants import ANNOTATIONS, RELATION
+from pybel.constants import ANNOTATIONS, NAME, RELATION
 from pybel.struct import add_annotation_value
 from pybel.struct.mutation import collapse_all_variants, collapse_to_genes
 from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
 from tqdm import tqdm
 
-from pathme.constants import KEGG, PATHME_DIR, REACTOME, WIKIPATHWAYS
-from pathme.normalize_names import normalize_graph_names
-from pathme.pybel_utils import flatten_complex_nodes
+from .constants import KEGG, PATHME_DIR, REACTOME, WIKIPATHWAYS
 from .constants import KEGG_BEL, REACTOME_BEL, WIKIPATHWAYS_BEL
+from .normalize_names import normalize_graph_names
+from .pybel_utils import flatten_complex_nodes
 
 logger = logging.getLogger(__name__)
 
@@ -33,10 +34,10 @@ def add_annotation_key(graph: BELGraph):
 
 
 def get_all_pickles(
-    *,
-    kegg_path: Optional[str] = None,
-    reactome_path: Optional[str] = None,
-    wikipathways_path: Optional[str] = None,
+        *,
+        kegg_path: Optional[str] = None,
+        reactome_path: Optional[str] = None,
+        wikipathways_path: Optional[str] = None,
 ) -> Tuple[List[str], List[str], List[str]]:
     """Return a list with all pickle paths."""
     kegg_pickles = get_paths_in_folder(kegg_path or KEGG_BEL)
@@ -55,12 +56,12 @@ def get_all_pickles(
 
 
 def get_universe_graph(
-    *,
-    kegg_path: Optional[str] = None,
-    reactome_path: Optional[str] = None,
-    wikipathways_path: Optional[str] = None,
-    flatten: bool = True,
-    normalize_names: bool = True,
+        *,
+        kegg_path: Optional[str] = None,
+        reactome_path: Optional[str] = None,
+        wikipathways_path: Optional[str] = None,
+        flatten: bool = True,
+        normalize_names: bool = True,
 ) -> BELGraph:
     """Return universe graph."""
     universe_graphs = iterate_universe_graphs(
@@ -76,14 +77,31 @@ def get_universe_graph(
     return union(universe_graphs)
 
 
-def spia_export_helper(
-    *,
-    output: str,
-    kegg_path: Optional[str] = None,
-    reactome_path: Optional[str] = None,
-    wikipathways_path: Optional[str] = None,
+@open_file(1, mode='w')
+def export_ppi_tsv(graph: BELGraph, path: Union[str, TextIO]):
+    """Export PPI like tsv-file."""
+    for u, v, edge_data in graph.edges(data=True):
+        # Only export if both node names are present
+        if NAME not in u or NAME not in v:
+            continue
+        print(
+            (u[NAME], edge_data[RELATION], v[NAME]),
+            sep='tsv',
+            file=path,
+        )
+
+
+def export_helper(
+        *,
+        output: str,
+        kegg_path: Optional[str] = None,
+        reactome_path: Optional[str] = None,
+        wikipathways_path: Optional[str] = None,
+        format='spia',
 ) -> None:
-    """Export PathMe pickles to SPIA excel like file.
+    """Export helper of PathMe.
+
+    It exporter to SPIA-like format or csv file with names.
 
     :param output: output directory
     :param kegg_path: directory to KEGG pickles
@@ -129,6 +147,7 @@ def spia_export_helper(
             # Log if it is not present
             if not pathway:
                 logger.warning(f'{pathway_id} not found in database')
+                continue
 
             # Check if there are children and merge them on the fly
             for child in yield_all_children(pathway):
@@ -160,15 +179,23 @@ def spia_export_helper(
         collapse_all_variants(pathway_graph)
         collapse_to_genes(pathway_graph)
 
-        spia_matrices = bel_to_spia_matrices(pathway_graph)
+        if format == 'spia':
+            # Default SPIA exporter
+            spia_matrices = bel_to_spia_matrices(pathway_graph)
 
-        output_file = os.path.join(output, f"{path.strip('.pickle')}.xlsx")
+            output_file = os.path.join(output, f"{path.strip('.pickle')}.xlsx")
 
-        if os.path.isfile(output_file):
-            continue
+            if os.path.isfile(output_file):
+                continue
 
-        # Export excel file representing the connectivity matrix of the BEL Graph
-        spia_matrices_to_excel(spia_matrices, output_file)
+            # Export excel file representing the connectivity matrix of the BEL Graph
+            spia_matrices_to_excel(spia_matrices, output_file)
+
+        elif format == 'ppi':
+            output_file = os.path.join(output, f"{path.strip('.pickle')}.tsv")
+            export_ppi_tsv(pathway_graph, output_file)
+        else:
+            raise ValueError(f'Unknown export format: {format}')
 
 
 def iterate_indra_statements(**kwargs) -> Iterable['indra.statements.Statement']:
@@ -178,12 +205,12 @@ def iterate_indra_statements(**kwargs) -> Iterable['indra.statements.Statement']
 
 
 def iterate_universe_graphs(
-    *,
-    kegg_path: Optional[str] = None,
-    reactome_path: Optional[str] = None,
-    wikipathways_path: Optional[str] = None,
-    flatten: bool = True,
-    normalize_names: bool = True,
+        *,
+        kegg_path: Optional[str] = None,
+        reactome_path: Optional[str] = None,
+        wikipathways_path: Optional[str] = None,
+        flatten: bool = True,
+        normalize_names: bool = True,
 ) -> Iterable[Tuple[str, str, BELGraph]]:
     """Return universe graph."""
     kegg_pickle_paths, reactome_pickle_paths, wp_pickle_paths = get_all_pickles(

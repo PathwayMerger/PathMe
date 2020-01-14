@@ -10,13 +10,12 @@ from typing import Dict, Iterable, Tuple
 import bio2bel_hgnc
 import rdflib
 import tqdm
+from pybel import BELGraph, to_pickle
+from rdflib.namespace import DC, DCTERMS, Namespace, RDF, RDFS
 
 from pathme.utils import get_pathway_statitics, parse_rdf, query_result_to_dict
 from pathme.wikipathways.convert_to_bel import convert_to_bel
 from pathme.wikipathways.utils import debug_pathway_info
-
-from pybel import BELGraph, to_pickle
-from rdflib.namespace import DC, DCTERMS, Namespace, RDF, RDFS
 
 logger = logging.getLogger(__name__)
 

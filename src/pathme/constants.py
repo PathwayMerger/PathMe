@@ -39,16 +39,19 @@ WIKIPATHWAYS_FILES = os.path.join(WIKIPATHWAYS_DIR, 'rdf')
 
 SPIA_DIR = os.path.join(DATA_DIR, 'spia')
 CX_DIR = os.path.join(DATA_DIR, 'cx')
+PPI_DIR = os.path.join(DATA_DIR, 'ppi')
 UNIVERSE_DIR = os.path.join(DATA_DIR, 'universe')
 
 
-def ensure_pathme_folders():  # TODO why is this a function?
+def ensure_pathme_folders():
     """Ensure data folders are created."""
     os.makedirs(KEGG_DIR, exist_ok=True)
     os.makedirs(REACTOME_DIR, exist_ok=True)
     os.makedirs(WIKIPATHWAYS_DIR, exist_ok=True)
     os.makedirs(KEGG_CACHE, exist_ok=True)
     os.makedirs(SPIA_DIR, exist_ok=True)
+    os.makedirs(CX_DIR, exist_ok=True)
+    os.makedirs(PPI_DIR, exist_ok=True)
     os.makedirs(UNIVERSE_DIR, exist_ok=True)
 
     os.makedirs(KEGG_BEL, exist_ok=True)

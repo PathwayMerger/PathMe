@@ -3,7 +3,7 @@
 """This module contains the methods to convert a WikiPathways RDF network into a BELGraph."""
 
 import logging
-from typing import Dict, Iterable, Mapping, Optional, Tuple, Any
+from typing import Any, Dict, Iterable, Mapping, Optional, Tuple
 
 import pybel
 from bio2bel_hgnc import Manager
