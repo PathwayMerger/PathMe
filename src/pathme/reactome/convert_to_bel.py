@@ -8,21 +8,10 @@ from typing import Dict, List, Tuple
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
 from pybel import BELGraph
-from pybel.dsl import (
-    abundance,
-    activity,
-    composite_abundance,
-    complex_abundance,
-    gene,
-    rna,
-    protein,
-    reaction,
-    bioprocess,
-    BaseEntity,
-    NamedComplexAbundance
-)
+from pybel.dsl import (BaseEntity, NamedComplexAbundance, abundance, activity, bioprocess, complex_abundance,
+                       composite_abundance, gene, protein, reaction, rna)
 
-from pathme.constants import ACTIVITY_ALLOWED_MODIFIERS, UNKNOWN, REACTOME_CITATION
+from pathme.constants import ACTIVITY_ALLOWED_MODIFIERS, REACTOME_CITATION, UNKNOWN
 from pathme.reactome.utils import get_valid_node_parameters, process_multiple_proteins
 from pathme.utils import add_bel_metadata, parse_id_uri
 

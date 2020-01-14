@@ -3,7 +3,7 @@
 """PyBEL generalized utils."""
 
 import logging
-from typing import Mapping, Iterable
+from typing import Iterable, Mapping
 
 from pybel import BELGraph
 from pybel.dsl import BaseEntity

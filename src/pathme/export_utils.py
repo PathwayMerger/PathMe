@@ -7,16 +7,16 @@ import os
 from typing import Iterable, List, Optional, TextIO, Tuple, Union
 
 import networkx as nx
-from networkx.utils import open_file
-from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
-from tqdm import tqdm
 import pybel
 from bio2bel_reactome import Manager as ReactomeManager
 from bio2bel_reactome.models import Pathway
+from networkx.utils import open_file
 from pybel import BELGraph, from_pickle, union
-from pybel.constants import ANNOTATIONS, RELATION, NAME
+from pybel.constants import ANNOTATIONS, NAME, RELATION
 from pybel.struct import add_annotation_value
 from pybel.struct.mutation import collapse_all_variants, collapse_to_genes
+from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
+from tqdm import tqdm
 
 from .constants import KEGG, PATHME_DIR, REACTOME, WIKIPATHWAYS
 from .constants import KEGG_BEL, REACTOME_BEL, WIKIPATHWAYS_BEL

@@ -12,8 +12,8 @@ from urllib.request import urlretrieve
 
 import click
 import pandas as pd
-import rdflib
 import pybel
+import rdflib
 from pybel import BELGraph, from_pickle
 from pybel.constants import GRAPH_NAMESPACE_URL
 from pybel.struct.summary import count_functions, count_relations
@@ -526,13 +526,13 @@ def add_bel_metadata(graph: BELGraph) -> None:
     graph.graph[GRAPH_NAMESPACE_URL] = {
         CHEBI.upper(): "https://arty.scai.fraunhofer.de/artifactory/bel/namespace/chebi/chebi-20190708.belns",
         HGNC: "https://arty.scai.fraunhofer.de/artifactory/bel/namespace/hgnc/hgnc-20190708.belns",
-        "GO": "https://raw.githubusercontent.com/pharmacome/terminology/b46b65c3da259b6e86026514dfececab7c22a11b/" +
-              "external/go-names.belns",
+        "GO": "https://raw.githubusercontent.com/pharmacome/terminology/"
+              "b46b65c3da259b6e86026514dfececab7c22a11b/external/go-names.belns",
     }
 
-    graph.namespace_pattern["NCBIGENE"] = "^\d+$"
-    graph.namespace_pattern[UNIPROT.upper()] = "^([A-N,R-Z][0-9]([A-Z][A-Z, 0-9][A-Z, 0-9][0-9]){1,2})|([O,P,Q][0-9]" \
-                                               "[A-Z, 0-9][A-Z, 0-9][A-Z, 0-9][0-9])(\.\d+)?$"
+    graph.namespace_pattern["NCBIGENE"] = r"^\d+$"
+    graph.namespace_pattern[UNIPROT.upper()] = r"^([A-N,R-Z][0-9]([A-Z][A-Z, 0-9][A-Z, 0-9][0-9]){1,2})|([O,P,Q][0-9]" \
+                                               r"[A-Z, 0-9][A-Z, 0-9][A-Z, 0-9][0-9])(\.\d+)?$"
     graph.namespace_pattern[PUBCHEM.upper()] = ".*"
     graph.namespace_pattern[EXPASY] = ".*"
     graph.namespace_pattern[ENTREZ] = ".*"

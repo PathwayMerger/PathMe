@@ -5,16 +5,12 @@
 #########################
 
 [flake8]
-ignore = 
-	E501
-	I100  # Import statements are in the wrong order
-	I101  # Imported names are in the wrong order
+ignore =
+    E501 # Line too long
 	F405 # Stars import
 	F403 # imports not used in init
 	F401 # imports not used in init
 	C901 # too complex methods
-	W504
-	W605
 exclude =
     .tox,
     .git,
@@ -27,7 +23,10 @@ exclude =
     *.egg-info,
     .cache,
     .eggs
-max-complexity = 10
+max-complexity = 20
+max-line-length = 120
 import-order-style = pycharm
-application-import-names = pathme
+application-import-names =
+    pathme
+    tests
 format = ${cyan}%(path)s${reset}:${yellow_bold}%(row)d${reset}:${green_bold}%(col)d${reset}: ${red_bold}%(code)s${reset} %(text)s

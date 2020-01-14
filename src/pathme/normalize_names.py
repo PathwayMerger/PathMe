@@ -7,12 +7,11 @@ from collections import defaultdict
 from typing import List
 
 from networkx import relabel_nodes
+from pybel import BELGraph
+from pybel.dsl import Abundance, BiologicalProcess, CentralDogma, ListAbundance, MicroRna, Protein, Reaction
 
 from pathme.constants import REACTOME, WIKIPATHWAYS
 from pathme.pybel_utils import multi_relabel
-
-from pybel import BELGraph
-from pybel.dsl import Abundance, BiologicalProcess, CentralDogma, ListAbundance, Reaction, MicroRna, Protein
 
 logger = logging.getLogger(__name__)
 

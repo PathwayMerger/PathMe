@@ -15,8 +15,8 @@ from pybel.struct.summary import count_functions
 import pathme.kegg.cli
 import pathme.reactome.cli
 import pathme.wikipathways.cli
-from .constants import CX_DIR, KEGG_BEL, REACTOME_BEL, SPIA_DIR, PPI_DIR, UNIVERSE_DIR, WIKIPATHWAYS_BEL
-from .export_utils import get_universe_graph, iterate_universe_graphs, export_helper
+from .constants import CX_DIR, KEGG_BEL, PPI_DIR, REACTOME_BEL, SPIA_DIR, UNIVERSE_DIR, WIKIPATHWAYS_BEL
+from .export_utils import export_helper, get_universe_graph, iterate_universe_graphs
 
 logger = logging.getLogger(__name__)
 

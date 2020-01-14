@@ -9,11 +9,11 @@ from bio2bel_hgnc import Manager as HgncManager
 from bio2bel_kegg.manager import Manager
 from pybel import BELGraph
 from pybel_tools.summary.edge_summary import count_relations
-from tests.constants import WP1871, WP22, WP2359, WP2799, WP706
 
 from pathme.kegg.kegg_xml_parser import *
 from pathme.utils import parse_rdf
 from pathme.wikipathways.rdf_sparql import _get_interactions, _get_nodes, wikipathways_to_bel
+from tests.constants import WP1871, WP22, WP2359, WP2799, WP706
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 resources_path = os.path.join(dir_path, 'resources')
