@@ -2,7 +2,7 @@ sudo: false
 cache: pip
 language: python
 python:
-- 3.6
+  - '3.7'
 stages:
   - lint
   - docs
@@ -13,9 +13,6 @@ jobs:
     - stage: lint
       env: TOXENV=manifest
     - env: TOXENV=flake8
-    - env: TOXENV=flake8-kegg
-    - env: TOXENV=xenon
-    - env: TOXENV=vulture
     - env: TOXENV=pyroma
     # docs stage
     - stage: docs
@@ -26,20 +23,14 @@ jobs:
     - stage: test
       env: TOXENV=py
     - env: TOXENV=py PATHME_TESTS=tests/test_kegg/
-matrix:
-  allow_failures:
-      - env: TOXENV=flake8
-      - env: TOXENV=xenon
-      - env: TOXENV=vulture
 install:
-- pip install --upgrade pip
-- pip install tox
-- pip install codecov
-- pip install coverage
+  - pip install tox
+  - pip install codecov
+  - pip install coverage
 script:
-- tox
+  - tox
 after_success:
-- tox -e coverage-report
-- codecov
+  - tox -e coverage-report
+  - codecov
 notifications:
   slack: pybel:n2KbWKBum3musnBg3L76gGwq
