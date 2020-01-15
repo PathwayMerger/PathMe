@@ -21,7 +21,7 @@ project = 'PathMe'
 copyright = '2020, Daniel Domingo-Fernández, Sarah Mubeen, Josep Marin Llao, and Charles Tapley Hoyt'
 author = 'Daniel Domingo-Fernández, Sarah Mubeen, Josep Marin Llao, and Charles Tapley Hoyt'
 
-release = '0.1.12'
+release = '0.1.13-dev'
 
 parsed_version = re.match(
     '(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?:-(?P<release>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+(?P<build>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?',
