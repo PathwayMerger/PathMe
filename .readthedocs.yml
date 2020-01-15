@@ -1,4 +1,12 @@
 # See: https://docs.readthedocs.io/en/latest/yaml-config.html
+version: 2
+
+formats:
+  - epub
+
+build:
+  image: latest
+
 python:
   version: 3.7
   pip_install: true
