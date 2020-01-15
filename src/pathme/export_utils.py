@@ -85,7 +85,7 @@ def export_ppi_tsv(graph: BELGraph, path: Union[str, TextIO]):
         if NAME not in u or NAME not in v:
             continue
         print(
-            (u[NAME], edge_data[RELATION], v[NAME]),
+            u[NAME], edge_data[RELATION], v[NAME],
             sep='tsv',
             file=path,
         )
@@ -118,7 +118,7 @@ def export_helper(
 
     logger.info(f'A total of {len(paths)} will be exported')
 
-    paths = tqdm(paths, desc='Exporting SPIA excel files')
+    paths = tqdm(paths, desc='Exporting PPI files')
 
     # Call Reactome manager and check that is populated
     reactome_manager = ReactomeManager()
