@@ -86,7 +86,7 @@ def export_ppi_tsv(graph: BELGraph, path: Union[str, TextIO]):
             continue
         print(
             u[NAME], edge_data[RELATION], v[NAME],
-            sep='tsv',
+            sep='\t',
             file=path,
         )
 
