@@ -155,6 +155,5 @@ WikiPathways
     :target: https://zenodo.org/badge/latestdoi/146161418
     
 Disclaimer
------------
-
-PathMe is a scientific software that has been developed in an academic capacity, and thus comes with no warranty or guarantee of maintenance, support, or back-up of data.    
+----------
+PathMe is a scientific software that has been developed in an academic capacity, and thus comes with no warranty or guarantee of maintenance, support, or back-up of data.
