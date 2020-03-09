@@ -97,7 +97,7 @@ in the exporting command. Example:
 .. code-block:: bash
 
     $ python3 -m pathme kegg bel --flatten
-    
+
 Export PathMe
 -------------
 Run the following command to see the different formats that you can export PathMe to (e.g., CX, SPIA, etc.):
