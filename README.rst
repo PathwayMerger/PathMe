@@ -16,7 +16,7 @@ Database Versions
 PathMe currently uses the following versions of the databases:
 
 - **KEGG**: Up-to-date (KEGG does not have tag its releases)
-- **Reactome**: 67 Release
+- **Reactome**: 71 Release
 - **WikiPathways**: September 2019 Release
 
 Citation
