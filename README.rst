@@ -137,7 +137,7 @@ WikiPathways
        research. *Nucleic Acids Research*, doi.org/10.1093/nar/gkx1064
 .. [8] Kutmon, M., *et al.* (2016). WikiPathways: capturing the full diversity of pathway knowledge Nucl. Acids Res., 44,
        D488-D494.
-.. [9] Kelder, T., *et al.* (201). WikiPathways: building research communities on biological pathways. Nucleic Acids Res.
+.. [9] Kelder, T., *et al.* (2011). WikiPathways: building research communities on biological pathways. Nucleic Acids Res.
        Jan;40(Database issue):D1301-7
 
 .. |build| image:: https://travis-ci.com/PathwayMerger/PathMe.svg?branch=master
