@@ -13,7 +13,7 @@ import requests
 from bio2bel_kegg.constants import API_KEGG_GET
 from bio2bel_kegg.parsers.description import parse_description
 
-from pathme.constants import CHEBI, CHEBI_NAME, HGNC, HGNC_SYMBOL, KEGG_CACHE, PUBCHEM, UNIPROT
+from pathme.constants import CHEBI, CHEBI_NAME, HGNC, HGNC_SYMBOL, KEGG_CACHE, PUBCHEM, UNIPROT, KEGG_ID, KEGG_TYPE
 from pathme.wikipathways.utils import merge_two_dicts
 
 log = logging.getLogger(__name__)
@@ -124,8 +124,8 @@ def _process_kegg_api_get_entity(entity, type, hgnc_manager, chebi_manager):
 
     node_dict = _post_process_api_query(node_meta_data, hgnc_manager, chebi_manager)
 
-    node_dict['kegg_id'] = entity
-    node_dict['kegg_type'] = type
+    node_dict[KEGG_ID] = entity
+    node_dict[KEGG_TYPE] = type
 
     with open(_entity_filepath, 'w') as f:
         json.dump(node_dict, f)
@@ -172,7 +172,7 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
 
         elif kegg_type.startswith('map'):
 
-            map_info = {'kegg_id': kegg_ids}
+            map_info = {KEGG_ID: kegg_ids}
 
             for graphics in entry.iter('graphics'):
                 map_name = graphics.get('name')
@@ -184,8 +184,8 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
 
             for ortholog_id in kegg_ids.split(' '):
                 ortholog_info = {
-                    'kegg_id': ortholog_id,
-                    'kegg_type': kegg_type
+                    KEGG_ID: ortholog_id,
+                    KEGG_TYPE: kegg_type
                 }
 
                 ortholog_dict[entry_id].append(ortholog_info)
