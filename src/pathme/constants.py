@@ -36,7 +36,7 @@ KEGG_CACHE = os.path.join(KEGG_DIR, 'cache')
 REACTOME = 'reactome'
 REACTOME_DIR = os.path.join(DATA_DIR, REACTOME)
 REACTOME_BEL = os.path.join(REACTOME_DIR, 'bel')
-REACTOME_FILES = os.path.join(REACTOME_DIR, 'rdf', 'biopax')
+REACTOME_FILES = os.path.join(REACTOME_DIR, 'rdf')
 
 #: WikiPathways
 WIKIPATHWAYS = 'wikipathways'
@@ -141,7 +141,7 @@ REACTOME_CITATION = '29145629'
 KEGG_KGML_URL = 'http://rest.kegg.jp/get/{}/kgml'
 
 #: Reactome RDF
-RDF_REACTOME = 'ftp://ftp.ebi.ac.uk/pub/databases/RDF/reactome/r71/reactome-biopax.tar.bz2'
+RDF_REACTOME = 'ftp://ftp.ebi.ac.uk/pub/databases/RDF/reactome/r67/reactome-biopax.tar.bz2'
 
 #: WikiPathways RDF
 RDF_WIKIPATHWAYS = 'http://data.wikipathways.org/20190910/rdf/wikipathways-20190910-rdf-wp.zip'
