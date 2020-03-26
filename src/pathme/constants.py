@@ -144,7 +144,7 @@ KEGG_KGML_URL = 'http://rest.kegg.jp/get/{}/kgml'
 RDF_REACTOME = 'ftp://ftp.ebi.ac.uk/pub/databases/RDF/reactome/r67/reactome-biopax.tar.bz2'
 
 #: WikiPathways RDF
-RDF_WIKIPATHWAYS = 'http://data.wikipathways.org/20190910/rdf/wikipathways-20190910-rdf-wp.zip'
+RDF_WIKIPATHWAYS = 'http://data.wikipathways.org/20200310/rdf/wikipathways-20200310-rdf-wp.zip'
 
 #: Mapping to compare conversion of entities from KEGG XML (i.e. KGML) to BEL
 KEGG_STATS_COLUMN_NAMES = {
