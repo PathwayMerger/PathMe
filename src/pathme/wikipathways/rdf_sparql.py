@@ -292,7 +292,8 @@ def wikipathways_to_pickles(
         pickle_path = os.path.join(export_folder, '{}.pickle'.format(rdf_file.strip('.ttl')))
 
         # Skip if BEL file already exists
-        if os.path.exists(pickle_path):
+        # TODO: Remove pathway from blacklist
+        if os.path.exists(pickle_path) or rdf_file in {'WP1772.ttl'}:
             continue
 
         # Parse pathway rdf_file and logger stats
