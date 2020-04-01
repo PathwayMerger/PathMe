@@ -14,27 +14,14 @@ from bio2bel_hgnc import Manager as HgncManager
 from bio2bel_wikipathways import Manager as WikiPathwaysManager
 from pybel import BELGraph
 from ..constants import (
-    BRENDA,
-    CHEMBL,
-    DATA_DIR,
-    ENSEMBL,
-    ENTREZ,
-    EXPASY,
-    HGNC,
-    INTERPRO,
-    KEGG,
-    MIRBASE,
-    PFAM,
-    REACTOME,
-    UNIPROT,
-    WIKIPATHWAYS,
-    WIKIPEDIA,
+    BRENDA, CHEMBL, DATA_DIR, ENSEMBL, ENTREZ, EXPASY, HGNC, INTERPRO, KEGG, MIRBASE, PFAM, REACTOME, UNIPROT,
+    WIKIPATHWAYS, WIKIPEDIA,
 )
 from ..export_utils import get_paths_in_folder
 
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def evaluate_wikipathways_metadata(metadata: Union[str, Set[str]]) -> str:
@@ -59,7 +46,7 @@ def _get_update_alias_symbol(
     query_result = hgnc_manager.get_hgnc_from_alias_symbol(original_identifier)
 
     if not query_result:
-        log.debug('No found HGNC Symbol for id %s in (%s)', original_identifier, original_namespace)
+        logger.debug('No found HGNC Symbol for id %s in (%s)', original_identifier, original_namespace)
         return original_namespace, original_identifier, original_identifier
 
     return HGNC, query_result.symbol, query_result.identifier
@@ -84,13 +71,13 @@ def _validate_query(
 
     # Invalid entry, proceed with invalid identifier
     if not query_result:
-        log.debug('No found HGNC Symbol for id %s in (%s)', original_identifier, original_namespace)
+        logger.debug('No found HGNC Symbol for id %s in (%s)', original_identifier, original_namespace)
         return original_namespace, original_identifier, original_identifier
 
     # Multiple entries are returned, for UniProt identifiers
     if isinstance(query_result, list):
         if len(query_result) > 1:
-            log.debug('UniProt identifier with multiple HGNC:s %s', query_result)
+            logger.debug('UniProt identifier with multiple HGNC:s %s', query_result)
         query_result = query_result[0]
 
     # Correct entry, use HGNC identifier
@@ -169,49 +156,49 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager: HgncManager, pathway_
         if hgnc_entry:
             return HGNC, hgnc_entry.symbol, hgnc_entry.identifier
 
-        log.debug('Adding WikiPathways node %s (%s)', name, WIKIPATHWAYS)
+        logger.debug('Adding WikiPathways node %s (%s)', name, WIKIPATHWAYS)
         return WIKIPATHWAYS, name, name
 
     elif WIKIPEDIA.lower() in node_ids_dict['uri_id']:
         wiki_name = check_multiple(node_ids_dict['identifier'], 'wikipedia_id', pathway_id)
         wiki_id = check_multiple(node_ids_dict['name'], 'wikipedia_name', pathway_id)
-        log.debug('Adding Wikipedia node %s (%s)', wiki_name, WIKIPATHWAYS)
+        logger.debug('Adding Wikipedia node %s (%s)', wiki_name, WIKIPATHWAYS)
         return WIKIPEDIA, wiki_name, wiki_id
 
     elif KEGG.lower() in node_ids_dict['uri_id']:
         kegg_id = check_multiple(node_ids_dict['identifier'], 'kegg_id', pathway_id)
         kegg_name = check_multiple(node_ids_dict['name'], 'kegg_name', pathway_id)
-        log.debug('Adding KEGG node %s ', kegg_id)
+        logger.debug('Adding KEGG node %s ', kegg_id)
         return KEGG, kegg_name, kegg_id
 
     elif INTERPRO.lower() in node_ids_dict['uri_id']:
         interpro_id = check_multiple(node_ids_dict['identifier'], 'interpro_id', pathway_id)
         interpro_name = check_multiple(node_ids_dict['name'], 'interpro_name', pathway_id)
-        log.debug('Adding InterPro node %s ', interpro_id)
+        logger.debug('Adding InterPro node %s ', interpro_id)
         return INTERPRO, interpro_name, interpro_id
 
     elif PFAM.lower() in node_ids_dict['uri_id']:
         pfam_id = check_multiple(node_ids_dict['identifier'], 'pfam_id', pathway_id)
         pfam_name = check_multiple(node_ids_dict['name'], 'pfam_name', pathway_id)
-        log.debug('Adding Pfam node %s ', pfam_id)
+        logger.debug('Adding Pfam node %s ', pfam_id)
         return PFAM, pfam_name, pfam_id
 
     elif 'mirbase.mature' in node_ids_dict['uri_id']:
         mirbase_id = check_multiple(node_ids_dict['identifier'], 'mirbase_id', pathway_id)
         mirbase_name = check_multiple(node_ids_dict['name'], 'mirbase_name', pathway_id)
-        log.debug('Adding miRBase node %s ', mirbase_id)
+        logger.debug('Adding miRBase node %s ', mirbase_id)
         return MIRBASE, mirbase_name, mirbase_id
 
     elif 'chembl.compound' in node_ids_dict['uri_id']:
         chembl_id = check_multiple(node_ids_dict['identifier'], 'chembl_id', pathway_id)
         chembl_name = check_multiple(node_ids_dict['name'], 'chembl_name', pathway_id)
-        log.debug('Adding ChEMBL node %s ', chembl_id)
+        logger.debug('Adding ChEMBL node %s ', chembl_id)
         return CHEMBL, chembl_name, chembl_id
 
     elif 'brenda' in node_ids_dict['uri_id']:
         brenda_id = check_multiple(node_ids_dict['identifier'], 'brenda', pathway_id)
         brenda_name = check_multiple(node_ids_dict['name'], 'brenda', pathway_id)
-        log.debug('Adding BRENDA node %s ', brenda_id)
+        logger.debug('Adding BRENDA node %s ', brenda_id)
         return BRENDA, brenda_name, brenda_id
 
     elif 'insdc' in node_ids_dict['uri_id']:
@@ -237,7 +224,7 @@ def check_multiple(element, element_name, pathway_id):
     :return:
     """
     if isinstance(element, (set, list)):
-        log.debug('Multiple values for "{}": {} [{}]'.format(element_name, element, pathway_id.split('/')[-1]))
+        logger.debug('Multiple values for "{}": {} [{}]'.format(element_name, element, pathway_id.split('/')[-1]))
         # TODO: print the WikiPathways bps that return a set because they are probably wrong.
         if len(element) == 1:
             return list(element)[0]
@@ -249,7 +236,7 @@ def check_multiple(element, element_name, pathway_id):
 
             return list(element)[0]
 
-        log.debug('Empty list/set %s', element)
+        logger.debug('Empty list/set %s', element)
 
     return element
 
@@ -289,27 +276,27 @@ def convert_to_nx(
     return graph
 
 
-def debug_pathway_info(bel_graph: BELGraph, pathway_path, **kwargs):
+def debug_pathway_info(bel_graph: BELGraph, pathway_path: str, **kwargs):
     """Debug information about the pathway graph representation.
 
-    :param pybel.BELGraph bel_graph: bel graph
-    :param str pathway_path: path of the pathway
+    :param bel_graph: bel graph
+    :param pathway_path: path of the pathway
     """
-    log.debug('Pathway id: {}'.format(os.path.basename(pathway_path)))
+    logger.debug('Pathway id: {}'.format(os.path.basename(pathway_path)))
 
     pathway_name = bel_graph.name
-    log.debug('Pathway Name: {}'.format(pathway_name))
+    logger.debug('Pathway Name: {}'.format(pathway_name))
 
     bel_nodes = bel_graph.number_of_nodes()
     bel_edges = bel_graph.number_of_edges()
 
-    log.debug('Nodes imported to BEL: %s', bel_nodes)
-    log.debug('Edges imported to BEL: %s', format(bel_edges))
+    logger.debug('Nodes imported to BEL: %s', bel_nodes)
+    logger.debug('Edges imported to BEL: %s', format(bel_edges))
 
     if 'statistics' in kwargs:
         statistics = kwargs.get('statistics')
-        log.debug('RDF Nodes statistics: %', format(statistics['RDF nodes']))
-        log.debug('RDF Edges statistics: %', format(statistics['RDF interactions']))
+        logger.debug('RDF Nodes statistics: %', format(statistics['RDF nodes']))
+        logger.debug('RDF Edges statistics: %', format(statistics['RDF interactions']))
 
 
 def debug_global_statistics(global_statistics):
@@ -318,10 +305,10 @@ def debug_global_statistics(global_statistics):
     :param dict global_statistics: pathway statistics
     """
     for statistics_type, rdf_types in global_statistics.items():
-        log.debug('Total statistics for %s', statistics_type)
+        logger.debug('Total statistics for %s', statistics_type)
 
         for rdf_type, value in rdf_types.items():
-            log.debug('%s: %s', rdf_type, value)
+            logger.debug('%s: %s', rdf_type, value)
 
 
 """Download utilities"""

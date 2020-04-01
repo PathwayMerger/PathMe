@@ -12,10 +12,10 @@ import tqdm
 from rdflib.namespace import DC, DCTERMS, Namespace, RDF, RDFS
 
 import bio2bel_hgnc
-from pathme.utils import get_pathway_statitics, parse_rdf, query_result_to_dict
-from pathme.wikipathways.convert_to_bel import convert_to_bel
-from pathme.wikipathways.utils import debug_pathway_info
 from pybel import BELGraph, to_pickle
+from .convert_to_bel import convert_to_bel
+from .utils import debug_pathway_info
+from ..utils import get_pathway_statitics, parse_rdf, query_result_to_dict
 
 logger = logging.getLogger(__name__)
 

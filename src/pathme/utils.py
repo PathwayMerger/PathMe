@@ -500,7 +500,7 @@ def make_downloader(url, path, export_path, decompress_file):
             logger.info('using cached data at %s', path)
         else:
             logger.info('downloading %s to %s', url, path)
-            urlretrieve(url, path)
+            urlretrieve(url, path)  # noqa: S310
 
         return path
 

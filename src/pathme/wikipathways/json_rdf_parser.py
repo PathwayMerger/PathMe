@@ -370,13 +370,11 @@ def parse_entries(entries):
 def convert_json(graph: rdflib.Graph):
     """Convert from rdflib importated graph object to python data structure (list of dicts of each entry).
 
-    :param rdflib.graph graph: graph object
+    :param graph: graph object
     :rtype: list[dict]
     """
-    serialized_json = graph.serialize(format='json-ld', indent=4)
-    json_wp_pathway = json.loads(serialized_json.decode("utf-8"))
-
-    return json_wp_pathway
+    serialized_json = graph.serialize(format='json-ld')
+    return json.loads(serialized_json.decode("utf-8"))
 
 
 def parse_pathway(pathway_path):

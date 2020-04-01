@@ -2,14 +2,13 @@
 
 """Tests for converting KEGG."""
 
-from pybel.dsl.nodes import abundance, bioprocess, composite_abundance, protein
-
 from pathme.constants import *
 from pathme.kegg.convert_to_bel import xml_complexes_to_bel, xml_entities_to_bel
 from pathme.kegg.kegg_xml_parser import (
     _process_kegg_api_get_entity, get_all_reactions, get_all_relationships,
     get_complex_components, get_entity_nodes, get_reaction_pathway_edges,
 )
+from pybel.dsl import bioprocess, composite_abundance
 from pybel.struct.summary.node_summary import count_functions
 from pybel_tools.summary.edge_summary import count_relations
 from tests.constants import KeggTest

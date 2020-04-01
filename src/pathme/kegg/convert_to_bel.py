@@ -7,27 +7,27 @@ from collections import defaultdict
 from itertools import product
 
 import tqdm
-from pybel.dsl.nodes import bioprocess, composite_abundance, pmod, reaction
 
-from pathme.constants import *
-from pathme.export_utils import add_annotation_key
-from pathme.kegg.kegg_xml_parser import (
-    get_all_reactions, get_all_relationships, get_complex_components, get_entity_nodes, get_reaction_pathway_edges,
-    import_xml_etree,
-)
-from pathme.utils import add_bel_metadata
 from pybel import BELGraph, to_pickle
+from pybel.dsl import bioprocess, composite_abundance, pmod, reaction
 from pybel.dsl.edges import activity
 from pybel.dsl.node_classes import CentralDogma
 from pybel.struct import add_annotation_value
 from pybel.struct.summary import count_functions, edge_summary
+from .kegg_xml_parser import (
+    get_all_reactions, get_all_relationships, get_complex_components, get_entity_nodes, get_reaction_pathway_edges,
+    import_xml_etree,
+)
+from ..constants import *
+from ..export_utils import add_annotation_key
+from ..utils import add_bel_metadata
 
 __all__ = [
     'kegg_to_bel',
     'kegg_to_pickles',
 ]
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 """Populate empty BEL graph with KEGG pathway entities and interactions"""
 
@@ -360,7 +360,7 @@ def map_to_bel_node(graph, node):
         identifier = attribute[KEGG_ID]
 
         if not name:
-            log.debug(f"KEGG API does not provide information about {node}. Using identifier.")
+            logger.debug(f"KEGG API does not provide information about {node}. Using identifier.")
             name = identifier
 
         if name.startswith('TITLE:'):

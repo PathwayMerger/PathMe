@@ -6,8 +6,11 @@
 
 [flake8]
 ignore =
+    W503 # line break before binary operator
     S403 # Pickle security
     S301 # Pickle security
+    S405 # xml security
+    S314 # xml security
 	F405 # Stars import
 	F403 # imports not used in init
 	F401 # imports not used in init
