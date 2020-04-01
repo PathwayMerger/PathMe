@@ -111,7 +111,7 @@ def cx(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no_norma
         sys.exit(1)
 
     click.echo(f'Results will be exported to {output}')
-    for _, path, graph in iterate_universe_graphs(
+    for source, path, graph in iterate_universe_graphs(
         kegg_path=kegg_path,
         reactome_path=reactome_path,
         wikipathways_path=wikipathways_path,
