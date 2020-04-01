@@ -8,13 +8,14 @@ import sys
 
 import click
 import networkx as nx
-from pybel import to_pickle
-from pybel.struct.mutation import collapse_all_variants, collapse_to_genes, remove_isolated_list_abundances
-from pybel.struct.summary import count_functions
 
 import pathme.kegg.cli
 import pathme.reactome.cli
 import pathme.wikipathways.cli
+import pybel
+from pybel import to_pickle
+from pybel.struct.mutation import collapse_all_variants, collapse_to_genes, remove_isolated_list_abundances
+from pybel.struct.summary import count_functions
 from .constants import CX_DIR, KEGG_BEL, PPI_DIR, REACTOME_BEL, SPIA_DIR, UNIVERSE_DIR, WIKIPATHWAYS_BEL
 from .export_utils import export_helper, get_universe_graph, iterate_universe_graphs
 
@@ -57,8 +58,8 @@ wikipathways_path_option = click.option(
     show_default=True,
 )
 
-no_flatten = click.option('--no-flatten', is_flag=True, help='Do not flatten complex/reactions nodes')
-no_normalize_names = click.option('--no-normalize-names', is_flag=True, help='Do not normalize names')
+no_flatten_option = click.option('--no-flatten', is_flag=True, help='Do not flatten complex/reactions nodes')
+no_normalize_names_option = click.option('--no-normalize-names', is_flag=True, help='Do not normalize names')
 
 
 @export.command()
@@ -99,8 +100,8 @@ def ppi(kegg_path, reactome_path, wikipathways_path, output):
 @reactome_path_option
 @wikipathways_path_option
 @click.option('-o', '--output', help='Output directory', default=CX_DIR, show_default=True)
-@no_flatten
-@no_normalize_names
+@no_flatten_option
+@no_normalize_names_option
 def cx(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no_normalize_names):
     """Export BEL Pickles to CX."""
     try:
@@ -110,12 +111,12 @@ def cx(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no_norma
         sys.exit(1)
 
     click.echo(f'Results will be exported to {output}')
-    for source, path, graph in iterate_universe_graphs(
-            kegg_path=kegg_path,
-            reactome_path=reactome_path,
-            wikipathways_path=wikipathways_path,
-            flatten=(not no_flatten),
-            normalize_names=(not no_normalize_names),
+    for _, path, graph in iterate_universe_graphs(
+        kegg_path=kegg_path,
+        reactome_path=reactome_path,
+        wikipathways_path=wikipathways_path,
+        flatten=(not no_flatten),
+        normalize_names=(not no_normalize_names),
     ):
         with open(os.path.join(output, f"{path.strip('.pickle')}.cx.json"), 'w') as file:
             to_cx_file(graph, file)
@@ -125,9 +126,29 @@ def cx(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no_norma
 @kegg_path_option
 @reactome_path_option
 @wikipathways_path_option
+@click.option('-o', '--output', help='Output directory', default=CX_DIR, show_default=True)
+@no_flatten_option
+@no_normalize_names_option
+def hipathia(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no_normalize_names):
+    """Export to hipathia directories."""
+    click.echo(f'Results will be exported to {output}')
+    for source, path, graph in iterate_universe_graphs(
+        kegg_path=kegg_path,
+        reactome_path=reactome_path,
+        wikipathways_path=wikipathways_path,
+        flatten=(not no_flatten),
+        normalize_names=(not no_normalize_names),
+    ):
+        pybel.to_hipathia(graph, os.path.join(output, os.path.basename(path)))
+
+
+@export.command()
+@kegg_path_option
+@reactome_path_option
+@wikipathways_path_option
 @click.option('-o', '--output', help='Output directory', default=UNIVERSE_DIR, show_default=True)
-@no_flatten
-@no_normalize_names
+@no_flatten_option
+@no_normalize_names_option
 def universe(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no_normalize_names):
     """Export harmonized PathMe universe."""
     logging.basicConfig(level=logging.info, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
