@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
-"""
-The goal of this package is to facilitate the evaluation of pathway knowledge across three of the major pathway databases by harmozing and consolidating different formats.
+"""PathMe is a package for harmonizing pathway databases in BEL..
+
+The goal of this package is to facilitate the evaluation of pathway knowledge across three of the major pathway
+databases by harmozing and consolidating different formats.
 
 PathMe does that by converting KEGG, Reactome, and WikiPathways to Biological Expression Language (BEL).
 Once the three databases are harmonized into BEL, we can evaluate the consensus and gaps in pathway knowledge.
@@ -34,7 +36,6 @@ Installation
 
 How to use
 ----------
-
 1. Download content
 
 PathMe first requires to download the raw files from the original pathway databases.

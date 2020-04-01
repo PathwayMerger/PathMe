@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 """This module contains the custom parser for RDF."""
+
 import json
 
 import rdflib
 
-from pathme.utils import parse_rdf
-from pathme.wikipathways.utils import convert_to_nx
+from .utils import convert_to_nx
+from ..utils import parse_rdf
 
 """RDF CUSTOM PARSER FUNCTIONS"""
 
@@ -44,11 +45,11 @@ def parse_namespace_uri(uri):
     :rtype: tuple[str,str]
     """
     # Split the uri str by '/'.
-    splited_uri = uri.split('/')
+    split_uri = uri.split('/')
 
     # Get the uri prefix and namespace into different variables.
-    prefix = ('/').join(splited_uri[0:-1])
-    namespace = splited_uri[-1]
+    prefix = '/'.join(split_uri[0:-1])
+    namespace = split_uri[-1]
     vocabulary = namespace.split('#')[-1]
 
     return prefix, namespace, vocabulary
@@ -64,19 +65,24 @@ def match_entry_type(types):
     :returns: entry_type: type identifier, also used as first key to the main graph (ex: 'nodes' -> graph[entry_type][node_id])
     :rtype: Optional[str]
     """
-    # Matches the vocabularies set from wp (could be indicated one or more types) specified in RDF as URI namespaces (previous URI parsing).
+    # Matches the vocabularies set from wp (could be indicated one or more types) specified in
+    # RDF as URI namespaces (previous URI parsing).
     if types == {'core#Collection', 'wp#Pathway'} or types == {'wp#PublicationReference'}:
         return 'pathway_info'
 
-    elif types == {'wp#DataNode', 'wp#Protein'} \
-            or types == {'wp#DataNode', 'wp#Metabolite'} \
-            or types == {'wp#DataNode', 'wp#GeneProduct'} \
-            or types == {'wp#DataNode'}:
+    elif (
+        types == {'wp#DataNode', 'wp#Protein'}
+        or types == {'wp#DataNode', 'wp#Metabolite'}
+        or types == {'wp#DataNode', 'wp#GeneProduct'}
+        or types == {'wp#DataNode'}
+    ):
         return 'nodes'
 
-    elif types == {'wp#Interaction', 'wp#DirectedInteraction'} \
-            or types == {'wp#Catalysis', 'wp#DirectedInteraction', 'wp#Interaction'} \
-            or types == {'wp#Interaction', 'wp#ComplexBinding', 'wp#Binding'}:
+    elif (
+        types == {'wp#Interaction', 'wp#DirectedInteraction'}
+        or types == {'wp#Catalysis', 'wp#DirectedInteraction', 'wp#Interaction'}
+        or types == {'wp#Interaction', 'wp#ComplexBinding', 'wp#Binding'}
+    ):
         return 'interactions'
 
     elif types == {'wp#Interaction'} or types == {'wp#Complex'}:
@@ -95,18 +101,24 @@ def match_attribute_label(attribute_namespace):
     # Depending on the attribute_namespace, of the following cases:
 
     # Return the attribute_namespace (is the variable that is being checked, so will be one of the list).
-    if attribute_namespace in {'title', 'source', 'identifier', 'description', 'isPartOf', 'hasVersion', 'page',
-                               'references'}:
+    if attribute_namespace in {
+        'title', 'source', 'identifier', 'description', 'isPartOf',
+        'hasVersion', 'page', 'references',
+    }:
         return attribute_namespace
 
     # Return the attribute_namespace without the voacabulary resource specification (ex: wp#, split #).
-    elif attribute_namespace in {'wp#isAbout', 'wp#participants', 'wp#pathwayOntologyTag', 'wp#ontologyTag',
-                                 'wp#organism', 'wp#organismName', 'rdf-schema#label'}:
+    elif attribute_namespace in {
+        'wp#isAbout', 'wp#participants', 'wp#pathwayOntologyTag', 'wp#ontologyTag',
+        'wp#organism', 'wp#organismName', 'rdf-schema#label',
+    }:
         return attribute_namespace.split('#')[1]
 
     # Return the value_namespace. The value of the atribute is also specified as a uri, with the value as the identifier. So in the following cases, the value namespace of the value uri will be later assigned as the attribute label.
-    elif attribute_namespace in {'wp#bdbEnsembl', 'wp#bdbEntrezGene', 'wp#bdbHgncSymbol', 'wp#bdbPubChem', 'wp#bdbHmdb',
-                                 'wp#bdbUniprot', 'wp#bdbChEBI', 'wp#bdbChemspider', 'wp#bdbWikidata'}:
+    elif attribute_namespace in {
+        'wp#bdbEnsembl', 'wp#bdbEntrezGene', 'wp#bdbHgncSymbol', 'wp#bdbPubChem', 'wp#bdbHmdb',
+        'wp#bdbUniprot', 'wp#bdbChEBI', 'wp#bdbChemspider', 'wp#bdbWikidata',
+    }:
         return 'value_namespace'
 
     else:
@@ -121,7 +133,9 @@ def match_entry(entry):
     :returns: entry_type:  type identifier, also used as first key to the main graph (ex: 'nodes' -> graph[entry_type][node_id])
     :rtype: Optional[tuple[str,str]]
     """
-    # Get the components of the entry identifier URI. The URI identifier will be used as the entry id and the namespace for type identification, wheras the prefix to match the entry handling
+    # Get the components of the entry identifier URI.
+    # The URI identifier will be used as the entry id and the namespace for
+    # type identification, wheras the prefix to match the entry handling
     uri = entry['@id']
     prefix, _, namespace, entry_id = parse_id_uri(uri)
 
@@ -164,7 +178,7 @@ def match_attribute(uri):
         'http://purl.org/dc/elements/1.1',
         'http://xmlns.com',
         'http://xmlns.com/foaf/0.1',
-        'http://purl.org/pav'
+        'http://purl.org/pav',
     }:
         raise Exception('Invalid attribute prefix %s', attribute_prefix, attribute_namespace)
 
@@ -175,12 +189,14 @@ def match_attribute(uri):
 """Getters and Setters"""
 
 
-def get_entry_attribute_value(entry_label, node_id, attribute_label, graph):
-    """For a given node (if entry type is nodes), entry_type and attribute, get the associated value in the graph object.
+def get_entry_attribute_value(entry_label: str, node_id: str, attribute_label: str, graph):
+    """Get the associated value in the graph object for a given node.
 
-    :param str node_id: ncbi id
-    :param str attribute_label: ex: 'source', 'title', 'description'...
-    :param str entry_label: ex: 'nodes', 'title', 'description'...
+    Only done if entry type is nodes, entry_type and attribute,...
+
+    :param entry_label: ex: 'nodes', 'title', 'description'...
+    :param node_id: ncbi id
+    :param attribute_label: ex: 'source', 'title', 'description'...
     :param dict graph:
     :returns: attribute_value: associated value in the graph object
     :rtype: Optional[str]
@@ -197,8 +213,9 @@ def get_entry_attribute_value(entry_label, node_id, attribute_label, graph):
 
 
 def set_entry_attribute(entry_type, node_id, attribute_label, value, graph):
-    """For a given node (if the entry type is 'nodes'), entry_type and attribute, set the associated value in the graph object.
+    """For a given node (if the entry type is 'nodes'), entry_type and attribute, set the associated value in the graph.
 
+    :param entry_type:
     :param str node_id: ncbi id
     :param str attribute_label: attribute label
     :param str entry_label: entry label
@@ -226,7 +243,9 @@ def set_interaction(entry, graph):
     :param dict entry: entry whose type has been previous identified as 'interactions'
     :param dict graph: pathway network graph object
     """
-    # Get the participants of the interaction, picking directly the node identifiers from the entry attributes with the corresponding argument URI namespace (wp#source or wp#interaction). After, for each participant, parse the URI value to obtine the nodes identifier.
+    # Get the participants of the interaction, picking directly the node identifiers from the entry attributes with
+    # the corresponding argument URI namespace (wp#source or wp#interaction). After, for each participant, parse the
+    # URI value to obtine the nodes identifier.
     # Get the node source id
     uri_source_id = entry['http://vocabularies.wikipathways.org/wp#source'][0]['@id']
     _, _, _, source_id = parse_id_uri(uri_source_id)
@@ -235,19 +254,20 @@ def set_interaction(entry, graph):
     uri_target_id = entry['http://vocabularies.wikipathways.org/wp#target'][0]['@id']
     _, _, _, target_id = parse_id_uri(uri_target_id)
 
-    # Also get the isAbout as the identifier of the interaction. For now will be the literal URI, due to no further information (like inhibits, increments) is indicated
+    # Also get the isAbout as the identifier of the interaction. For now will be the literal URI, due to no further
+    # information (like inhibits, increments) is indicated
     uri_interaction_type = entry['http://vocabularies.wikipathways.org/wp#isAbout'][0]['@id']
 
-    # Finally, add directy to the interactions set of the graph the three identifiers of the interaction as a tupple.
+    # Finally, add directy to the interactions set of the graph the three identifiers of the interaction as a tuple.
     graph['interactions'].add((source_id, target_id, uri_interaction_type))
 
 
-def get_entry_type(types):
+def get_entry_type(types) -> str:
     """For a set of uris that indicate the entry's type, get the type identifier (call match_entry_type).
 
     :param set types: set of uris (from the entry's @type attribute) that indicate the entry's type
-    :returns: entry_type: type identifier, also used as first key to the main graph (ex: 'nodes' -> graph[entry_type][node_id])
-    :rtype: str
+    :returns: entry_type: type identifier, also used as first key to the main graph
+     (ex: 'nodes' -> graph[entry_type][node_id])
     """
     types_set = set()
 
@@ -267,7 +287,10 @@ def get_entry_type(types):
 
 
 def parse_attribute_values(entry_label, entry_id, attribute_values, attribute_label, graph):
-    """For each value in attribute_values, taking into account the attribute_label type (if it is specified value_namespace thus would be the value namespace), adds a new entry to the graph (calling set_entry_attribute methode) beeing the last level of parsing. The value is added as a set if there are multiple values for the same attribute_labe or as a sigle value.
+    """For each value in attribute_values, taking into account the attribute_label type (if it is specified
+    value_namespace thus would be the value namespace), adds a new entry to the graph (calling set_entry_attribute
+    method) being the last level of parsing. The value is added as a set if there are multiple values for the same
+    attribute_label or as a sigle value.
 
     :param str entry_label: entry label
     :param str entry_id: entry identifier
@@ -301,7 +324,8 @@ def parse_attribute_values(entry_label, entry_id, attribute_values, attribute_la
 
 
 def parse_attributes(entry, entry_type, entry_id, graph):
-    """For each attribute in attributes, if is labbeled as a uri (not in {'@id', '@value', '@type'}) gets the attribute_type (calling the correspondent function) and calls the next statement (parse_attribute_values).
+    """For each attribute in attributes, if is labbeled as a uri (not in {'@id', '@value', '@type'}) gets the
+    attribute_type (calling the correspondent function) and calls the next statement (parse_attribute_values).
 
     :param dict attributes: attributes of the entity
     :param str entry_type: entity type
@@ -316,16 +340,15 @@ def parse_attributes(entry, entry_type, entry_id, graph):
 
 def generate_empty_pathway_graph():
     """Test set entry attribute."""
-    graph = {}
-    graph['interactions'] = set()
-    graph['nodes'] = {}
-    graph['pathway_info'] = {}
-
-    return graph
+    return {'interactions': set(), 'nodes': {}, 'pathway_info': {}}
 
 
 def parse_entries(entries):
-    """Create the graph object which will be finally returned full, with the values of the statements parser calls (entry -> attributes -> values). First the type of the entry and the id is obtined with match_entry, and according the type retrived is haddled the entry in a particular manner. If the entry is 'interactions' type, only will be called the methode set_interaction, but if not in depth parser if the different levels will be called (parse_attributes and parse_attribute_values).
+    """Create the graph object which will be finally returned full, with the values of the statements parser calls
+    (entry -> attributes -> values). First the type of the entry and the id is obtined with match_entry, and according
+    the type retrived is haddled the entry in a particular manner. If the entry is 'interactions' type, only will be
+    called the methode set_interaction, but if not in depth parser if the different levels will be called
+    (parse_attributes and parse_attribute_values).
 
     :param list[dict] entries:
     :rtype: networkx.MultiDiGraph
@@ -357,7 +380,10 @@ def convert_json(graph: rdflib.Graph):
 
 
 def parse_pathway(pathway_path):
-    """After importing the indicated pathway from text file resources into a graph rdflib object(import_pathway), calls the diferent data types transformations (convert_json function) and the first statement of the parser that will return a graph data structure (parse_entries function). This retrieved graph will be converted to a networX graph (convert_to_nx function).
+    """After importing the indicated pathway from text file resources into a graph rdflib object(import_pathway),
+    calls the different data types transformations (convert_json function) and the first statement of the parser that
+    will return a graph data structure (parse_entries function). This retrieved graph will be converted to a networkx
+    graph (convert_to_nx function).
 
     :param str pathway_path: pathway identifier
     :rtype: networkx.MultiDiGraph

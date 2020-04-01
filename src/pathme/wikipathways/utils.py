@@ -9,10 +9,10 @@ import zipfile
 from typing import Dict, Iterable, List, Optional, Set, Tuple, Union
 
 import networkx as nx
+
 from bio2bel_hgnc import Manager as HgncManager
 from bio2bel_wikipathways import Manager as WikiPathwaysManager
 from pybel import BELGraph
-
 from ..constants import (
     BRENDA,
     CHEMBL,
@@ -46,9 +46,9 @@ def evaluate_wikipathways_metadata(metadata: Union[str, Set[str]]) -> str:
 
 
 def _get_update_alias_symbol(
-        hgnc_manager: HgncManager,
-        original_identifier: str,
-        original_namespace: str,
+    hgnc_manager: HgncManager,
+    original_identifier: str,
+    original_namespace: str,
 ) -> Tuple[str, str, str]:
     """Try to get current alias symbol.
 
@@ -66,10 +66,10 @@ def _get_update_alias_symbol(
 
 
 def _validate_query(
-        hgnc_manager: HgncManager,
-        query_result,
-        original_identifier: str,
-        original_namespace: str,
+    hgnc_manager: HgncManager,
+    query_result,
+    original_identifier: str,
+    original_namespace: str,
 ) -> Tuple[str, str, str]:
     """Process and validate HGNC query.
 
@@ -268,9 +268,9 @@ def merge_two_dicts(dict1, dict2):
 
 
 def convert_to_nx(
-        nodes: Dict[str, Dict],
-        interactions: List[Tuple[str, str, Dict]],
-        pathway_info: Dict,
+    nodes: Dict[str, Dict],
+    interactions: List[Tuple[str, str, Dict]],
+    pathway_info: Dict,
 ) -> nx.MultiDiGraph:
     """Generate a NetworkX Graph from a network data structure (dict with nodes and edges).
 
@@ -353,9 +353,9 @@ def filter_wikipathways_files(file_names: Iterable[str]) -> List[str]:
 
 
 def iterate_wikipathways_paths(
-        directory: str,
-        connection: Optional[str] = None,
-        only_canonical: bool = True,
+    directory: str,
+    connection: Optional[str] = None,
+    only_canonical: bool = True,
 ) -> List[str]:
     """Get WikiPathways RDF files in folder.
 

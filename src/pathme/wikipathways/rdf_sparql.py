@@ -7,15 +7,15 @@ import os
 from collections import defaultdict
 from typing import Dict, Iterable, Tuple
 
-import bio2bel_hgnc
 import rdflib
 import tqdm
-from pybel import BELGraph, to_pickle
 from rdflib.namespace import DC, DCTERMS, Namespace, RDF, RDFS
 
+import bio2bel_hgnc
 from pathme.utils import get_pathway_statitics, parse_rdf, query_result_to_dict
 from pathme.wikipathways.convert_to_bel import convert_to_bel
 from pathme.wikipathways.utils import debug_pathway_info
+from pybel import BELGraph, to_pickle
 
 logger = logging.getLogger(__name__)
 
@@ -199,7 +199,7 @@ def _get_interactions(rdf_graph: rdflib.Graph) -> Dict[str, Dict]:
 
 
 def _get_pathway_components(graph) -> Tuple[
-        Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]]]:
+    Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]]]:
     """Get all components in data structures from a RDF pathway network.
 
     :param graph: RDF graph object
@@ -212,7 +212,7 @@ def _get_pathway_components(graph) -> Tuple[
 
 
 def get_wp_statistics(resource_files, resource_folder, hgnc_manager) -> Tuple[
-        Dict[str, Dict[str, int]], Dict[str, Dict[str, Dict[str, int]]]]:
+    Dict[str, Dict[str, int]], Dict[str, Dict[str, Dict[str, int]]]]:
     """Load WikiPathways RDF to BELGraph.
 
     :param iter[str] resource_files: RDF file path
@@ -276,10 +276,10 @@ def wikipathways_to_bel(file_path: str, hgnc_manager):
 
 
 def wikipathways_to_pickles(
-        resource_files: Iterable[str],
-        resource_folder: str,
-        hgnc_manager: bio2bel_hgnc.Manager,
-        export_folder: str,
+    resource_files: Iterable[str],
+    resource_folder: str,
+    hgnc_manager: bio2bel_hgnc.Manager,
+    export_folder: str,
 ) -> None:
     """Export WikiPathways to Pickles.
 

@@ -8,10 +8,9 @@ from bio2bel.testing import TemporaryConnectionMixin
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
 from bio2bel_kegg.manager import Manager
-from pybel import BELGraph
-
 from pathme.kegg.convert_to_bel import kegg_to_bel
 from pathme.kegg.kegg_xml_parser import *
+from pybel import BELGraph
 
 log = logging.getLogger(__name__)
 

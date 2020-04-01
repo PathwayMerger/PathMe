@@ -7,8 +7,8 @@ import os
 import pandas as pd
 import requests
 import tqdm
-from bio2bel_kegg.manager import Manager as KeggManager
 
+from bio2bel_kegg.manager import Manager as KeggManager
 from pathme.constants import KEGG_FILES, KEGG_KGML_URL, KEGG_STATS_COLUMN_NAMES
 from pathme.export_utils import get_paths_in_folder
 from pathme.kegg.convert_to_bel import get_bel_types

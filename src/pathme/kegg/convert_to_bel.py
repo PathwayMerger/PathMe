@@ -7,12 +7,7 @@ from collections import defaultdict
 from itertools import product
 
 import tqdm
-from pybel import BELGraph, to_pickle
-from pybel.dsl.edges import activity
-from pybel.dsl.node_classes import CentralDogma
 from pybel.dsl.nodes import bioprocess, composite_abundance, pmod, reaction
-from pybel.struct import add_annotation_value
-from pybel.struct.summary import count_functions, edge_summary
 
 from pathme.constants import *
 from pathme.export_utils import add_annotation_key
@@ -21,6 +16,11 @@ from pathme.kegg.kegg_xml_parser import (
     import_xml_etree,
 )
 from pathme.utils import add_bel_metadata
+from pybel import BELGraph, to_pickle
+from pybel.dsl.edges import activity
+from pybel.dsl.node_classes import CentralDogma
+from pybel.struct import add_annotation_value
+from pybel.struct.summary import count_functions, edge_summary
 
 __all__ = [
     'kegg_to_bel',
