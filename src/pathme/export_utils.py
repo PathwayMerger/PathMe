@@ -96,7 +96,7 @@ def export_helper(
     kegg_path: Optional[str] = None,
     reactome_path: Optional[str] = None,
     wikipathways_path: Optional[str] = None,
-    format='spia',
+    fmt: str = 'spia',
 ) -> None:
     """Export helper of PathMe.
 
@@ -178,7 +178,7 @@ def export_helper(
         collapse_all_variants(pathway_graph)
         collapse_to_genes(pathway_graph)
 
-        if format == 'spia':
+        if fmt == 'spia':
             # Default SPIA exporter
             spia_matrices = bel_to_spia_matrices(pathway_graph)
 
@@ -190,11 +190,11 @@ def export_helper(
             # Export excel file representing the connectivity matrix of the BEL Graph
             spia_matrices_to_excel(spia_matrices, output_file)
 
-        elif format == 'ppi':
+        elif fmt == 'ppi':
             output_file = os.path.join(output, f"{path.strip('.pickle')}.tsv")
             export_ppi_tsv(pathway_graph, output_file)
         else:
-            raise ValueError(f'Unknown export format: {format}')
+            raise ValueError(f'Unknown export format: {fmt}')
 
 
 def iterate_indra_statements(**kwargs) -> Iterable['indra.statements.Statement']:

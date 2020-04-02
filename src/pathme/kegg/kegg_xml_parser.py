@@ -100,11 +100,11 @@ def _post_process_api_query(node_meta_data, hgnc_manager, chebi_manager):
     return node_dict
 
 
-def _process_kegg_api_get_entity(entity, type, hgnc_manager, chebi_manager):
+def _process_kegg_api_get_entity(entity, entity_type, hgnc_manager, chebi_manager):
     """Send a given entity to the KEGG API and process the results.
 
     :param str entity: A KEGG identifier
-    :param str type: Entity type
+    :param str entity_type: Entity type
     :param bio2bel_hgnc.Manager hgnc_manager: HGNC Manager
     :param bio2bel_chebi.Manager chebi_manager: ChEBI Manager
     :return: JSON retrieved from the API
@@ -123,7 +123,7 @@ def _process_kegg_api_get_entity(entity, type, hgnc_manager, chebi_manager):
     node_dict = _post_process_api_query(node_meta_data, hgnc_manager, chebi_manager)
 
     node_dict[KEGG_ID] = entity
-    node_dict[KEGG_TYPE] = type
+    node_dict[KEGG_TYPE] = entity_type
 
     with open(_entity_filepath, 'w') as f:
         json.dump(node_dict, f)

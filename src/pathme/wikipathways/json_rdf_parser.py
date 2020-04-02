@@ -392,7 +392,7 @@ def parse_pathway(pathway_path):
     # calls the different data types transformations (convert_json function) and the first statement of the parser that
     # will return a graph data structure (parse_entries function). This retrieved graph will be converted to a networkx
     # graph (convert_to_nx function)
-    graph = parse_rdf(pathway_path, format='turtle')
+    graph = parse_rdf(pathway_path, fmt='turtle')
 
     json_wp_pathway = convert_json(graph)
     pathway_network = parse_entries(json_wp_pathway)

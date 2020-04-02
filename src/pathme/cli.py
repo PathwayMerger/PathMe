@@ -90,7 +90,7 @@ def ppi(kegg_path, reactome_path, wikipathways_path, output):
         reactome_path=reactome_path,
         wikipathways_path=wikipathways_path,
         output=output,
-        format='ppi',
+        fmt='ppi',
     )
 
 

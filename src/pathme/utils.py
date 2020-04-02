@@ -87,14 +87,14 @@ def parse_namespace_uri(uri: str) -> Tuple[str, str, str]:
     return prefix, namespace, vocabulary
 
 
-def parse_rdf(path: str, format: Optional[str] = None) -> rdflib.Graph:
+def parse_rdf(path: str, fmt: Optional[str] = None) -> rdflib.Graph:
     """Import a queried pathway into a rdflib Graph object.
 
     :param path: RDF file path
-    :param format: RDF file format, default is turtle
+    :param fmt: RDF file format, default is turtle
     """
-    if format is None:
-        format = 'ttl'
+    if fmt is None:
+        fmt = 'ttl'
 
     pickle_path = f'{path}.pickle'
     if os.path.exists(pickle_path):
@@ -108,7 +108,7 @@ def parse_rdf(path: str, format: Optional[str] = None) -> rdflib.Graph:
         )
 
     graph = rdflib.Graph()
-    graph.parse(path, format=format)
+    graph.parse(path, format=fmt)
 
     with open(pickle_path, 'wb') as file:
         pickle.dump(graph, file)

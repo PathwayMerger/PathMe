@@ -229,7 +229,7 @@ def get_wp_statistics(resource_files, resource_folder, hgnc_manager) -> Tuple[
     for rdf_file in tqdm.tqdm(resource_files, desc='Parsing WikiPathways'):
         # Parse pathway rdf_file
         pathway_path = os.path.join(resource_folder, rdf_file)
-        rdf_graph = parse_rdf(pathway_path, format='turtle')
+        rdf_graph = parse_rdf(pathway_path, fmt='turtle')
 
         pathway_metadata = _get_pathway_metadata(rdf_graph)
 
@@ -276,7 +276,7 @@ def wikipathways_to_bel(file_path: str, hgnc_manager):
     :param bio2bel_hgnc.Manager: HGNC manager
     :rtype: pybel.BELGraph
     """
-    rdf_graph = parse_rdf(file_path, format='turtle')
+    rdf_graph = parse_rdf(file_path, fmt='turtle')
     return rdf_wikipathways_to_bel(rdf_graph, hgnc_manager)
 
 
