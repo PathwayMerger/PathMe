@@ -318,7 +318,7 @@ def parse_attribute_values(entry_label, entry_id, attribute_values, attribute_la
             elif value_label == '@language':
                 set_entry_attribute(entry_label, entry_id, 'language', value, graph)
             else:
-                raise Exception('Error with attribute {}'.format(value_label))
+                raise Exception(f'Error with attribute {value_label}')
 
     if len(attribute_value) == 1:
         attribute_value = list(attribute_value)[0]

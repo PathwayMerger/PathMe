@@ -43,7 +43,7 @@ def download():
 
 
 @main.command()
-@click.option('-c', '--connection', help="Defaults to {}".format(DEFAULT_CACHE_CONNECTION))
+@click.option('-c', '--connection', default=DEFAULT_CACHE_CONNECTION, show_default=True)
 @click.option('-r', '--resource-folder')
 @click.option('-d', '--export-folder', default=WIKIPATHWAYS_BEL)
 @click.option('-v', '--debug', is_flag=True, default=False, help='Debug mode')
@@ -98,7 +98,7 @@ def summarize(export_folder):
 
 
 @main.command()
-@click.option('-c', '--connection', help="Defaults to {}".format(DEFAULT_CACHE_CONNECTION))
+@click.option('-c', '--connection', default=DEFAULT_CACHE_CONNECTION, show_default=True)
 @click.option('-v', '--verbose', is_flag=True)
 @click.option('-x', '--only-canonical', default=True, help='Parse only canonical pathways')
 @click.option('-e', '--export', default=False, help='Export to datasheet csv and xls')

@@ -691,13 +691,13 @@ def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager
 
     for kgml_file in tqdm.tqdm(resource_files, desc=f'Exporting KEGG to BEL in {export_folder}'):
 
+        _name = kgml_file.strip('.xml')
+        _flatten = 'flatten' if flatten else 'unflatten'
+
         # Name of file created will be: "hsaXXX_unflatten.pickle" or "hsaXXX_flatten.pickle"
         pickle_path = os.path.join(
             export_folder if export_folder else KEGG_BEL,
-            '{}_{}.pickle'.format(
-                kgml_file.strip('.xml'),
-                'flatten' if flatten else 'unflatten',
-            ),  # By default graphs are unflatten
+            f'{_name}_{_flatten}.pickle',
         )
 
         # Skip not KGML files or file already exists
