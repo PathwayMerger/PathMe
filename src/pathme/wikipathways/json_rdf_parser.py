@@ -114,7 +114,8 @@ def match_attribute_label(attribute_namespace):
     }:
         return attribute_namespace.split('#')[1]
 
-    # Return the value_namespace. The value of the atribute is also specified as a uri, with the value as the identifier. So in the following cases, the value namespace of the value uri will be later assigned as the attribute label.
+    # Return the value_namespace. The value of the atribute is also specified as a uri, with the value as the identifier
+    # So in the following cases, the value namespace of the value uri will be later assigned as the attribute label.
     elif attribute_namespace in {
         'wp#bdbEnsembl', 'wp#bdbEntrezGene', 'wp#bdbHgncSymbol', 'wp#bdbPubChem', 'wp#bdbHmdb',
         'wp#bdbUniprot', 'wp#bdbChEBI', 'wp#bdbChemspider', 'wp#bdbWikidata',
@@ -289,10 +290,7 @@ def get_entry_type(types) -> str:
 
 
 def parse_attribute_values(entry_label, entry_id, attribute_values, attribute_label, graph):
-    """For each value in attribute_values, taking into account the attribute_label type (if it is specified
-    value_namespace thus would be the value namespace), adds a new entry to the graph (calling set_entry_attribute
-    method) being the last level of parsing. The value is added as a set if there are multiple values for the same
-    attribute_label or as a sigle value.
+    """For each value in attribute_values, taking into account the attribute_label type.
 
     :param str entry_label: entry label
     :param str entry_id: entry identifier
@@ -300,6 +298,9 @@ def parse_attribute_values(entry_label, entry_id, attribute_values, attribute_la
     :param str attribute_label: label
     :param dict graph: graph object
     """
+    # If it is specified value_namespace thus would be the value namespace), adds a new entry to the graph
+    # (calling set_entry_attribute method) being the last level of parsing. The value is added as a set if there are
+    # multiple values for the same attribute_label or as a sigle value.
     attribute_value = set()
 
     for attribute_raw_value in attribute_values:
@@ -326,14 +327,15 @@ def parse_attribute_values(entry_label, entry_id, attribute_values, attribute_la
 
 
 def parse_attributes(entry, entry_type, entry_id, graph):
-    """For each attribute in attributes, if is labbeled as a uri (not in {'@id', '@value', '@type'}) gets the
-    attribute_type (calling the correspondent function) and calls the next statement (parse_attribute_values).
+    """Parse attributes RDF node.
 
     :param dict entry: attributes of the entity
     :param str entry_type: entity type
     :param str entry_id: entry identifier
     :param dict graph: graph object
     """
+    # For each attribute in attributes, if is labbeled as a uri (not in {'@id', '@value', '@type'}) gets the
+    # attribute_type (calling the correspondent function) and calls the next statement (parse_attribute_values)
     for attribute_label, values in entry.items():
         if attribute_label not in {'@id', '@value', '@type'}:
             attribute_type = match_attribute(attribute_label)
@@ -346,15 +348,16 @@ def generate_empty_pathway_graph():
 
 
 def parse_entries(entries):
-    """Create the graph object which will be finally returned full, with the values of the statements parser calls
-    (entry -> attributes -> values). First the type of the entry and the id is obtined with match_entry, and according
-    the type retrived is haddled the entry in a particular manner. If the entry is 'interactions' type, only will be
-    called the methode set_interaction, but if not in depth parser if the different levels will be called
-    (parse_attributes and parse_attribute_values).
+    """Parse entries.
 
     :param list[dict] entries:
     :rtype: networkx.MultiDiGraph
     """
+    # Create the graph object which will be finally returned full, with the values of the statements parser calls
+    # (entry -> attributes -> values). First the type of the entry and the id is obtined with match_entry, and according
+    # the type retrived is haddled the entry in a particular manner. If the entry is 'interactions' type, only will be
+    # called the methode set_interaction, but if not in depth parser if the different levels will be called
+    # (parse_attributes and parse_attribute_values)
     # Create the graph object
     graph = generate_empty_pathway_graph()
 
@@ -380,14 +383,15 @@ def convert_json(graph: rdflib.Graph):
 
 
 def parse_pathway(pathway_path):
-    """After importing the indicated pathway from text file resources into a graph rdflib object(import_pathway),
-    calls the different data types transformations (convert_json function) and the first statement of the parser that
-    will return a graph data structure (parse_entries function). This retrieved graph will be converted to a networkx
-    graph (convert_to_nx function).
+    """Parse pathway.
 
     :param str pathway_path: pathway identifier
     :rtype: networkx.MultiDiGraph
     """
+    # After importing the indicated pathway from text file resources into a graph rdflib object(import_pathway),
+    # calls the different data types transformations (convert_json function) and the first statement of the parser that
+    # will return a graph data structure (parse_entries function). This retrieved graph will be converted to a networkx
+    # graph (convert_to_nx function)
     graph = parse_rdf(pathway_path, format='turtle')
 
     json_wp_pathway = convert_json(graph)

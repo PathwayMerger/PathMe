@@ -206,7 +206,7 @@ class TestWikiPathways(unittest.TestCase):
         return graph, entry_id, entry_type
 
     def assert_get_value(self, entry_type, entry_id, graph, assert_values):  # noqa: D202
-        """Assert a dict of attributes values (labels as keys and values) with the retrieval of the function get_node_attribute_value."""
+        """Assert a dict of attributes values (labels as keys and values) using get_node_attribute_value."""
 
         def get_node_attribute_value(attribute_label):
             return get_entry_attribute_value(entry_type, entry_id, attribute_label, graph)

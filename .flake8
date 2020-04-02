@@ -17,6 +17,8 @@ ignore =
 	C901 # too complex methods
 	E125 # Long or in if statements
 	I202 # Import order group
+	D412
+
 exclude =
     .tox,
     .git,
