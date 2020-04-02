@@ -10,15 +10,13 @@ from collections import defaultdict
 from xml.etree.ElementTree import parse
 
 import requests
+
 from bio2bel_kegg.constants import API_KEGG_GET
 from bio2bel_kegg.parsers.description import parse_description
+from ..constants import CHEBI, CHEBI_NAME, HGNC, HGNC_SYMBOL, KEGG_CACHE, KEGG_ID, KEGG_TYPE, PUBCHEM, UNIPROT
+from ..wikipathways.utils import merge_two_dicts
 
-from pathme.constants import CHEBI, CHEBI_NAME, HGNC, HGNC_SYMBOL, KEGG_CACHE, KEGG_ID, KEGG_TYPE, PUBCHEM, UNIPROT
-from pathme.wikipathways.utils import merge_two_dicts
-
-log = logging.getLogger(__name__)
-
-"""Import XML"""
+logger = logging.getLogger(__name__)
 
 
 def import_xml_etree(filename):
@@ -323,7 +321,7 @@ def get_all_relationships(tree):
 
             # TODO: assume association ??
             if not relation_subtype:
-                log.warning("No relation type declared")
+                logger.warning("No relation type declared")
 
             # Add protein-protein, protein-compound and transcription factor-target gene product interactions
             if relation_type in {'PPrel', 'PCrel', 'GErel'}:

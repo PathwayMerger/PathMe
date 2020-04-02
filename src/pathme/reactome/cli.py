@@ -7,17 +7,17 @@ import os
 import time
 
 import click
+from tqdm import tqdm
+
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
 from pybel import from_pickle
-from tqdm import tqdm
-
-from pathme.constants import DATA_DIR, DEFAULT_CACHE_CONNECTION, RDF_REACTOME, REACTOME_BEL, REACTOME_FILES
-from pathme.export_utils import get_paths_in_folder
-from pathme.reactome.rdf_sparql import get_reactome_statistics, reactome_to_bel
-from pathme.reactome.utils import untar_file
-from pathme.utils import make_downloader, statistics_to_df, summarize_helper
-from pathme.wikipathways.utils import get_file_name_from_url
+from .rdf_sparql import get_reactome_statistics, reactome_to_bel
+from .utils import untar_file
+from ..constants import DATA_DIR, DEFAULT_CACHE_CONNECTION, RDF_REACTOME, REACTOME_BEL, REACTOME_FILES
+from ..export_utils import get_paths_in_folder
+from ..utils import make_downloader, statistics_to_df, summarize_helper
+from ..wikipathways.utils import get_file_name_from_url
 
 __all__ = [
     'main',

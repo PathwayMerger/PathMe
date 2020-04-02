@@ -7,17 +7,17 @@ import os
 import time
 
 import click
-from bio2bel_hgnc import Manager as HgncManager
-from pybel import from_pickle
 from tqdm import tqdm
 
-from pathme.constants import (
+from bio2bel_hgnc import Manager as HgncManager
+from pybel import from_pickle
+from .rdf_sparql import get_wp_statistics, wikipathways_to_pickles
+from .utils import get_file_name_from_url, iterate_wikipathways_paths, unzip_file
+from ..constants import (
     DATA_DIR, DEFAULT_CACHE_CONNECTION, RDF_WIKIPATHWAYS, WIKIPATHWAYS_BEL, WIKIPATHWAYS_DIR, WIKIPATHWAYS_FILES,
 )
-from pathme.export_utils import get_paths_in_folder
-from pathme.utils import CallCounted, make_downloader, statistics_to_df, summarize_helper
-from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pickles
-from pathme.wikipathways.utils import get_file_name_from_url, iterate_wikipathways_paths, unzip_file
+from ..export_utils import get_paths_in_folder
+from ..utils import CallCounted, make_downloader, statistics_to_df, summarize_helper
 
 logger = logging.getLogger(__name__)
 

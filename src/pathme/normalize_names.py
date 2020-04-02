@@ -7,11 +7,11 @@ from collections import defaultdict
 from typing import List
 
 from networkx import relabel_nodes
+
 from pybel import BELGraph
 from pybel.dsl import Abundance, BiologicalProcess, CentralDogma, ListAbundance, MicroRna, Protein, Reaction
-
-from pathme.constants import REACTOME, WIKIPATHWAYS
-from pathme.pybel_utils import multi_relabel
+from .constants import REACTOME, WIKIPATHWAYS
+from .pybel_utils import multi_relabel
 
 logger = logging.getLogger(__name__)
 
@@ -205,7 +205,8 @@ def normalize_graph_names(graph: BELGraph, database: str) -> None:
         elif isinstance(node, Abundance):
 
             if database == 'wikipathways':
-                # Biological processes that are captured as abundance in BEL since they were characterized wrong in WikiPathways
+                # Biological processes that are captured as abundance in
+                # BEL since they were characterized wrong in WikiPathways
                 if lower_name in WIKIPATHWAYS_BIOL_PROCESS:
                     one_to_one_mapping[node] = BiologicalProcess(
                         node.namespace, name=lower_name, identifier=node.identifier
@@ -213,8 +214,10 @@ def normalize_graph_names(graph: BELGraph, database: str) -> None:
                     continue
 
                 # Abundances to BiologicalProcesses
-                elif node.namespace in {'WIKIDATA', 'WIKIPATHWAYS', 'REACTOME'} \
-                        and lower_name not in WIKIPATHWAYS_METAB:
+                elif (
+                    node.namespace in {'WIKIDATA', 'WIKIPATHWAYS', 'REACTOME'}
+                    and lower_name not in WIKIPATHWAYS_METAB
+                ):
                     one_to_one_mapping[node] = BiologicalProcess(
                         node.namespace, name=lower_name, identifier=node.identifier
                     )
@@ -235,8 +238,8 @@ def normalize_graph_names(graph: BELGraph, database: str) -> None:
                 # Flat multiple identifiers (this is not trivial because most of ChEBI names contain commas,
                 # so a clever way to fix some of the entities is to check that all identifiers contain letters)
                 elif "," in lower_name and all(
-                        string.isalpha()
-                        for string in lower_name.split(",")
+                    string.isalpha()
+                    for string in lower_name.split(",")
                 ):
                     for string in lower_name.split(","):
                         one_to_many_mapping[node].add(

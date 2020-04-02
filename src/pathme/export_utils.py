@@ -7,19 +7,18 @@ import os
 from typing import Iterable, List, Optional, TextIO, Tuple, Union
 
 import networkx as nx
+from networkx.utils import open_file
+from tqdm import tqdm
+
 import pybel
 from bio2bel_reactome import Manager as ReactomeManager
 from bio2bel_reactome.models import Pathway
-from networkx.utils import open_file
 from pybel import BELGraph, from_pickle, union
 from pybel.constants import ANNOTATIONS, NAME, RELATION
 from pybel.struct import add_annotation_value
 from pybel.struct.mutation import collapse_all_variants, collapse_to_genes
 from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
-from tqdm import tqdm
-
-from .constants import KEGG, PATHME_DIR, REACTOME, WIKIPATHWAYS
-from .constants import KEGG_BEL, REACTOME_BEL, WIKIPATHWAYS_BEL
+from .constants import KEGG, KEGG_BEL, PATHME_DIR, REACTOME, REACTOME_BEL, WIKIPATHWAYS, WIKIPATHWAYS_BEL
 from .normalize_names import normalize_graph_names
 from .pybel_utils import flatten_complex_nodes
 
@@ -34,10 +33,10 @@ def add_annotation_key(graph: BELGraph):
 
 
 def get_all_pickles(
-        *,
-        kegg_path: Optional[str] = None,
-        reactome_path: Optional[str] = None,
-        wikipathways_path: Optional[str] = None,
+    *,
+    kegg_path: Optional[str] = None,
+    reactome_path: Optional[str] = None,
+    wikipathways_path: Optional[str] = None,
 ) -> Tuple[List[str], List[str], List[str]]:
     """Return a list with all pickle paths."""
     kegg_pickles = get_paths_in_folder(kegg_path or KEGG_BEL)
@@ -56,12 +55,12 @@ def get_all_pickles(
 
 
 def get_universe_graph(
-        *,
-        kegg_path: Optional[str] = None,
-        reactome_path: Optional[str] = None,
-        wikipathways_path: Optional[str] = None,
-        flatten: bool = True,
-        normalize_names: bool = True,
+    *,
+    kegg_path: Optional[str] = None,
+    reactome_path: Optional[str] = None,
+    wikipathways_path: Optional[str] = None,
+    flatten: bool = True,
+    normalize_names: bool = True,
 ) -> BELGraph:
     """Return universe graph."""
     universe_graphs = iterate_universe_graphs(
@@ -92,12 +91,12 @@ def export_ppi_tsv(graph: BELGraph, path: Union[str, TextIO]):
 
 
 def export_helper(
-        *,
-        output: str,
-        kegg_path: Optional[str] = None,
-        reactome_path: Optional[str] = None,
-        wikipathways_path: Optional[str] = None,
-        format='spia',
+    *,
+    output: str,
+    kegg_path: Optional[str] = None,
+    reactome_path: Optional[str] = None,
+    wikipathways_path: Optional[str] = None,
+    format='spia',
 ) -> None:
     """Export helper of PathMe.
 
@@ -205,12 +204,12 @@ def iterate_indra_statements(**kwargs) -> Iterable['indra.statements.Statement']
 
 
 def iterate_universe_graphs(
-        *,
-        kegg_path: Optional[str] = None,
-        reactome_path: Optional[str] = None,
-        wikipathways_path: Optional[str] = None,
-        flatten: bool = True,
-        normalize_names: bool = True,
+    *,
+    kegg_path: Optional[str] = None,
+    reactome_path: Optional[str] = None,
+    wikipathways_path: Optional[str] = None,
+    flatten: bool = True,
+    normalize_names: bool = True,
 ) -> Iterable[Tuple[str, str, BELGraph]]:
     """Return universe graph."""
     kegg_pickle_paths, reactome_pickle_paths, wp_pickle_paths = get_all_pickles(

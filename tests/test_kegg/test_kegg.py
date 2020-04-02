@@ -2,14 +2,15 @@
 
 """Tests for converting KEGG."""
 
-from pybel.dsl.nodes import abundance, bioprocess, composite_abundance, protein
-from pybel.struct.summary.node_summary import count_functions
-from pybel_tools.summary.edge_summary import count_relations
-
 from pathme.constants import *
 from pathme.kegg.convert_to_bel import xml_complexes_to_bel, xml_entities_to_bel
-from pathme.kegg.kegg_xml_parser import _process_kegg_api_get_entity, get_all_reactions, get_all_relationships, \
-    get_complex_components, get_entity_nodes, get_reaction_pathway_edges
+from pathme.kegg.kegg_xml_parser import (
+    _process_kegg_api_get_entity, get_all_reactions, get_all_relationships,
+    get_complex_components, get_entity_nodes, get_reaction_pathway_edges,
+)
+from pybel.dsl import bioprocess, composite_abundance
+from pybel.struct.summary.node_summary import count_functions
+from pybel_tools.summary.edge_summary import count_relations
 from tests.constants import KeggTest
 
 
@@ -37,24 +38,32 @@ class TestKegg(KeggTest):
         self.assertEqual(len(glycolysis_orthologs), 27)
 
         self.assertEqual(notch_genes['3'], [
-            {KEGG_ID: 'hsa:5663',
-             KEGG_TYPE: 'gene',
-             HGNC_SYMBOL: 'PSEN1',
-             HGNC: '9508'},
-            {KEGG_ID: 'hsa:5664',
-             KEGG_TYPE: 'gene',
-             HGNC_SYMBOL: 'PSEN2',
-             HGNC: '9509'}
+            {
+                KEGG_ID: 'hsa:5663',
+                KEGG_TYPE: 'gene',
+                HGNC_SYMBOL: 'PSEN1',
+                HGNC: '9508'
+            },
+            {
+                KEGG_ID: 'hsa:5664',
+                KEGG_TYPE: 'gene',
+                HGNC_SYMBOL: 'PSEN2',
+                HGNC: '9509'
+            }
         ])
         self.assertEqual(glycolysis_genes['45'], [
-            {KEGG_ID: 'hsa:10327',
-             KEGG_TYPE: 'gene',
-             HGNC_SYMBOL: 'AKR1A1',
-             HGNC: '380'}
+            {
+                KEGG_ID: 'hsa:10327',
+                KEGG_TYPE: 'gene',
+                HGNC_SYMBOL: 'AKR1A1',
+                HGNC: '380'
+            }
         ])
         self.assertEqual(glycolysis_compounds['83'], [
-            {KEGG_ID: 'cpd:C00031', CHEBI: '4167', CHEBI_NAME: 'D-glucopyranose', PUBCHEM: '3333',
-             KEGG_TYPE: 'compound'}
+            {
+                KEGG_ID: 'cpd:C00031', CHEBI: '4167', CHEBI_NAME: 'D-glucopyranose', PUBCHEM: '3333',
+                KEGG_TYPE: 'compound'
+            }
         ])
         self.assertEqual(notch_maps['4'], [
             {KEGG_ID: 'path:hsa04010', 'map_name': 'MAPK signaling pathway'}
@@ -83,22 +92,30 @@ class TestKegg(KeggTest):
         self.assertEqual(len(flattened_complexes), 4)
         self.assertEqual(complex_ids['29'], ['5', '8'])
         self.assertEqual(flattened_complexes['29'], [
-            {KEGG_ID: 'hsa:3065',
-             KEGG_TYPE: 'gene',
-             HGNC_SYMBOL: 'HDAC1',
-             HGNC: '4852'},
-            {KEGG_ID: 'hsa:3066',
-             KEGG_TYPE: 'gene',
-             HGNC_SYMBOL: 'HDAC2',
-             HGNC: '4853'},
-            {KEGG_ID: 'hsa:1487',
-             KEGG_TYPE: 'gene',
-             HGNC_SYMBOL: 'CTBP1',
-             HGNC: '2494'},
-            {KEGG_ID: 'hsa:1488',
-             KEGG_TYPE: 'gene',
-             HGNC_SYMBOL: 'CTBP2',
-             HGNC: '2495'}
+            {
+                KEGG_ID: 'hsa:3065',
+                KEGG_TYPE: 'gene',
+                HGNC_SYMBOL: 'HDAC1',
+                HGNC: '4852'
+            },
+            {
+                KEGG_ID: 'hsa:3066',
+                KEGG_TYPE: 'gene',
+                HGNC_SYMBOL: 'HDAC2',
+                HGNC: '4853'
+            },
+            {
+                KEGG_ID: 'hsa:1487',
+                KEGG_TYPE: 'gene',
+                HGNC_SYMBOL: 'CTBP1',
+                HGNC: '2494'
+            },
+            {
+                KEGG_ID: 'hsa:1488',
+                KEGG_TYPE: 'gene',
+                HGNC_SYMBOL: 'CTBP2',
+                HGNC: '2495'
+            }
         ])
 
     def test_get_all_relationships(self):
@@ -272,7 +289,8 @@ class TestKegg(KeggTest):
 
         # Test pathway map nodes
         self.assertEqual(flat_glycolysis_nodes['54'],
-                         bioprocess(namespace=KEGG.upper(), name='Citrate cycle (TCA cycle)', identifier='path:hsa00020')
+                         bioprocess(namespace=KEGG.upper(), name='Citrate cycle (TCA cycle)',
+                                    identifier='path:hsa00020')
                          )
         self.assertEqual(flat_notch_nodes['4'],
                          bioprocess(namespace=KEGG.upper(), name='MAPK signaling pathway', identifier='path:hsa04010')

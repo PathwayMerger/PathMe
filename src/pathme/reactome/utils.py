@@ -10,11 +10,10 @@ from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
 from bio2bel_hgnc.models import HumanGene
 from pybel.dsl import protein
-
-from pathme.utils import parse_id_uri
 from ..constants import ENSEMBL, HGNC, UNIPROT, UNKNOWN
+from ..utils import parse_id_uri
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 """Download utilities"""
 
@@ -28,9 +27,9 @@ def get_hgnc_node_info(gene: HumanGene) -> Tuple[str, str, str]:
 
 
 def get_valid_node_parameters(
-        node,
-        hgnc_manager: HgncManager,
-        chebi_manager: ChebiManager,
+    node,
+    hgnc_manager: HgncManager,
+    chebi_manager: ChebiManager,
 ) -> Tuple[str, str, str]:
     """Get valid node parameters."""
     namespace = None
@@ -45,7 +44,7 @@ def get_valid_node_parameters(
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(identifier)
 
         if not hgnc_entry:
-            log.debug('UniProt id: %s could not be converted to HGNC', identifier)
+            logger.debug('UniProt id: %s could not be converted to HGNC', identifier)
             namespace = UNIPROT
 
         # Multiple HGNC entries match the UniProt ID
@@ -60,7 +59,7 @@ def get_valid_node_parameters(
         hgnc_entry = hgnc_manager.get_gene_by_ensembl_id(identifier)
 
         if not hgnc_entry:
-            log.debug('ENSEMBL id: %s could not be converted to HGNC', identifier)
+            logger.debug('ENSEMBL id: %s could not be converted to HGNC', identifier)
             namespace = ENSEMBL
 
         else:
@@ -78,10 +77,10 @@ def get_valid_node_parameters(
             if '#' in identifier:
                 identifier = str(identifier).split('#')[1]
         if 'Complex' not in identifier or 'SmallMolecule' not in identifier:
-            log.debug('Adding Reactome identifier for %s ', node['uri_reactome_id'])
+            logger.debug('Adding Reactome identifier for %s ', node['uri_reactome_id'])
 
     else:
-        log.debug('Not found HGNC Symbol neither Reactome id for %s ', node['uri_id'])
+        logger.debug('Not found HGNC Symbol neither Reactome id for %s ', node['uri_id'])
 
     if 'display_name' in node:
         name = node['display_name']

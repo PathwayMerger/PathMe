@@ -8,23 +8,22 @@ import sys
 
 import click
 import networkx as nx
+
 from pybel import to_pickle
 from pybel.struct.mutation import collapse_all_variants, collapse_to_genes, remove_isolated_list_abundances
 from pybel.struct.summary import count_functions
-
-import pathme.kegg.cli
-import pathme.reactome.cli
-import pathme.wikipathways.cli
-
 from .constants import CX_DIR, KEGG_BEL, PPI_DIR, REACTOME_BEL, SPIA_DIR, UNIVERSE_DIR, WIKIPATHWAYS_BEL
 from .export_utils import export_helper, get_universe_graph, iterate_universe_graphs
+from .kegg.cli import main as kegg_cli
+from .reactome.cli import main as reactome_cli
+from .wikipathways.cli import main as wikipathways_cli
 
 logger = logging.getLogger(__name__)
 
 commands = dict(
-    kegg=pathme.kegg.cli.main,
-    wikipathways=pathme.wikipathways.cli.main,
-    reactome=pathme.reactome.cli.main,
+    kegg=kegg_cli,
+    wikipathways=wikipathways_cli,
+    reactome=reactome_cli,
 )
 
 
@@ -131,7 +130,7 @@ def cx(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no_norma
 @no_normalize_names_option
 def universe(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no_normalize_names):
     """Export harmonized PathMe universe."""
-    logging.basicConfig(level=logging.info, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     logger.setLevel(logging.INFO)
 
     flatten = not no_flatten

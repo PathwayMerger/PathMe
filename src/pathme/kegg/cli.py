@@ -7,11 +7,11 @@ import os
 import time
 
 import click
+from tqdm import tqdm
+
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
 from pybel import from_pickle
-from tqdm import tqdm
-
 from .convert_to_bel import kegg_to_pickles
 from .utils import download_kgml_files, get_kegg_pathway_ids
 from ..constants import KEGG_BEL, KEGG_FILES
@@ -37,10 +37,10 @@ def download(connection):
     kegg_ids = get_kegg_pathway_ids(connection=connection)
 
     if click.confirm(
-            'You are about to download KGML files from KEGG.\n'
-            'Please make sure you have read KEGG license (see: https://www.kegg.jp/kegg/rest/).'
-            ' These files cannot be distributed and their use must be exclusively with academic purposes.\n'
-            'We (PathMe developers) are not responsible for the end use of this data.\n'
+        'You are about to download KGML files from KEGG.\n'
+        'Please make sure you have read KEGG license (see: https://www.kegg.jp/kegg/rest/).'
+        ' These files cannot be distributed and their use must be exclusively with academic purposes.\n'
+        'We (PathMe developers) are not responsible for the end use of this data.\n'
     ):
         click.echo('You have read and accepted the conditions stated above.\n')
         download_kgml_files(kegg_ids)

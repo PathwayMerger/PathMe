@@ -8,7 +8,7 @@ This module contains all the string constants used in PathMe.
 import os
 
 from bio2bel.utils import get_connection
-from pybel.dsl.nodes import abundance, complex_abundance, protein, rna
+from pybel.dsl import abundance, complex_abundance, protein, rna
 
 MODULE_NAME = 'pathme'
 DEFAULT_PATHME_DIR = os.path.join(os.path.expanduser('~'), '.pathme')

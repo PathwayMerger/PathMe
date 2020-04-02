@@ -12,16 +12,16 @@ from urllib.request import urlretrieve
 
 import click
 import pandas as pd
-import pybel
 import rdflib
+
+import pybel
 from pybel import BELGraph, from_pickle
 from pybel.constants import GRAPH_NAMESPACE_URL
 from pybel.struct.summary import count_functions, count_relations
-
 from .constants import *
 from .export_utils import get_paths_in_folder
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class CallCounted:
@@ -488,7 +488,7 @@ def make_downloader(url, path, export_path, decompress_file):
     :return: A function that downloads the data and returns the path of the data
     :rtype: (bool -> str)
     """
-    log.info(url)
+    logger.info(url)
 
     def download_data(force_download=False):
         """Download the data.
@@ -497,16 +497,16 @@ def make_downloader(url, path, export_path, decompress_file):
         :rtype: str
         """
         if os.path.exists(path) and not force_download:
-            log.info('using cached data at %s', path)
+            logger.info('using cached data at %s', path)
         else:
-            log.info('downloading %s to %s', url, path)
-            urlretrieve(url, path)
+            logger.info('downloading %s to %s', url, path)
+            urlretrieve(url, path)  # noqa: S310
 
         return path
 
     data = download_data()
 
-    log.info('unzipping file %s, da')
+    logger.info('unzipping file %s, da')
     decompress_file(data, export_path)
 
 

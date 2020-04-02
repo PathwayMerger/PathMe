@@ -9,7 +9,6 @@ import pybel
 from bio2bel_hgnc import Manager
 from pybel import BELGraph
 from pybel.dsl import BaseEntity, abundance, activity, bioprocess, complex_abundance, gene, protein, rna
-
 from .utils import check_multiple, evaluate_wikipathways_metadata, get_valid_gene_identifier
 from ..constants import ACTIVITY_ALLOWED_MODIFIERS, HGNC
 from ..utils import add_bel_metadata, parse_id_uri
@@ -18,7 +17,7 @@ __all__ = [
     'convert_to_bel',
 ]
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def _check_empty_complex(complex: Dict[str, Dict], nodes: Dict[str, BaseEntity]):
@@ -34,10 +33,10 @@ def _check_empty_complex(complex: Dict[str, Dict], nodes: Dict[str, BaseEntity])
 
 
 def convert_to_bel(
-        nodes: Dict[str, Dict],
-        complexes: Dict[str, Dict],
-        interactions: Dict[str, Dict],
-        pathway_info, hgnc_manager: Manager,
+    nodes: Dict[str, Dict],
+    complexes: Dict[str, Dict],
+    interactions: Dict[str, Dict],
+    pathway_info, hgnc_manager: Manager,
 ) -> BELGraph:
     """Convert  RDF graph info to BEL."""
     graph = BELGraph(
@@ -114,13 +113,13 @@ def node_to_bel(node: Dict, hgnc_manager: Manager, pathway_id) -> BaseEntity:
         return abundance(namespace=namespace.upper(), name=name, identifier=identifier)
 
     else:
-        log.debug('Unknown %s [pathway=%s]', node_types, pathway_id)
+        logger.debug('Unknown %s [pathway=%s]', node_types, pathway_id)
 
 
 def complexes_to_bel(
-        complexes: Dict[str, Dict],
-        nodes: Dict[str, BaseEntity],
-        graph: BELGraph,
+    complexes: Dict[str, Dict],
+    nodes: Dict[str, BaseEntity],
+    graph: BELGraph,
 ) -> Dict[str, BaseEntity]:
     """Convert node to BEL."""
     return {
@@ -147,9 +146,9 @@ def complex_to_bel(complex, nodes, graph: BELGraph):
 
 
 def get_reaction_node(
-        participants: Iterable[Tuple[str, str]],
-        nodes,
-        interactions,
+    participants: Iterable[Tuple[str, str]],
+    nodes,
+    interactions,
 ) -> pybel.dsl.Reaction:
     reactants = set()
     products = set()
@@ -171,9 +170,9 @@ def get_reaction_node(
 
 
 def get_node(
-        node: str,
-        nodes: Mapping[str, BaseEntity],
-        interactions: Mapping[str, Any],
+    node: str,
+    nodes: Mapping[str, BaseEntity],
+    interactions: Mapping[str, Any],
 ) -> Optional[BaseEntity]:
     if node in nodes:
         return nodes[node]
@@ -183,7 +182,7 @@ def get_node(
         if identifier in interactions:
             return get_reaction_node(interactions[identifier]['participants'], nodes, interactions)
 
-    log.debug('No valid id for node %s', node)
+    logger.debug('No valid id for node %s', node)
 
 
 def add_edges(graph: BELGraph, participants, nodes, interactions: Dict, att: Dict):
@@ -203,9 +202,9 @@ def add_edges(graph: BELGraph, participants, nodes, interactions: Dict, att: Dic
             if u and v:
                 add_simple_edge(graph, u, v, edge_types, uri_id)
             if u is None:
-                log.debug(f'Source is none: {source}')
+                logger.debug(f'Source is none: {source}')
             if v is None:
-                log.debug(f'Target is none: {target}')
+                logger.debug(f'Target is none: {target}')
 
 
 def add_simple_edge(graph: BELGraph, u: BaseEntity, v: BaseEntity, edge_types, uri_id):
@@ -252,10 +251,10 @@ def add_simple_edge(graph: BELGraph, u: BaseEntity, v: BaseEntity, edge_types, u
         )
 
     elif 'Interaction' in edge_types:
-        log.debug('No interaction subtype for %s', str(uri_id))
+        logger.debug('No interaction subtype for %s', str(uri_id))
 
     elif 'TranscriptionTranslation' in edge_types:
         graph.add_translation(u, v)
 
     else:
-        log.debug('No handled edge type %s', str(uri_id))
+        logger.debug('No handled edge type %s', str(uri_id))

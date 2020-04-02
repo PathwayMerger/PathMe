@@ -8,16 +8,16 @@ from collections import defaultdict
 from typing import Any, Dict, List, Set, Tuple, Union
 
 import rdflib
-from pybel import to_pickle
 from rdflib import URIRef
 from rdflib.namespace import DC, DCTERMS, Namespace, OWL, RDF, RDFS, SKOS, XSD
 from tqdm import tqdm
 
-from pathme.constants import REACTOME_BEL
-from pathme.reactome.convert_to_bel import convert_to_bel
-from pathme.utils import get_pathway_statitics, parse_rdf, query_result_to_dict
+from pybel import BELGraph, to_pickle
+from .convert_to_bel import convert_to_bel
+from ..constants import REACTOME_BEL
+from ..utils import get_pathway_statitics, parse_rdf, query_result_to_dict
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 """SPARQL string queries"""
 
@@ -158,7 +158,8 @@ def _get_entity_metadata(entity: rdflib.URIRef, rdf_graph: rdflib.Graph) -> Dict
         attr_empty=['entity_type'],
         id_dict=False
     )
-    # Complexes might contain multiple components entities so we iterate over the complex components to fetch that information
+    # Complexes might contain multiple components entities so we iterate over
+    # the complex components to fetch that information
     if entity_metadata['entity_type'] == 'Complex':
 
         complex_components = entity_metadata.get('complex_components')
@@ -177,13 +178,14 @@ def _get_entity_metadata(entity: rdflib.URIRef, rdf_graph: rdflib.Graph) -> Dict
 
 
 def _get_reaction_participants(component_uri: str, component, rdf_graph: rdflib.Graph) -> Tuple[
-        Dict[Union[str, Set[str]], Dict[str, Union[str, Set[str]]]], Dict[Any, Dict[str, Any]]]:
+    Dict[Union[str, Set[str]], Dict[str, Union[str, Set[str]]]], Dict[Any, Dict[str, Any]]]:
     """Get reaction participants (nodes and interactions) for a given reaction.
 
     :param component_uri: URI reference of the queried reaction component
     :param component: Reaction component metadata
     :param rdf_graph: RDF Reactome Universe graph object
-    :return: returns the reaction participants as entities (Proteins, Complex, SmallMolecule...) and proteins (the reaction link)
+    :return: returns the reaction participants as entities (Proteins, Complex, SmallMolecule...)
+     and proteins (the reaction link)
     """
     interactions = {}
     nodes = {}
@@ -227,8 +229,10 @@ def _get_reaction_participants(component_uri: str, component, rdf_graph: rdflib.
     return nodes, interactions
 
 
-def _get_pathway_components(pathway_uri: rdflib.URIRef, rdf_graph: rdflib.Graph) -> Tuple[
-        Dict[str, Dict[str, Union[str, Set[str]]]], List[Dict[str, Union[str, Set[str]]]]]:
+def _get_pathway_components(
+    pathway_uri: rdflib.URIRef,
+    rdf_graph: rdflib.Graph,
+) -> Tuple[Dict[str, Dict[str, Union[str, Set[str]]]], List[Dict[str, Union[str, Set[str]]]]]:
     """Get components (nodes and interactions) for a given pathway.
 
     :param pathway_uri: URI reference of the queried pathway
@@ -268,7 +272,7 @@ def get_reactome_statistics(resource_file, hgnc_manager, chebi_manager):
     :param str resource_file: RDF file
     :param bio2bel_hgnc.Manager hgnc_manager: Hgnc Manager
     """
-    log.info('Parsing Reactome RDF file')
+    logger.info('Parsing Reactome RDF file')
     rdf_graph = parse_rdf(resource_file, format='xml')
 
     spaqrl_all_pathways = rdf_graph.query(GET_ALL_PATHWAYS, initNs=PREFIXES)
@@ -295,11 +299,10 @@ def get_reactome_statistics(resource_file, hgnc_manager, chebi_manager):
     return global_statistics
 
 
-def reactome_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager, chebi_manager):
+def reactome_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager, chebi_manager) -> BELGraph:
     """Convert a Reactome pathway to BEL.
 
     :param str filepath: path to the file
-    :rtype: pybel.BELGraph
     :param bio2bel_hgnc.Manager hgnc_manager: Bio2BEL HGNC Manager
     """
     pathway_metadata = _get_pathway_metadata(pathway_uri, rdf_graph)
@@ -309,14 +312,14 @@ def reactome_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager, chebi_manager)
     return convert_to_bel(nodes, interactions, pathway_metadata, hgnc_manager, chebi_manager)
 
 
-def reactome_to_bel(resource_file, hgnc_manager, chebi_manager, export_folder=REACTOME_BEL):
+def reactome_to_bel(resource_file: str, hgnc_manager, chebi_manager, export_folder=REACTOME_BEL):
     """Create Reactome BEL graphs.
 
-    :param str resource_file: rdf reactome file (there is only one)
+    :param resource_file: rdf reactome file (there is only one)
     :param bio2bel_hgnc.Manager hgnc_manager: uniprot id to hgnc symbol dictionary
     :return:
     """
-    log.info('Parsing Reactome RDF file')
+    logger.info('Parsing Reactome RDF file')
     rdf_graph = parse_rdf(resource_file, format='xml')
 
     pathways_uris_to_names = rdf_graph.query(GET_ALL_PATHWAYS, initNs=PREFIXES)
