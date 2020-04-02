@@ -690,8 +690,7 @@ def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager
         export_folder = resource_folder
 
     for kgml_file in tqdm.tqdm(resource_files, desc=f'Exporting KEGG to BEL in {export_folder}'):
-
-        _name = kgml_file.strip('.xml')
+        _name = kgml_file[:-len('.xml')]
         _flatten = 'flatten' if flatten else 'unflatten'
 
         # Name of file created will be: "hsaXXX_unflatten.pickle" or "hsaXXX_flatten.pickle"

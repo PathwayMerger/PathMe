@@ -138,7 +138,7 @@ def export_helper(
             pathway_graph = from_pickle(os.path.join(reactome_path, path))
 
             # Check if pathway has children to build the merge graph
-            pathway_id = path.strip('.pickle')
+            pathway_id = path[:-len('.pickle')]
 
             # Look up in Bio2BEL Reactome
             pathway = reactome_manager.get_pathway_by_id(pathway_id)
@@ -182,7 +182,8 @@ def export_helper(
             # Default SPIA exporter
             spia_matrices = bel_to_spia_matrices(pathway_graph)
 
-            output_file = os.path.join(output, f"{path.strip('.pickle')}.xlsx")
+            _name = path[:-len('.pickle')]
+            output_file = os.path.join(output, f"{_name}.xlsx")
 
             if os.path.isfile(output_file):
                 continue
@@ -191,7 +192,8 @@ def export_helper(
             spia_matrices_to_excel(spia_matrices, output_file)
 
         elif fmt == 'ppi':
-            output_file = os.path.join(output, f"{path.strip('.pickle')}.tsv")
+            _name = path[:-len('.pickle')]
+            output_file = os.path.join(output, f"{_name}.tsv")
             export_ppi_tsv(pathway_graph, output_file)
         else:
             raise ValueError(f'Unknown export format: {fmt}')
@@ -281,7 +283,8 @@ def _update_graph(graph, file, database):
     add_annotation_key(graph)
     add_annotation_value(graph, 'database', database)
     graph.annotation_pattern['PathwayID'] = '.*'
-    add_annotation_value(graph, 'PathwayID', file.strip(".pickle"))
+    _name = file[:-len('.pickle')]
+    add_annotation_value(graph, 'PathwayID', _name)
 
 
 def _munge_node_attribute(node, attribute='name'):

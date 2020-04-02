@@ -357,7 +357,7 @@ def get_bel_stats(resource_folder: str):
     df = pd.DataFrame()
 
     for file_name in get_paths_in_folder(resource_folder):
-        pathway_names = [file_name.strip('.pickle')]
+        pathway_names = [file_name[:-len('.pickle')]]
 
         bel_statistics_dict = get_bel_types(os.path.join(resource_folder, file_name))
 
@@ -395,7 +395,7 @@ def get_genes_from_pickles(resource_folder: str, files: List[str], manager) -> D
 
         # Get gene set for pathway
         gene_set = get_genes_in_graph(graph)
-        file_name = file_name.strip('.pickle')
+        file_name = file_name[:-len('.pickle')]
         file_name = manager.get_pathway_by_id(file_name)
         pathway_genes_dict[str(file_name)] = gene_set
 

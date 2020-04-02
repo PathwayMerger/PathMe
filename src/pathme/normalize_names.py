@@ -159,9 +159,13 @@ def normalize_graph_names(graph: BELGraph, database: str) -> None:
                                 ),
                             )
 
+                    if lower_name.endswith(' genes'):
+                        lower_name = lower_name[:-len(' genes')]
+                    elif lower_name.endswith(' gene'):
+                        lower_name = lower_name[:-len(' gene')]
                     one_to_one_mapping[node] = MicroRna(
                         node.namespace,
-                        name=lower_name.strip(' genes').replace("mir-", "mir"),  # Special case for Reactome
+                        name=lower_name.replace("mir-", "mir"),  # Special case for Reactome
                     )
                     continue
 
@@ -260,7 +264,7 @@ def normalize_graph_names(graph: BELGraph, database: str) -> None:
         elif isinstance(node, BiologicalProcess):
             # KEGG normalize name by removing the title prefix
             if lower_name.startswith('title:'):
-                lower_name = lower_name[6:]
+                lower_name = lower_name[len('title:'):]
 
             one_to_one_mapping[node] = BiologicalProcess(
                 node.namespace, name=lower_name, identifier=node.identifier,

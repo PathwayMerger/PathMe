@@ -117,7 +117,8 @@ def cx(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no_norma
         flatten=(not no_flatten),
         normalize_names=(not no_normalize_names),
     ):
-        with open(os.path.join(output, f"{path.strip('.pickle')}.cx.json"), 'w') as file:
+        _name = path[:-len('.pickle')]
+        with open(os.path.join(output, f"{_name}.cx.json"), 'w') as file:
             to_cx_file(graph, file)
 
 
