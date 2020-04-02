@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """This module contains the custom parser for RDF."""
+
 import json
 
 import rdflib
@@ -61,22 +62,22 @@ def match_entry_type(types):
     """Get the type identifier from the type attributes of an entry.
 
     :param set types: set with wp vocabularies as string.
-    :returns: entry_type: type identifier, also used as first key to the main graph (ex: 'nodes' -> graph[entry_type][node_id])
+    :return: entry_type: type identifier, used as first key to the main graph ('nodes' -> graph[entry_type][node_id])
     :rtype: Optional[str]
     """
-    # Matches the vocabularies set from wp (could be indicated one or more types) specified in RDF as URI namespaces (previous URI parsing).
+    # Matches the vocabularies set from wp (could be indicated one or more types) specified in RDF as URI namespaces.
     if types == {'core#Collection', 'wp#Pathway'} or types == {'wp#PublicationReference'}:
         return 'pathway_info'
 
     elif types == {'wp#DataNode', 'wp#Protein'} \
-            or types == {'wp#DataNode', 'wp#Metabolite'} \
-            or types == {'wp#DataNode', 'wp#GeneProduct'} \
-            or types == {'wp#DataNode'}:
+        or types == {'wp#DataNode', 'wp#Metabolite'} \
+        or types == {'wp#DataNode', 'wp#GeneProduct'} \
+        or types == {'wp#DataNode'}:
         return 'nodes'
 
     elif types == {'wp#Interaction', 'wp#DirectedInteraction'} \
-            or types == {'wp#Catalysis', 'wp#DirectedInteraction', 'wp#Interaction'} \
-            or types == {'wp#Interaction', 'wp#ComplexBinding', 'wp#Binding'}:
+        or types == {'wp#Catalysis', 'wp#DirectedInteraction', 'wp#Interaction'} \
+        or types == {'wp#Interaction', 'wp#ComplexBinding', 'wp#Binding'}:
         return 'interactions'
 
     elif types == {'wp#Interaction'} or types == {'wp#Complex'}:
@@ -104,7 +105,8 @@ def match_attribute_label(attribute_namespace):
                                  'wp#organism', 'wp#organismName', 'rdf-schema#label'}:
         return attribute_namespace.split('#')[1]
 
-    # Return the value_namespace. The value of the atribute is also specified as a uri, with the value as the identifier. So in the following cases, the value namespace of the value uri will be later assigned as the attribute label.
+    # Return the value_namespace. The value of the atribute is also specified as a uri, with the value as the identifier
+    # So in the following cases, the value namespace of the value uri will be later assigned as the attribute label.
     elif attribute_namespace in {'wp#bdbEnsembl', 'wp#bdbEntrezGene', 'wp#bdbHgncSymbol', 'wp#bdbPubChem', 'wp#bdbHmdb',
                                  'wp#bdbUniprot', 'wp#bdbChEBI', 'wp#bdbChemspider', 'wp#bdbWikidata'}:
         return 'value_namespace'
@@ -118,10 +120,11 @@ def match_entry(entry):
 
     :param dict entry:
     :returns: entry_id: for nodes would be the ncbi id and edges the interaction wp id
-    :returns: entry_type:  type identifier, also used as first key to the main graph (ex: 'nodes' -> graph[entry_type][node_id])
+    :returns: entry_type:  type identifier, used as first key to the main graph ('nodes' -> graph[entry_type][node_id])
     :rtype: Optional[tuple[str,str]]
     """
-    # Get the components of the entry identifier URI. The URI identifier will be used as the entry id and the namespace for type identification, wheras the prefix to match the entry handling
+    # Get the components of the entry identifier URI. The URI identifier will be used as the entry id and the namespace
+    # for type identification, wheras the prefix to match the entry handling
     uri = entry['@id']
     prefix, _, namespace, entry_id = parse_id_uri(uri)
 
@@ -197,11 +200,10 @@ def get_entry_attribute_value(entry_label, node_id, attribute_label, graph):
 
 
 def set_entry_attribute(entry_type, node_id, attribute_label, value, graph):
-    """For a given node (if the entry type is 'nodes'), entry_type and attribute, set the associated value in the graph object.
+    """For a given node (if the entry type is 'nodes'), entry_type and attribute, set the associated value in the graph.
 
     :param str node_id: ncbi id
     :param str attribute_label: attribute label
-    :param str entry_label: entry label
     :param str value: value
     :param dict graph: graph object
     """
@@ -226,7 +228,9 @@ def set_interaction(entry, graph):
     :param dict entry: entry whose type has been previous identified as 'interactions'
     :param dict graph: pathway network graph object
     """
-    # Get the participants of the interaction, picking directly the node identifiers from the entry attributes with the corresponding argument URI namespace (wp#source or wp#interaction). After, for each participant, parse the URI value to obtine the nodes identifier.
+    # Get the participants of the interaction, picking directly the node identifiers from the entry attributes with the
+    # corresponding argument URI namespace (wp#source or wp#interaction). After, for each participant, parse the URI
+    # value to obtine the nodes identifier.
     # Get the node source id
     uri_source_id = entry['http://vocabularies.wikipathways.org/wp#source'][0]['@id']
     _, _, _, source_id = parse_id_uri(uri_source_id)
@@ -235,7 +239,8 @@ def set_interaction(entry, graph):
     uri_target_id = entry['http://vocabularies.wikipathways.org/wp#target'][0]['@id']
     _, _, _, target_id = parse_id_uri(uri_target_id)
 
-    # Also get the isAbout as the identifier of the interaction. For now will be the literal URI, due to no further information (like inhibits, increments) is indicated
+    # Also get the isAbout as the identifier of the interaction. For now will be the literal URI, due to no further
+    # information (like inhibits, increments) is indicated
     uri_interaction_type = entry['http://vocabularies.wikipathways.org/wp#isAbout'][0]['@id']
 
     # Finally, add directy to the interactions set of the graph the three identifiers of the interaction as a tupple.
@@ -246,7 +251,7 @@ def get_entry_type(types):
     """For a set of uris that indicate the entry's type, get the type identifier (call match_entry_type).
 
     :param set types: set of uris (from the entry's @type attribute) that indicate the entry's type
-    :returns: entry_type: type identifier, also used as first key to the main graph (ex: 'nodes' -> graph[entry_type][node_id])
+    :returns: entry_type: type identifier, used as first key to the main graph ('nodes' -> graph[entry_type][node_id])
     :rtype: str
     """
     types_set = set()
@@ -267,7 +272,7 @@ def get_entry_type(types):
 
 
 def parse_attribute_values(entry_label, entry_id, attribute_values, attribute_label, graph):
-    """For each value in attribute_values, taking into account the attribute_label type (if it is specified value_namespace thus would be the value namespace), adds a new entry to the graph (calling set_entry_attribute methode) beeing the last level of parsing. The value is added as a set if there are multiple values for the same attribute_labe or as a sigle value.
+    """For each value in attribute_values, taking into account the attribute_label type.
 
     :param str entry_label: entry label
     :param str entry_id: entry identifier
@@ -301,13 +306,15 @@ def parse_attribute_values(entry_label, entry_id, attribute_values, attribute_la
 
 
 def parse_attributes(entry, entry_type, entry_id, graph):
-    """For each attribute in attributes, if is labbeled as a uri (not in {'@id', '@value', '@type'}) gets the attribute_type (calling the correspondent function) and calls the next statement (parse_attribute_values).
+    """Parse attributes of RDF node.
 
-    :param dict attributes: attributes of the entity
+    :param dict entry: attributes of the entity
     :param str entry_type: entity type
     :param str entry_id: entry identifier
     :param dict graph: graph object
     """
+    # For each attribute in attributes, if is labbeled as a uri (not in {'@id', '@value', '@type'}) gets the
+    # attribute_type (calling the correspondent function) and calls the next statement (parse_attribute_values).
     for attribute_label, values in entry.items():
         if attribute_label not in {'@id', '@value', '@type'}:
             attribute_type = match_attribute(attribute_label)
@@ -325,11 +332,16 @@ def generate_empty_pathway_graph():
 
 
 def parse_entries(entries):
-    """Create the graph object which will be finally returned full, with the values of the statements parser calls (entry -> attributes -> values). First the type of the entry and the id is obtined with match_entry, and according the type retrived is haddled the entry in a particular manner. If the entry is 'interactions' type, only will be called the methode set_interaction, but if not in depth parser if the different levels will be called (parse_attributes and parse_attribute_values).
+    """Parse entry.
 
     :param list[dict] entries:
     :rtype: networkx.MultiDiGraph
     """
+    # Create the graph object which will be finally returned full, with the values of the statements parser calls
+    # (entry -> attributes -> values). First the type of the entry and the id is obtined with match_entry, and according
+    # the type retrived is haddled the entry in a particular manner. If the entry is 'interactions' type, only will be
+    # called the methode set_interaction, but if not in depth parser if the different levels will be called
+    # (parse_attributes and parse_attribute_values).
     # Create the graph object
     graph = generate_empty_pathway_graph()
 
@@ -357,11 +369,15 @@ def convert_json(graph: rdflib.Graph):
 
 
 def parse_pathway(pathway_path):
-    """After importing the indicated pathway from text file resources into a graph rdflib object(import_pathway), calls the diferent data types transformations (convert_json function) and the first statement of the parser that will return a graph data structure (parse_entries function). This retrieved graph will be converted to a networX graph (convert_to_nx function).
+    """Parse pathway.
 
     :param str pathway_path: pathway identifier
     :rtype: networkx.MultiDiGraph
     """
+    # After importing the indicated pathway from text file resources into a graph rdflib object(import_pathway),
+    # calls the different data types transformations (convert_json function) and the first statement of the parser that
+    # will return a graph data structure (parse_entries function). This retrieved graph will be converted to a
+    # networX graph (convert_to_nx function).
     graph = parse_rdf(pathway_path, format='turtle')
 
     json_wp_pathway = convert_json(graph)

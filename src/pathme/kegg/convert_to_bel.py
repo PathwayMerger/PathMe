@@ -542,7 +542,8 @@ def add_simple_edge(graph, u, v, relation_type):
                 )
                 return
 
-            # Found multiple relationship which cannot be combined into one logic (e.g., ['inhibition', 'indirect effect'])
+            # Found multiple relationship which cannot be combined into one logic
+            # (e.g., ['inhibition', 'indirect effect'])
             else:
                 # Create all relationships in the list
                 for relation in relation_type:

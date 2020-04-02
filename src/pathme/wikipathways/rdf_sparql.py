@@ -190,7 +190,7 @@ def _get_interactions(rdf_graph: rdflib.Graph) -> Dict[str, Dict]:
     """Get all interactions from a RDF pathway network.
 
     :param rdf_graph: RDF graph object
-    :returns: Interactions as a list of dictionaries, where the participants are in an entry and the interaction metadata in other
+    :returns: Interactions as a list of dictionaries, participants are in an entry and the interaction metadata in other
     """
     return query_result_to_dict(
         rdf_graph.query(GET_ALL_DIRECTED_INTERACTIONS_SPARQL, initNs=PREFIXES),
@@ -199,7 +199,10 @@ def _get_interactions(rdf_graph: rdflib.Graph) -> Dict[str, Dict]:
 
 
 def _get_pathway_components(graph) -> Tuple[
-        Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]]]:
+    Dict[str, Dict[str, Dict[str, str]]],
+    Dict[str, Dict[str, Dict[str, str]]],
+    Dict[str, Dict[str, Dict[str, str]]]
+]:
     """Get all components in data structures from a RDF pathway network.
 
     :param graph: RDF graph object
@@ -212,7 +215,9 @@ def _get_pathway_components(graph) -> Tuple[
 
 
 def get_wp_statistics(resource_files, resource_folder, hgnc_manager) -> Tuple[
-        Dict[str, Dict[str, int]], Dict[str, Dict[str, Dict[str, int]]]]:
+    Dict[str, Dict[str, int]],
+    Dict[str, Dict[str, Dict[str, int]]]
+]:
     """Load WikiPathways RDF to BELGraph.
 
     :param iter[str] resource_files: RDF file path
@@ -276,10 +281,10 @@ def wikipathways_to_bel(file_path: str, hgnc_manager):
 
 
 def wikipathways_to_pickles(
-        resource_files: Iterable[str],
-        resource_folder: str,
-        hgnc_manager: bio2bel_hgnc.Manager,
-        export_folder: str,
+    resource_files: Iterable[str],
+    resource_folder: str,
+    hgnc_manager: bio2bel_hgnc.Manager,
+    export_folder: str,
 ) -> None:
     """Export WikiPathways to Pickles.
 

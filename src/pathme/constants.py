@@ -132,9 +132,9 @@ ACTIVITY_ALLOWED_MODIFIERS = (
     rna
 )
 
-#: KEGG reference Kanehisa, M., & Goto, S. (2000). KEGG: kyoto encyclopedia of genes and genomes. Nucleic acids research, 28(1), 27-30.
+#: Kanehisa, M., & Goto, S. (2000). KEGG: kyoto encyclopedia of genes and genomes. Nucleic acids research, 28(1), 27-30.
 KEGG_CITATION = '10592173'
-#: Reactome reference Fabregat, A., et al. (2018). The reactome pathway knowledgebase. Nucleic acids research, 46(D1), D649-D655.
+#: Fabregat, A., et al. (2018). The reactome pathway knowledgebase. Nucleic acids research, 46(D1), D649-D655.
 REACTOME_CITATION = '29145629'
 
 #: REST API to KEGG

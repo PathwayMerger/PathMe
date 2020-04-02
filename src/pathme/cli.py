@@ -8,13 +8,13 @@ import sys
 
 import click
 import networkx as nx
+from pybel import to_pickle
+from pybel.struct.mutation import collapse_all_variants, collapse_to_genes, remove_isolated_list_abundances
+from pybel.struct.summary import count_functions
 
 import pathme.kegg.cli
 import pathme.reactome.cli
 import pathme.wikipathways.cli
-from pybel import to_pickle
-from pybel.struct.mutation import collapse_all_variants, collapse_to_genes, remove_isolated_list_abundances
-from pybel.struct.summary import count_functions
 from .constants import CX_DIR, KEGG_BEL, PPI_DIR, REACTOME_BEL, SPIA_DIR, UNIVERSE_DIR, WIKIPATHWAYS_BEL
 from .export_utils import export_helper, get_universe_graph, iterate_universe_graphs
 
