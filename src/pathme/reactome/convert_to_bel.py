@@ -63,8 +63,12 @@ def convert_to_bel(
     return graph
 
 
-def nodes_to_bel(nodes: Dict[str, Dict], graph: BELGraph, hgnc_manager: HgncManager, chebi_manager: ChebiManager) -> \
-    Dict[str, BaseEntity]:
+def nodes_to_bel(
+    nodes: Dict[str, Dict],
+    graph: BELGraph,
+    hgnc_manager: HgncManager,
+    chebi_manager: ChebiManager,
+) -> Dict[str, BaseEntity]:
     """Convert dictionary values to BEL nodes."""
     return {
         node_id: node_to_bel(node_att, graph, hgnc_manager, chebi_manager)
