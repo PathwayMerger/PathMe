@@ -17,7 +17,7 @@ from ..export_utils import get_paths_in_folder
 __all__ = [
     'download_kgml_files',
     'get_kegg_statistics',
-    'get_kegg_pathway_ids'
+    'get_kegg_pathway_ids',
 ]
 
 
@@ -95,7 +95,7 @@ def get_kegg_statistics(path, hgnc_manager, chebi_manager, flatten=None):
             all_kegg_statistics,
             index=pathway_names,
             columns=KEGG_STATS_COLUMN_NAMES.values(),
-            dtype=int
+            dtype=int,
 
         )
         df = df.append(pathway_data.fillna(0).astype(int))

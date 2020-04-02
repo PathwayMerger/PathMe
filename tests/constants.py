@@ -97,7 +97,7 @@ class KeggTest(TemporaryConnectionMixin):
             version='1.0.0',
             description='Glycolysis',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
-            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de',
         )
 
         cls.glycolysis_empty_graph.graph['pathway_id'] = 'path:hsa00010'
@@ -107,7 +107,7 @@ class KeggTest(TemporaryConnectionMixin):
             version='1.0.0',
             description='Glycolysis',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
-            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de',
         )
 
         cls.glycolysis_empty_graph.graph['pathway_id'] = 'path:hsa00010'
@@ -117,7 +117,7 @@ class KeggTest(TemporaryConnectionMixin):
             version='1.0.0',
             description='Notch signaling pathway',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
-            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de',
         )
 
         cls.notch_empty_graph.graph['pathway_id'] = 'path:hsa04330'
@@ -127,7 +127,7 @@ class KeggTest(TemporaryConnectionMixin):
             version='1.0.0',
             description='Notch signaling pathway',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
-            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de',
         )
 
         cls.notch_empty_flatten_graph.graph['pathway_id'] = 'path:hsa04330'
@@ -137,7 +137,7 @@ class KeggTest(TemporaryConnectionMixin):
             version='1.0.0',
             description='PPAR signaling pathway',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
-            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de',
         )
 
         cls.ppar_empty_graph.graph['pathway_id'] = 'path:hsa03320'
@@ -147,7 +147,7 @@ class KeggTest(TemporaryConnectionMixin):
             version='1.0.0',
             description='PPAR signaling pathway',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
-            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de',
         )
 
         cls.ppar_empty_flatten_graph.graph['pathway_id'] = 'path:hsa03320'

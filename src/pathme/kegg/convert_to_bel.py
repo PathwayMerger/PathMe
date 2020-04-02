@@ -49,7 +49,7 @@ def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False):
         version='1.0.0',
         description=root.attrib['link'],
         authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
-        contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+        contact='daniel.domingo.fernandez@scai.fraunhofer.de',
     )
 
     add_bel_metadata(graph)
@@ -73,7 +73,7 @@ def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False):
         graph=graph,
         node_dict=nodes,
         complex_ids=complex_ids,
-        flatten_complexes=flattened_complexes if flatten else None
+        flatten_complexes=flattened_complexes if flatten else None,
     )
 
     # Add edges to graph
@@ -180,8 +180,10 @@ def gene_to_bel_node(graph, node):
                 return protein_node
 
             elif UNIPROT in attribute:
-                protein_node = protein(namespace=UNIPROT.upper(), name=attribute[UNIPROT],
-                                       identifier=attribute[UNIPROT])
+                protein_node = protein(
+                    namespace=UNIPROT.upper(), name=attribute[UNIPROT],
+                    identifier=attribute[UNIPROT],
+                )
                 graph.add_node_from_data(protein_node)
                 return protein_node
 
@@ -364,7 +366,7 @@ def map_to_bel_node(graph, node):
             name = identifier
 
         if name.startswith('TITLE:'):
-            name = name.strip('TITLE:')
+            name = name[len('TITLE:'):]
 
         bio_process = bioprocess(namespace=KEGG.upper(), name=name, identifier=identifier)
         graph.add_node_from_data(bio_process)
@@ -692,7 +694,8 @@ def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager
             export_folder if export_folder else KEGG_BEL,
             '{}_{}.pickle'.format(
                 kgml_file.strip('.xml'),
-                'flatten' if flatten else 'unflatten')  # By default graphs are unflatten
+                'flatten' if flatten else 'unflatten',
+            ),  # By default graphs are unflatten
         )
 
         # Skip not KGML files or file already exists

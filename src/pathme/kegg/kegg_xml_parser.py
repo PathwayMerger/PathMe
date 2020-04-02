@@ -183,7 +183,7 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
             for ortholog_id in kegg_ids.split(' '):
                 ortholog_info = {
                     KEGG_ID: ortholog_id,
-                    KEGG_TYPE: kegg_type
+                    KEGG_TYPE: kegg_type,
                 }
 
                 ortholog_dict[entry_id].append(ortholog_info)
@@ -264,13 +264,11 @@ def get_xml_types(tree):
 
         if entry_type.startswith('gene'):
             gene_ids = entry.get('name')
-            for gene_id in gene_ids.split(' '):
-                entity_types_dict['gene'] += 1
+            entity_types_dict['gene'] += len(gene_ids.split(' '))
 
         elif entry_type.startswith('ortholog'):
             ortholog_ids = entry.get('name')
-            for ortholog_id in ortholog_ids.split(' '):
-                entity_types_dict['ortholog'] += 1
+            entity_types_dict['ortholog'] += len(ortholog_ids.split(' '))
 
         elif entry_type.startswith('compound'):
             entity_types_dict['compound entity'] += 1
@@ -362,20 +360,16 @@ def get_all_reactions(tree, compounds_dict):
     products_dict = defaultdict(list)
 
     for reaction in tree.findall("reaction"):
-
         reaction_id = reaction.get("id")
 
-        for k, v in compounds_dict.items():
-
+        for k in compounds_dict:
             for substrate in reaction.iter('substrate'):
                 substrate_id = substrate.get("id")
-
                 if substrate_id == k:
                     substrates_dict[reaction_id].append(substrate_id)
 
             for product in reaction.iter('product'):
                 product_id = product.get("id")
-
                 if product_id == k:
                     products_dict[reaction_id].append(product_id)
 

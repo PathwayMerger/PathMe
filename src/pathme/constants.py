@@ -129,7 +129,7 @@ ACTIVITY_ALLOWED_MODIFIERS = (
     abundance,
     protein,
     complex_abundance,
-    rna
+    rna,
 )
 
 #: Kanehisa, M., & Goto, S. (2000). KEGG: kyoto encyclopedia of genes and genomes. Nucleic acids research, 28(1), 27-30.

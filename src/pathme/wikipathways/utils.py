@@ -353,7 +353,7 @@ def iterate_wikipathways_paths(
     if not os.path.exists(directory):
         raise FileNotFoundError(
             f'{directory} does not exist. Please ensure you have downloaded WikiPathways using '
-            f'the "pathme wikipathways download" command or you have passed the right argument.'
+            f'the "pathme wikipathways download" command or you have passed the right argument.',
         )
 
     paths = get_paths_in_folder(directory)

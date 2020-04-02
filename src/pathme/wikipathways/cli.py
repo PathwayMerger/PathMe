@@ -77,7 +77,7 @@ def bel(connection: str, resource_folder: str, export_folder: str, debug: bool, 
     logger.info(
         'WikiPathways exported in %.2f seconds. A total of %d warnings regarding entities that could not be converted '
         'to standard identifiers were found.',
-        time.time() - t, logging.debug.counter
+        time.time() - t, logging.debug.counter,
     )
 
 

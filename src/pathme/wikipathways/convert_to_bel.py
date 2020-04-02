@@ -57,7 +57,7 @@ def convert_to_bel(
     }
     nodes.update(complexes_to_bel(complexes, nodes, graph))
 
-    for interaction_key, interaction in interactions.items():
+    for interaction in interactions.values():
         participants = interaction['participants']
         add_edges(graph, participants, nodes, interactions, interaction)
 

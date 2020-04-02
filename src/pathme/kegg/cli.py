@@ -40,7 +40,7 @@ def download(connection):
         'You are about to download KGML files from KEGG.\n'
         'Please make sure you have read KEGG license (see: https://www.kegg.jp/kegg/rest/).'
         ' These files cannot be distributed and their use must be exclusively with academic purposes.\n'
-        'We (PathMe developers) are not responsible for the end use of this data.\n'
+        'We (PathMe developers) are not responsible for the end use of this data.\n',
     ):
         click.echo('You have read and accepted the conditions stated above.\n')
         download_kgml_files(kegg_ids)

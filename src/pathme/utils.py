@@ -17,6 +17,7 @@ import rdflib
 import pybel
 from pybel import BELGraph, from_pickle
 from pybel.constants import GRAPH_NAMESPACE_URL
+from pybel.dsl import CentralDogma
 from pybel.struct.summary import count_functions, count_relations
 from .constants import *
 from .export_utils import get_paths_in_folder
@@ -99,7 +100,7 @@ def parse_rdf(path: str, format: Optional[str] = None) -> rdflib.Graph:
     if not os.path.exists(path):
         raise FileNotFoundError(
             'You have still not downloaded the database file.'
-            'Please run "python3 -m pathme "database" download"'
+            'Please run "python3 -m pathme "database" download"',
         )
 
     graph = rdflib.Graph()
@@ -128,7 +129,8 @@ def entry_result_to_dict(entry, **kwargs):
 
         if directed_interaction[0] and directed_interaction[1] in attributes_dict.keys():
             attributes_dict['participants'] = (
-                attributes_dict.pop(directed_interaction[0]), attributes_dict.pop(directed_interaction[1]))
+                attributes_dict.pop(directed_interaction[0]), attributes_dict.pop(directed_interaction[1]),
+            )
 
     if 'attr_empty' in kwargs:
         attr_empty = kwargs.get('attr_empty')
@@ -259,8 +261,8 @@ def get_pathway_statitics(nodes_types, edges_types, bel_graph, **kwargs):
             'RDF nodes': rdf_total_nodes,
             'RDF interactions': rdf_total_edges,
             'BEL imported nodes': bel_graph.number_of_nodes(),
-            'BEL imported edges': bel_graph.number_of_edges()
-        }
+            'BEL imported edges': bel_graph.number_of_edges(),
+        },
     }
 
     if 'global_statistics' in kwargs and pathway_statistics:
@@ -295,7 +297,7 @@ def statistics_to_df(all_pathways_statistics):
     column_primary_types_dict = collections.defaultdict(set)
 
     # Get pathway type statistics
-    for pathway_name, statistics_primary_type_dict in all_pathways_statistics.items():
+    for statistics_primary_type_dict in all_pathways_statistics.values():
         for statistic_primary_type, statistic_dict in statistics_primary_type_dict.items():
             column_types.update(set(statistic_dict.keys()))
             column_primary_types_dict[statistic_primary_type].update(set(statistic_dict.keys()))
@@ -306,7 +308,8 @@ def statistics_to_df(all_pathways_statistics):
             for statistic_primary_type, statistic_dict in statistics_primary_type_dict.items():
                 if column_type in statistic_dict.keys():
                     pathways_statistics['"' + column_type + '" ' + statistic_primary_type].append(
-                        str(statistic_dict[column_type]))
+                        str(statistic_dict[column_type]),
+                    )
                 elif column_type in column_primary_types_dict[statistic_primary_type]:
                     pathways_statistics['"' + column_type + '" ' + statistic_primary_type].append('')
 
@@ -414,7 +417,8 @@ def get_kegg_genes_from_pickles(resource_folder, files: List[str], manager) -> D
 
             # Get gene set for pathway
             gene_set = get_genes_in_graph(graph)
-            file_name = file_name.strip('_flatten.pickle')
+
+            file_name = file_name[:-len('_flatten.pickle')]
             file_name = 'path:' + file_name
             file_name = manager.get_pathway_by_id(file_name)
 
@@ -429,13 +433,12 @@ def get_genes_in_graph(graph: pybel.BELGraph) -> Set[str]:
     :param graph: BEL Graph
     :return: BEL graph gene set
     """
-    gene_set = set()
+    return {
+        node
+        for node in graph
+        if isinstance(node, CentralDogma) and node.namespace.lower() == 'hgnc'
 
-    for node, data in graph.nodes(data=True):
-        if node.function in {'Protein', 'RNA', 'Gene'} and node.namespace == 'HGNC':
-            gene_set.add(node.name)
-
-    return gene_set
+    }
 
 
 def jaccard_similarity(database_gene_set, bel_genes_set):
@@ -450,8 +453,10 @@ def jaccard_similarity(database_gene_set, bel_genes_set):
     count = 0
     count_no_similarity = 0
 
-    for (database_key, database_value), (bel_key, bel_value) in itt.product(database_gene_set.items(),
-                                                                            bel_genes_set.items()):
+    for (database_key, database_value), (bel_key, bel_value) in itt.product(
+        database_gene_set.items(),
+        bel_genes_set.items(),
+    ):
 
         if database_key != bel_key:
             continue
@@ -468,10 +473,14 @@ def jaccard_similarity(database_gene_set, bel_genes_set):
             count_no_similarity += 1
 
     print('Jaccard index for gene sets in database vs gene sets in BEL:')
-    print('{} of {} gene sets in the database and BEL '
-          'graphs have a similarity of 100%.'.format(count, len(jaccard_similarities)))
-    print('{} of {} gene sets in the database and '
-          'BEL graphs have a similarity of 0%.'.format(count_no_similarity, len(jaccard_similarities)))
+    print(
+        '{} of {} gene sets in the database and BEL '
+        'graphs have a similarity of 100%.'.format(count, len(jaccard_similarities)),
+    )
+    print(
+        '{} of {} gene sets in the database and '
+        'BEL graphs have a similarity of 0%.'.format(count_no_similarity, len(jaccard_similarities)),
+    )
 
     return jaccard_similarities
 

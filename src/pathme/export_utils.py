@@ -68,7 +68,7 @@ def get_universe_graph(
         reactome_path=reactome_path,
         wikipathways_path=wikipathways_path,
         flatten=flatten,
-        normalize_names=normalize_names
+        normalize_names=normalize_names,
     )
     # Just keep the graph and not the source
     universe_graphs = (graph for _, _, graph in universe_graphs)
