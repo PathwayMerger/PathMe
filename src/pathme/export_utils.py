@@ -83,7 +83,7 @@ def export_ppi_tsv(graph: BELGraph, path: Union[str, TextIO]):
         # Only export if both node names are present
         if NAME not in u or NAME not in v:
             continue
-        print(
+        print(  # noqa: T001
             u[NAME], edge_data[RELATION], v[NAME],
             sep='\t',
             file=path,

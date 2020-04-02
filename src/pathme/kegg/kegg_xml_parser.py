@@ -29,7 +29,7 @@ def import_xml_etree(filename):
     try:
         tree = parse(filename)
     except IOError as ioerr:
-        print('File error: ' + str(ioerr))
+        logger.warning('File error: %s', ioerr)
         return None
 
     return tree

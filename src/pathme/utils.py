@@ -476,12 +476,12 @@ def jaccard_similarity(database_gene_set, bel_genes_set):
         elif jaccard_index == 0.0:
             count_no_similarity += 1
 
-    print('Jaccard index for gene sets in database vs gene sets in BEL:')
-    print(
+    logger.info('Jaccard index for gene sets in database vs gene sets in BEL:')
+    logger.info(
         '{} of {} gene sets in the database and BEL '
         'graphs have a similarity of 100%.'.format(count, len(jaccard_similarities)),
     )
-    print(
+    logger.info(
         '{} of {} gene sets in the database and '
         'BEL graphs have a similarity of 0%.'.format(count_no_similarity, len(jaccard_similarities)),
     )
