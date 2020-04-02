@@ -113,7 +113,7 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager: HgncManager, pathway_
         elif 'ncbiprotein' in node_ids_dict['uri_id']:
             entrez_id = check_multiple(node_ids_dict['identifier'], 'ncbiprotein', pathway_id)
         else:
-            raise ValueError('Missing entrez gene identifier [pathway={}]'.format(pathway_id))
+            raise ValueError(f'Missing entrez gene identifier [pathway={pathway_id}]')
 
         hgnc_entry = hgnc_manager.get_gene_by_entrez_id(entrez_id)
 
@@ -135,7 +135,7 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager: HgncManager, pathway_
             ensembl_id = check_multiple(node_ids_dict['identifier'], 'bdb_ensembl', pathway_id)
 
         else:
-            raise ValueError('Missing ensemble identifier [pathway={}]'.format(pathway_id))
+            raise ValueError(f'Missing ensemble identifier [pathway={pathway_id}]')
 
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(ensembl_id)
 
@@ -224,7 +224,8 @@ def check_multiple(element, element_name, pathway_id):
     :return:
     """
     if isinstance(element, (set, list)):
-        logger.debug('Multiple values for "{}": {} [{}]'.format(element_name, element, pathway_id.split('/')[-1]))
+        _pid = pathway_id.split('/')[-1]
+        logger.debug(f'Multiple values for "{element_name}": {element} [{_pid}]')
         # TODO: print the WikiPathways bps that return a set because they are probably wrong.
         if len(element) == 1:
             return list(element)[0]
@@ -282,21 +283,21 @@ def debug_pathway_info(bel_graph: BELGraph, pathway_path: str, **kwargs):
     :param bel_graph: bel graph
     :param pathway_path: path of the pathway
     """
-    logger.debug('Pathway id: {}'.format(os.path.basename(pathway_path)))
+    logger.debug('Pathway id: %s', os.path.basename(pathway_path))
 
     pathway_name = bel_graph.name
-    logger.debug('Pathway Name: {}'.format(pathway_name))
+    logger.debug('Pathway Name: %s', pathway_name)
 
     bel_nodes = bel_graph.number_of_nodes()
     bel_edges = bel_graph.number_of_edges()
 
     logger.debug('Nodes imported to BEL: %s', bel_nodes)
-    logger.debug('Edges imported to BEL: %s', format(bel_edges))
+    logger.debug('Edges imported to BEL: %s', bel_edges)
 
     if 'statistics' in kwargs:
         statistics = kwargs.get('statistics')
-        logger.debug('RDF Nodes statistics: %', format(statistics['RDF nodes']))
-        logger.debug('RDF Edges statistics: %', format(statistics['RDF interactions']))
+        logger.debug('RDF Nodes statistics: %s', statistics['RDF nodes'])
+        logger.debug('RDF Edges statistics: %s', statistics['RDF interactions'])
 
 
 def debug_global_statistics(global_statistics):
@@ -353,7 +354,7 @@ def iterate_wikipathways_paths(
     if not os.path.exists(directory):
         raise FileNotFoundError(
             f'{directory} does not exist. Please ensure you have downloaded WikiPathways using '
-            f'the "pathme wikipathways download" command or you have passed the right argument.'
+            f'the "pathme wikipathways download" command or you have passed the right argument.',
         )
 
     paths = get_paths_in_folder(directory)

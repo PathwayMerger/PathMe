@@ -68,7 +68,7 @@ def get_universe_graph(
         reactome_path=reactome_path,
         wikipathways_path=wikipathways_path,
         flatten=flatten,
-        normalize_names=normalize_names
+        normalize_names=normalize_names,
     )
     # Just keep the graph and not the source
     universe_graphs = (graph for _, _, graph in universe_graphs)
@@ -83,7 +83,7 @@ def export_ppi_tsv(graph: BELGraph, path: Union[str, TextIO]):
         # Only export if both node names are present
         if NAME not in u or NAME not in v:
             continue
-        print(
+        print(  # noqa: T001
             u[NAME], edge_data[RELATION], v[NAME],
             sep='\t',
             file=path,
@@ -96,7 +96,7 @@ def export_helper(
     kegg_path: Optional[str] = None,
     reactome_path: Optional[str] = None,
     wikipathways_path: Optional[str] = None,
-    format='spia',
+    fmt: str = 'spia',
 ) -> None:
     """Export helper of PathMe.
 
@@ -138,7 +138,7 @@ def export_helper(
             pathway_graph = from_pickle(os.path.join(reactome_path, path))
 
             # Check if pathway has children to build the merge graph
-            pathway_id = path.strip('.pickle')
+            pathway_id = path[:-len('.pickle')]
 
             # Look up in Bio2BEL Reactome
             pathway = reactome_manager.get_pathway_by_id(pathway_id)
@@ -178,11 +178,12 @@ def export_helper(
         collapse_all_variants(pathway_graph)
         collapse_to_genes(pathway_graph)
 
-        if format == 'spia':
+        if fmt == 'spia':
             # Default SPIA exporter
             spia_matrices = bel_to_spia_matrices(pathway_graph)
 
-            output_file = os.path.join(output, f"{path.strip('.pickle')}.xlsx")
+            _name = path[:-len('.pickle')]
+            output_file = os.path.join(output, f"{_name}.xlsx")
 
             if os.path.isfile(output_file):
                 continue
@@ -190,11 +191,12 @@ def export_helper(
             # Export excel file representing the connectivity matrix of the BEL Graph
             spia_matrices_to_excel(spia_matrices, output_file)
 
-        elif format == 'ppi':
-            output_file = os.path.join(output, f"{path.strip('.pickle')}.tsv")
+        elif fmt == 'ppi':
+            _name = path[:-len('.pickle')]
+            output_file = os.path.join(output, f"{_name}.tsv")
             export_ppi_tsv(pathway_graph, output_file)
         else:
-            raise ValueError(f'Unknown export format: {format}')
+            raise ValueError(f'Unknown export format: {fmt}')
 
 
 def iterate_indra_statements(**kwargs) -> Iterable['indra.statements.Statement']:
@@ -281,7 +283,8 @@ def _update_graph(graph, file, database):
     add_annotation_key(graph)
     add_annotation_value(graph, 'database', database)
     graph.annotation_pattern['PathwayID'] = '.*'
-    add_annotation_value(graph, 'PathwayID', file.strip(".pickle"))
+    _name = file[:-len('.pickle')]
+    add_annotation_value(graph, 'PathwayID', _name)
 
 
 def _munge_node_attribute(node, attribute='name'):

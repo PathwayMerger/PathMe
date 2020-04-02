@@ -17,7 +17,7 @@ from ..export_utils import get_paths_in_folder
 __all__ = [
     'download_kgml_files',
     'get_kegg_statistics',
-    'get_kegg_pathway_ids'
+    'get_kegg_pathway_ids',
 ]
 
 
@@ -47,7 +47,7 @@ def download_kgml_files(kegg_pathway_ids):
     """
     for kegg_id in tqdm.tqdm(kegg_pathway_ids, desc='Downloading KEGG files'):
         request = requests.get(KEGG_KGML_URL.format(kegg_id))
-        with open(os.path.join(KEGG_FILES, '{}.xml'.format(kegg_id)), 'w+') as file:
+        with open(os.path.join(KEGG_FILES, f'{kegg_id}.xml'), 'w+') as file:
             file.write(request.text)
             file.close()
 
@@ -63,7 +63,8 @@ def get_kegg_statistics(path, hgnc_manager, chebi_manager, flatten=None):
     :rtype: pandas.DataFrame
     """
     df = pd.DataFrame()
-    export_file_name = 'KEGG_pathway_stats_{}.csv'.format('flatten' if flatten else 'non_flatten')
+    flatten_part = 'flatten' if flatten else 'non_flatten'
+    export_file_name = f'KEGG_pathway_stats_{flatten_part}.csv'
 
     # Get list of all files in folder
     files = get_paths_in_folder(path)
@@ -95,7 +96,7 @@ def get_kegg_statistics(path, hgnc_manager, chebi_manager, flatten=None):
             all_kegg_statistics,
             index=pathway_names,
             columns=KEGG_STATS_COLUMN_NAMES.values(),
-            dtype=int
+            dtype=int,
 
         )
         df = df.append(pathway_data.fillna(0).astype(int))

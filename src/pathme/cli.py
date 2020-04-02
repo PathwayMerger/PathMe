@@ -90,7 +90,7 @@ def ppi(kegg_path, reactome_path, wikipathways_path, output):
         reactome_path=reactome_path,
         wikipathways_path=wikipathways_path,
         output=output,
-        format='ppi',
+        fmt='ppi',
     )
 
 
@@ -110,14 +110,15 @@ def cx(kegg_path, reactome_path, wikipathways_path, output, no_flatten, no_norma
         sys.exit(1)
 
     click.echo(f'Results will be exported to {output}')
-    for source, path, graph in iterate_universe_graphs(
+    for _, path, graph in iterate_universe_graphs(
         kegg_path=kegg_path,
         reactome_path=reactome_path,
         wikipathways_path=wikipathways_path,
         flatten=(not no_flatten),
         normalize_names=(not no_normalize_names),
     ):
-        with open(os.path.join(output, f"{path.strip('.pickle')}.cx.json"), 'w') as file:
+        _name = path[:-len('.pickle')]
+        with open(os.path.join(output, f"{_name}.cx.json"), 'w') as file:
             to_cx_file(graph, file)
 
 

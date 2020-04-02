@@ -20,10 +20,10 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
-def _check_empty_complex(complex: Dict[str, Dict], nodes: Dict[str, BaseEntity]):
+def _check_empty_complex(complex_dict: Dict[str, Dict], nodes: Dict[str, BaseEntity]):
     members = {
         nodes[member_id]
-        for member_id in complex['participants']
+        for member_id in complex_dict['participants']
         if member_id in nodes
     }
     if not members:
@@ -57,7 +57,7 @@ def convert_to_bel(
     }
     nodes.update(complexes_to_bel(complexes, nodes, graph))
 
-    for interaction_key, interaction in interactions.items():
+    for interaction in interactions.values():
         participants = interaction['participants']
         add_edges(graph, participants, nodes, interactions, interaction)
 
@@ -129,15 +129,15 @@ def complexes_to_bel(
     }
 
 
-def complex_to_bel(complex, nodes, graph: BELGraph):
+def complex_to_bel(complex_dict, nodes, graph: BELGraph):
     """Convert complex abundance to BEL."""
     members = list({
         nodes[member_id]
-        for member_id in complex['participants']
+        for member_id in complex_dict['participants']
         if member_id in nodes
     })
 
-    _, _, _, identifier = parse_id_uri(complex['uri_id'])
+    _, _, _, identifier = parse_id_uri(complex_dict['uri_id'])
 
     complex_bel_node = complex_abundance(members=members, identifier=identifier)
     graph.add_node_from_data(complex_bel_node)

@@ -2,6 +2,8 @@
 
 """Tests constants."""
 
+import logging
+import os
 import tempfile
 
 from bio2bel.testing import TemporaryConnectionMixin
@@ -9,10 +11,10 @@ from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
 from bio2bel_kegg.manager import Manager
 from pathme.kegg.convert_to_bel import kegg_to_bel
-from pathme.kegg.kegg_xml_parser import *
+from pathme.kegg.kegg_xml_parser import import_xml_etree
 from pybel import BELGraph
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 TEST_FOLDER = os.path.dirname(os.path.realpath(__file__))
 KEGG_TEST_RESOURCES = os.path.join(TEST_FOLDER, 'resources', 'kegg')
@@ -97,7 +99,7 @@ class KeggTest(TemporaryConnectionMixin):
             version='1.0.0',
             description='Glycolysis',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
-            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de',
         )
 
         cls.glycolysis_empty_graph.graph['pathway_id'] = 'path:hsa00010'
@@ -107,7 +109,7 @@ class KeggTest(TemporaryConnectionMixin):
             version='1.0.0',
             description='Glycolysis',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
-            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de',
         )
 
         cls.glycolysis_empty_graph.graph['pathway_id'] = 'path:hsa00010'
@@ -117,7 +119,7 @@ class KeggTest(TemporaryConnectionMixin):
             version='1.0.0',
             description='Notch signaling pathway',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
-            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de',
         )
 
         cls.notch_empty_graph.graph['pathway_id'] = 'path:hsa04330'
@@ -127,7 +129,7 @@ class KeggTest(TemporaryConnectionMixin):
             version='1.0.0',
             description='Notch signaling pathway',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
-            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de',
         )
 
         cls.notch_empty_flatten_graph.graph['pathway_id'] = 'path:hsa04330'
@@ -137,7 +139,7 @@ class KeggTest(TemporaryConnectionMixin):
             version='1.0.0',
             description='PPAR signaling pathway',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
-            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de',
         )
 
         cls.ppar_empty_graph.graph['pathway_id'] = 'path:hsa03320'
@@ -147,7 +149,7 @@ class KeggTest(TemporaryConnectionMixin):
             version='1.0.0',
             description='PPAR signaling pathway',
             authors="Daniel Domingo-Fernández, Josep Marín-Llaó and Sarah Mubeen",
-            contact='daniel.domingo.fernandez@scai.fraunhofer.de'
+            contact='daniel.domingo.fernandez@scai.fraunhofer.de',
         )
 
         cls.ppar_empty_flatten_graph.graph['pathway_id'] = 'path:hsa03320'

@@ -23,8 +23,10 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
-def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]], pathway_info: Dict,
-                   hgnc_manager: HgncManager, chebi_manager: ChebiManager) -> BELGraph:
+def convert_to_bel(
+    nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]], pathway_info: Dict,
+    hgnc_manager: HgncManager, chebi_manager: ChebiManager,
+) -> BELGraph:
     """Convert RDF graph dictionary into BEL graph."""
     uri_id = pathway_info['uri_reactome_id']
 
@@ -61,8 +63,12 @@ def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Di
     return graph
 
 
-def nodes_to_bel(nodes: Dict[str, Dict], graph: BELGraph, hgnc_manager: HgncManager, chebi_manager: ChebiManager) -> \
-    Dict[str, BaseEntity]:
+def nodes_to_bel(
+    nodes: Dict[str, Dict],
+    graph: BELGraph,
+    hgnc_manager: HgncManager,
+    chebi_manager: ChebiManager,
+) -> Dict[str, BaseEntity]:
     """Convert dictionary values to BEL nodes."""
     return {
         node_id: node_to_bel(node_att, graph, hgnc_manager, chebi_manager)
@@ -109,13 +115,13 @@ def node_to_bel(node: Dict, graph, hgnc_manager: HgncManager, chebi_manager: Che
                 name=node.get('display_name'),
                 members=members,
                 identifier=identifier,
-                namespace=namespace.upper()
+                namespace=namespace.upper(),
             )
         else:
             return NamedComplexAbundance(
                 name=node.get('display_name'),
                 identifier=identifier,
-                namespace=namespace.upper()
+                namespace=namespace.upper(),
             )
 
     elif 'Pathway' in node_types:

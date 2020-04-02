@@ -318,7 +318,7 @@ def parse_attribute_values(entry_label, entry_id, attribute_values, attribute_la
             elif value_label == '@language':
                 set_entry_attribute(entry_label, entry_id, 'language', value, graph)
             else:
-                raise Exception('Error with attribute {}'.format(value_label))
+                raise Exception(f'Error with attribute {value_label}')
 
     if len(attribute_value) == 1:
         attribute_value = list(attribute_value)[0]
@@ -392,7 +392,7 @@ def parse_pathway(pathway_path):
     # calls the different data types transformations (convert_json function) and the first statement of the parser that
     # will return a graph data structure (parse_entries function). This retrieved graph will be converted to a networkx
     # graph (convert_to_nx function)
-    graph = parse_rdf(pathway_path, format='turtle')
+    graph = parse_rdf(pathway_path, fmt='turtle')
 
     json_wp_pathway = convert_json(graph)
     pathway_network = parse_entries(json_wp_pathway)

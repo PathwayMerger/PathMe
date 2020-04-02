@@ -88,7 +88,7 @@ def summarize(export_folder):
 
 
 @main.command()
-@click.option('-c', '--connection', help="Defaults to {}".format(DEFAULT_CACHE_CONNECTION))
+@click.option('-c', '--connection', help=f"Defaults to {DEFAULT_CACHE_CONNECTION}")
 @click.option('-v', '--verbose', is_flag=True)
 @click.option('-x', '--only-canonical', default=True, help='Parse only canonical pathways')
 @click.option('-e', '--export', default=False, help='Export to datasheet csv and xls')
