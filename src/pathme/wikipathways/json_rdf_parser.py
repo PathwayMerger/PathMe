@@ -62,7 +62,7 @@ def match_entry_type(types):
     """Get the type identifier from the type attributes of an entry.
 
     :param set types: set with wp vocabularies as string.
-    :returns: entry_type: type identifier, also used as first key to the main graph (ex: 'nodes' -> graph[entry_type][node_id])
+    :return: entry_type: type identifier, used as first key to the main graph ('nodes' -> graph[entry_type][node_id])
     :rtype: Optional[str]
     """
     # Matches the vocabularies set from wp (could be indicated one or more types) specified in
@@ -130,7 +130,7 @@ def match_entry(entry):
 
     :param dict entry:
     :returns: entry_id: for nodes would be the ncbi id and edges the interaction wp id
-    :returns: entry_type:  type identifier, also used as first key to the main graph (ex: 'nodes' -> graph[entry_type][node_id])
+    :returns: entry_type:  type identifier, used as first key to the main graph ('nodes' -> graph[entry_type][node_id])
     :rtype: Optional[tuple[str,str]]
     """
     # Get the components of the entry identifier URI.
@@ -218,7 +218,6 @@ def set_entry_attribute(entry_type, node_id, attribute_label, value, graph):
     :param entry_type:
     :param str node_id: ncbi id
     :param str attribute_label: attribute label
-    :param str entry_label: entry label
     :param str value: value
     :param dict graph: graph object
     """
@@ -244,8 +243,10 @@ def set_interaction(entry, graph):
     :param dict graph: pathway network graph object
     """
     # Get the participants of the interaction, picking directly the node identifiers from the entry attributes with
-    # the corresponding argument URI namespace (wp#source or wp#interaction). After, for each participant, parse the
-    # URI value to obtine the nodes identifier.
+    # the
+    # corresponding argument URI namespace (wp#source or wp#interaction). After, for each participant, parse the
+    # URI
+    # value to obtine the nodes identifier.
     # Get the node source id
     uri_source_id = entry['http://vocabularies.wikipathways.org/wp#source'][0]['@id']
     _, _, _, source_id = parse_id_uri(uri_source_id)
@@ -268,6 +269,7 @@ def get_entry_type(types) -> str:
     :param set types: set of uris (from the entry's @type attribute) that indicate the entry's type
     :returns: entry_type: type identifier, also used as first key to the main graph
      (ex: 'nodes' -> graph[entry_type][node_id])
+    :returns: entry_type: type identifier, used as first key to the main graph ('nodes' -> graph[entry_type][node_id])
     """
     types_set = set()
 
@@ -327,7 +329,7 @@ def parse_attributes(entry, entry_type, entry_id, graph):
     """For each attribute in attributes, if is labbeled as a uri (not in {'@id', '@value', '@type'}) gets the
     attribute_type (calling the correspondent function) and calls the next statement (parse_attribute_values).
 
-    :param dict attributes: attributes of the entity
+    :param dict entry: attributes of the entity
     :param str entry_type: entity type
     :param str entry_id: entry identifier
     :param dict graph: graph object
