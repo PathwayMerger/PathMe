@@ -3,13 +3,14 @@
 """This module contains the methods to convert a KEGG RDF network into a BELGraph."""
 
 import logging
+import os
 from collections import defaultdict
 from itertools import product
 
 import tqdm
 
 from pybel import BELGraph, to_pickle
-from pybel.dsl import bioprocess, composite_abundance, pmod, reaction
+from pybel.dsl import abundance, bioprocess, complex_abundance, composite_abundance, pmod, protein, reaction
 from pybel.dsl.edges import activity
 from pybel.dsl.node_classes import CentralDogma
 from pybel.struct import add_annotation_value
@@ -18,7 +19,10 @@ from .kegg_xml_parser import (
     get_all_reactions, get_all_relationships, get_complex_components, get_entity_nodes, get_reaction_pathway_edges,
     import_xml_etree,
 )
-from ..constants import *
+from ..constants import (
+    ACTIVITY_ALLOWED_MODIFIERS, CHEBI, CHEBI_NAME, HGNC, HGNC_SYMBOL, KEGG, KEGG_BEL, KEGG_CITATION, KEGG_ID,
+    KEGG_MODIFICATIONS, PUBCHEM, UNIPROT,
+)
 from ..export_utils import add_annotation_key
 from ..utils import add_bel_metadata
 
@@ -267,13 +271,11 @@ def compound_to_bel(graph, node):
         node_dict = node[0]
 
         if CHEBI in node_dict:
-
             compound = abundance(namespace=CHEBI.upper(), name=node_dict[CHEBI_NAME], identifier=node_dict[CHEBI])
             graph.add_node_from_data(compound)
             return compound
 
         elif PUBCHEM in node_dict:
-
             compound = abundance(namespace=PUBCHEM.upper(), name=node_dict[PUBCHEM], identifier=node_dict[PUBCHEM])
             graph.add_node_from_data(compound)
             return compound

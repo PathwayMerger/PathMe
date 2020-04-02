@@ -4,7 +4,11 @@
 
 import unittest
 
-from pathme.wikipathways.json_rdf_parser import *
+from pathme.wikipathways.json_rdf_parser import (
+    generate_empty_pathway_graph, get_entry_attribute_value, get_entry_type, match_attribute, match_attribute_label,
+    match_entry, match_entry_type, parse_attributes, parse_id_uri, parse_namespace_uri, set_entry_attribute,
+    set_interaction,
+)
 
 
 class TestWikiPathways(unittest.TestCase):

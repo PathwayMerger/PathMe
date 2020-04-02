@@ -5,6 +5,7 @@
 import collections
 import itertools as itt
 import logging
+import os
 import pickle
 from typing import Dict, Iterable, List, Optional, Set, Tuple
 from urllib.parse import urlparse
@@ -19,7 +20,10 @@ from pybel import BELGraph, from_pickle
 from pybel.constants import GRAPH_NAMESPACE_URL
 from pybel.dsl import CentralDogma
 from pybel.struct.summary import count_functions, count_relations
-from .constants import *
+from .constants import (
+    BEL_STATS_COLUMN_NAMES, BRENDA, CHEBI, ENSEMBL, ENTREZ, EXPASY, HGNC, INTERPRO, KEGG, MIRBASE, PFAM, PUBCHEM,
+    REACTOME, UNIPROT, UNKNOWN, WIKIPATHWAYS, WIKIPEDIA,
+)
 from .export_utils import get_paths_in_folder
 
 logger = logging.getLogger(__name__)

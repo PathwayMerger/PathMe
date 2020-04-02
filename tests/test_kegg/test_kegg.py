@@ -2,13 +2,13 @@
 
 """Tests for converting KEGG."""
 
-from pathme.constants import *
+from pathme.constants import CHEBI, CHEBI_NAME, HGNC, HGNC_SYMBOL, KEGG, KEGG_ID, KEGG_TYPE, PUBCHEM
 from pathme.kegg.convert_to_bel import xml_complexes_to_bel, xml_entities_to_bel
 from pathme.kegg.kegg_xml_parser import (
     _process_kegg_api_get_entity, get_all_reactions, get_all_relationships,
     get_complex_components, get_entity_nodes, get_reaction_pathway_edges,
 )
-from pybel.dsl import bioprocess, composite_abundance
+from pybel.dsl import abundance, bioprocess, composite_abundance, protein
 from pybel.struct.summary.node_summary import count_functions
 from pybel_tools.summary.edge_summary import count_relations
 from tests.constants import KeggTest
@@ -67,7 +67,10 @@ class TestKegg(KeggTest):
         self.assertEqual(
             glycolysis_compounds['83'], [
                 {
-                    KEGG_ID: 'cpd:C00031', CHEBI: '4167', CHEBI_NAME: 'D-glucopyranose', PUBCHEM: '3333',
+                    KEGG_ID: 'cpd:C00031',
+                    CHEBI: '4167',
+                    CHEBI_NAME: 'D-glucopyranose',
+                    PUBCHEM: '3333',
                     KEGG_TYPE: 'compound',
                 },
             ],

@@ -2,6 +2,8 @@
 
 """Tests constants."""
 
+import logging
+import os
 import tempfile
 
 from bio2bel.testing import TemporaryConnectionMixin
@@ -9,10 +11,10 @@ from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
 from bio2bel_kegg.manager import Manager
 from pathme.kegg.convert_to_bel import kegg_to_bel
-from pathme.kegg.kegg_xml_parser import *
+from pathme.kegg.kegg_xml_parser import import_xml_etree
 from pybel import BELGraph
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 TEST_FOLDER = os.path.dirname(os.path.realpath(__file__))
 KEGG_TEST_RESOURCES = os.path.join(TEST_FOLDER, 'resources', 'kegg')
