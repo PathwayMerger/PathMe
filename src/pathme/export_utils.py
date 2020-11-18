@@ -44,7 +44,10 @@ def get_all_pickles(
     if not kegg_pickles:
         logger.warning('No KEGG files found. Please create the BEL KEGG files')
 
-    reactome_pickles = get_paths_in_folder(reactome_path or REACTOME_BEL)
+    if os.path.isfile(reactome_path):
+        reactome_pickles = [reactome_path]
+    else:
+        reactome_pickles = get_paths_in_folder(reactome_path or REACTOME_BEL)
     if not reactome_pickles:
         logger.warning('No Reactome files found. Please create the BEL Reactome files')
 

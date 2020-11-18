@@ -19,7 +19,7 @@ def get_data_dir() -> str:
 
 
 DATA_DIR = get_data_dir()
-DEFAULT_CACHE_CONNECTION = get_connection(MODULE_NAME)
+DEFAULT_CACHE_CONNECTION = get_connection()
 
 KEGG = 'kegg'
 KEGG_DIR = os.path.join(DATA_DIR, KEGG)

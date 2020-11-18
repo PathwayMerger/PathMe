@@ -2,6 +2,7 @@
 
 """This module has utilities method for parsing and handling KEGG KGML files."""
 
+import logging
 import os
 
 import pandas as pd
@@ -17,11 +18,13 @@ from pathme.kegg.kegg_xml_parser import get_xml_types, import_xml_etree
 __all__ = [
     'download_kgml_files',
     'get_kegg_statistics',
-    'get_kegg_pathway_ids'
+    'get_kegg_pathway_ids',
 ]
 
+logger = logging.getLogger(__name__)
 
-def get_kegg_pathway_ids(connection=None):
+
+def get_kegg_pathway_ids(connection=None, populate=False, species="hsa"):
     """Return a list of all pathway identifiers stored in the KEGG database.
 
     :param Optional[str] connection: connection to the database
@@ -29,6 +32,8 @@ def get_kegg_pathway_ids(connection=None):
     :rtype: list
     """
     kegg_manager = KeggManager(connection=connection)
+    if populate:
+        kegg_manager.populate(species=species)
     kegg_pathways_ids = [
         pathway.resource_id.replace('path:', '')
         for pathway in kegg_manager.get_all_pathways()
@@ -40,14 +45,14 @@ def get_kegg_pathway_ids(connection=None):
     return kegg_pathways_ids
 
 
-def download_kgml_files(kegg_pathway_ids):
+def download_kgml_files(kegg_pathway_ids, path=KEGG_FILES):
     """Download KEGG KGML files by querying the KEGG API.
 
     :param list kegg_pathway_ids: list of kegg ids
     """
     for kegg_id in tqdm.tqdm(kegg_pathway_ids, desc='Downloading KEGG files'):
         request = requests.get(KEGG_KGML_URL.format(kegg_id))
-        with open(os.path.join(KEGG_FILES, '{}.xml'.format(kegg_id)), 'w+') as file:
+        with open(os.path.join(path, '{}.xml'.format(kegg_id)), 'w+') as file:
             file.write(request.text)
             file.close()
 
