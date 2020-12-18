@@ -11,6 +11,7 @@ MODULE_NAME = 'pathme'
 DEFAULT_PATHME_DIR = os.path.join(os.path.expanduser('~'), '.pathme')
 PATHME_DIR = os.environ.get('PATHME_DIRECTORY', DEFAULT_PATHME_DIR)
 
+KEGG_PATHWAYS_URL = 'http://rest.kegg.jp/link/pathway/'
 
 def get_data_dir() -> str:
     """Ensure the appropriate PathMe data directory exists for the given module, then returns the file path."""
@@ -35,7 +36,7 @@ REACTOME_FILES = os.path.join(REACTOME_DIR, 'rdf')
 WIKIPATHWAYS = 'wikipathways'
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
 WIKIPATHWAYS_BEL = os.path.join(WIKIPATHWAYS_DIR, 'bel')
-WIKIPATHWAYS_FILES = os.path.join(WIKIPATHWAYS_DIR, 'rdf')
+WIKIPATHWAYS_FILES = os.path.join(WIKIPATHWAYS_DIR, 'rdf', 'wp')
 
 SPIA_DIR = os.path.join(DATA_DIR, 'spia')
 CX_DIR = os.path.join(DATA_DIR, 'cx')

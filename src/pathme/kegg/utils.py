@@ -4,6 +4,7 @@
 
 import logging
 import os
+from typing import List
 
 import pandas as pd
 import requests
@@ -11,7 +12,6 @@ import tqdm
 from bio2bel_kegg.manager import Manager as KeggManager
 
 from pathme.constants import KEGG_FILES, KEGG_KGML_URL, KEGG_STATS_COLUMN_NAMES
-from pathme.export_utils import get_paths_in_folder
 from pathme.kegg.convert_to_bel import get_bel_types
 from pathme.kegg.kegg_xml_parser import get_xml_types, import_xml_etree
 
@@ -24,7 +24,20 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
-def get_kegg_pathway_ids(connection=None, populate=False, species="hsa"):
+def get_paths_in_folder(directory: str) -> List[str]:
+    """Return the files in a given folder.
+
+    :param directory: folder path
+    :return: file names in folder
+    """
+    return [
+        path
+        for path in os.listdir(directory)
+        if os.path.isfile(os.path.join(directory, path))
+    ]
+
+
+def get_kegg_pathway_ids(connection=None, populate=False, species='hsa'):
     """Return a list of all pathway identifiers stored in the KEGG database.
 
     :param Optional[str] connection: connection to the database
@@ -33,9 +46,9 @@ def get_kegg_pathway_ids(connection=None, populate=False, species="hsa"):
     """
     kegg_manager = KeggManager(connection=connection)
     if populate:
-        kegg_manager.populate(species=species)
+        kegg_manager.populate(organisms=species)
     kegg_pathways_ids = [
-        pathway.resource_id.replace('path:', '')
+        pathway.identifier.replace('path:', '')
         for pathway in kegg_manager.get_all_pathways()
     ]
 
