@@ -7,18 +7,13 @@ import os
 import sys
 
 import click
-import networkx as nx
 import pathme.kegg.cli
 import pathme.reactome.cli
 import pathme.wikipathways.cli
-from pathme.kegg import download_kgml_files, get_kegg_pathway_ids
-from pybel import to_pickle
-from pybel.struct.mutation import collapse_all_variants, collapse_to_genes, remove_isolated_list_abundances
-from pybel.struct.summary import count_functions
 
 from .constants import CX_DIR, KEGG_BEL, PPI_DIR, REACTOME_BEL, SPIA_DIR, UNIVERSE_DIR, WIKIPATHWAYS_BEL, KEGG_FILES, \
     REACTOME_FILES, WIKIPATHWAYS_FILES
-from .export_utils import export_helper, get_universe_graph, iterate_universe_graphs, generate_universe
+from .export_utils import export_helper, iterate_universe_graphs, generate_universe
 
 logger = logging.getLogger(__name__)
 
@@ -148,6 +143,7 @@ def universe(
                       no_flatten=no_flatten,
                       no_normalize_names=no_normalize_names,
                       specie=specie)
+
 
 if __name__ == '__main__':
     main()
