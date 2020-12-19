@@ -24,7 +24,7 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
-def get_kegg_pathway_ids(connection=None, populate=False, species="hsa"):
+def get_kegg_pathway_ids(connection=None, populate=False, species='hsa'):
     """Return a list of all pathway identifiers stored in the KEGG database.
 
     :param Optional[str] connection: connection to the database
@@ -33,9 +33,9 @@ def get_kegg_pathway_ids(connection=None, populate=False, species="hsa"):
     """
     kegg_manager = KeggManager(connection=connection)
     if populate:
-        kegg_manager.populate(species=species)
+        kegg_manager.populate(organisms=species)
     kegg_pathways_ids = [
-        pathway.resource_id.replace('path:', '')
+        pathway.identifier.replace('path:', '')
         for pathway in kegg_manager.get_all_pathways()
     ]
 

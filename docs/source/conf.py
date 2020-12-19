@@ -21,11 +21,11 @@ project = 'PathMe'
 copyright = '2020, Daniel Domingo-Fernández, Sarah Mubeen, Josep Marin Llao, and Charles Tapley Hoyt'
 author = 'Daniel Domingo-Fernández, Sarah Mubeen, Josep Marin Llao, and Charles Tapley Hoyt'
 
-release = '0.1.13-dev'
+release = '0.1.14-dev'
 
 parsed_version = re.match(
     '(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?:-(?P<release>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+(?P<build>[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?',
-    release
+    release,
 )
 version = parsed_version.expand('\g<major>.\g<minor>.\g<patch>')
 
@@ -43,11 +43,13 @@ html_static_path = []
 htmlhelp_basename = 'pathmedoc'
 latex_elements = {}
 latex_documents = [
-    (master_doc, 'pathme.tex', 'PathMe Documentation',
-     'Daniel Domingo-Fernández, Sarah Mubeen, Josep Marin Llao, and Charles Tapley Hoyt', 'manual'),
+    (
+        master_doc, 'pathme.tex', 'PathMe Documentation',
+        'Daniel Domingo-Fernández, Sarah Mubeen, Josep Marin Llao, and Charles Tapley Hoyt', 'manual',
+    ),
 ]
 man_pages = [
-    (master_doc, 'pathme', 'PathMe Documentation', [author], 1)
+    (master_doc, 'pathme', 'PathMe Documentation', [author], 1),
 ]
 texinfo_documents = [
     (master_doc, 'PathMe', 'PathMe Documentation', author, 'PathMe'),

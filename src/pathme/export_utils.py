@@ -7,19 +7,18 @@ import os
 from typing import Iterable, List, Optional, TextIO, Tuple, Union
 
 import networkx as nx
+from networkx.utils import open_file
+from tqdm import tqdm
+
 import pybel
 from bio2bel_reactome import Manager as ReactomeManager
 from bio2bel_reactome.models import Pathway
-from networkx.utils import open_file
 from pybel import BELGraph, from_pickle, union
 from pybel.constants import ANNOTATIONS, NAME, RELATION
 from pybel.struct import add_annotation_value
 from pybel.struct.mutation import collapse_all_variants, collapse_to_genes
 from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
-from tqdm import tqdm
-
-from .constants import KEGG, PATHME_DIR, REACTOME, WIKIPATHWAYS
-from .constants import KEGG_BEL, REACTOME_BEL, WIKIPATHWAYS_BEL
+from .constants import KEGG, KEGG_BEL, PATHME_DIR, REACTOME, REACTOME_BEL, WIKIPATHWAYS, WIKIPATHWAYS_BEL
 from .normalize_names import normalize_graph_names
 from .pybel_utils import flatten_complex_nodes
 
@@ -34,10 +33,10 @@ def add_annotation_key(graph: BELGraph):
 
 
 def get_all_pickles(
-        *,
-        kegg_path: Optional[str] = None,
-        reactome_path: Optional[str] = None,
-        wikipathways_path: Optional[str] = None,
+    *,
+    kegg_path: Optional[str] = None,
+    reactome_path: Optional[str] = None,
+    wikipathways_path: Optional[str] = None,
 ) -> Tuple[List[str], List[str], List[str]]:
     """Return a list with all pickle paths."""
     kegg_pickles = get_paths_in_folder(kegg_path or KEGG_BEL)
@@ -59,12 +58,12 @@ def get_all_pickles(
 
 
 def get_universe_graph(
-        *,
-        kegg_path: Optional[str] = None,
-        reactome_path: Optional[str] = None,
-        wikipathways_path: Optional[str] = None,
-        flatten: bool = True,
-        normalize_names: bool = True,
+    *,
+    kegg_path: Optional[str] = None,
+    reactome_path: Optional[str] = None,
+    wikipathways_path: Optional[str] = None,
+    flatten: bool = True,
+    normalize_names: bool = True,
 ) -> BELGraph:
     """Return universe graph."""
     universe_graphs = iterate_universe_graphs(
@@ -72,7 +71,7 @@ def get_universe_graph(
         reactome_path=reactome_path,
         wikipathways_path=wikipathways_path,
         flatten=flatten,
-        normalize_names=normalize_names
+        normalize_names=normalize_names,
     )
     # Just keep the graph and not the source
     universe_graphs = (graph for _, _, graph in universe_graphs)
@@ -87,7 +86,7 @@ def export_ppi_tsv(graph: BELGraph, path: Union[str, TextIO]):
         # Only export if both node names are present
         if NAME not in u or NAME not in v:
             continue
-        print(
+        print(  # noqa: T001
             u[NAME], edge_data[RELATION], v[NAME],
             sep='\t',
             file=path,
@@ -95,12 +94,12 @@ def export_ppi_tsv(graph: BELGraph, path: Union[str, TextIO]):
 
 
 def export_helper(
-        *,
-        output: str,
-        kegg_path: Optional[str] = None,
-        reactome_path: Optional[str] = None,
-        wikipathways_path: Optional[str] = None,
-        format='spia',
+    *,
+    output: str,
+    kegg_path: Optional[str] = None,
+    reactome_path: Optional[str] = None,
+    wikipathways_path: Optional[str] = None,
+    fmt: str = 'spia',
 ) -> None:
     """Export helper of PathMe.
 
@@ -142,7 +141,7 @@ def export_helper(
             pathway_graph = from_pickle(os.path.join(reactome_path, path))
 
             # Check if pathway has children to build the merge graph
-            pathway_id = path.strip('.pickle')
+            pathway_id = path[:-len('.pickle')]
 
             # Look up in Bio2BEL Reactome
             pathway = reactome_manager.get_pathway_by_id(pathway_id)
@@ -182,11 +181,12 @@ def export_helper(
         collapse_all_variants(pathway_graph)
         collapse_to_genes(pathway_graph)
 
-        if format == 'spia':
+        if fmt == 'spia':
             # Default SPIA exporter
             spia_matrices = bel_to_spia_matrices(pathway_graph)
 
-            output_file = os.path.join(output, f"{path.strip('.pickle')}.xlsx")
+            _name = path[:-len('.pickle')]
+            output_file = os.path.join(output, f"{_name}.xlsx")
 
             if os.path.isfile(output_file):
                 continue
@@ -194,11 +194,12 @@ def export_helper(
             # Export excel file representing the connectivity matrix of the BEL Graph
             spia_matrices_to_excel(spia_matrices, output_file)
 
-        elif format == 'ppi':
-            output_file = os.path.join(output, f"{path.strip('.pickle')}.tsv")
+        elif fmt == 'ppi':
+            _name = path[:-len('.pickle')]
+            output_file = os.path.join(output, f"{_name}.tsv")
             export_ppi_tsv(pathway_graph, output_file)
         else:
-            raise ValueError(f'Unknown export format: {format}')
+            raise ValueError(f'Unknown export format: {fmt}')
 
 
 def iterate_indra_statements(**kwargs) -> Iterable['indra.statements.Statement']:
@@ -208,12 +209,12 @@ def iterate_indra_statements(**kwargs) -> Iterable['indra.statements.Statement']
 
 
 def iterate_universe_graphs(
-        *,
-        kegg_path: Optional[str] = None,
-        reactome_path: Optional[str] = None,
-        wikipathways_path: Optional[str] = None,
-        flatten: bool = True,
-        normalize_names: bool = True,
+    *,
+    kegg_path: Optional[str] = None,
+    reactome_path: Optional[str] = None,
+    wikipathways_path: Optional[str] = None,
+    flatten: bool = True,
+    normalize_names: bool = True,
 ) -> Iterable[Tuple[str, str, BELGraph]]:
     """Return universe graph."""
     kegg_pickle_paths, reactome_pickle_paths, wp_pickle_paths = get_all_pickles(
@@ -285,7 +286,8 @@ def _update_graph(graph, file, database):
     add_annotation_key(graph)
     add_annotation_value(graph, 'database', database)
     graph.annotation_pattern['PathwayID'] = '.*'
-    add_annotation_value(graph, 'PathwayID', file.strip(".pickle"))
+    _name = file[:-len('.pickle')]
+    add_annotation_value(graph, 'PathwayID', _name)
 
 
 def _munge_node_attribute(node, attribute='name'):

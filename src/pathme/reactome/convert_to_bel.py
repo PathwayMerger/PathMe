@@ -8,22 +8,25 @@ from typing import Dict, List, Tuple
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
 from pybel import BELGraph
-from pybel.dsl import (BaseEntity, NamedComplexAbundance, abundance, activity, bioprocess, complex_abundance,
-                       composite_abundance, gene, protein, reaction, rna)
-
-from pathme.constants import ACTIVITY_ALLOWED_MODIFIERS, REACTOME_CITATION, UNKNOWN
-from pathme.reactome.utils import get_valid_node_parameters, process_multiple_proteins
-from pathme.utils import add_bel_metadata, parse_id_uri
-
-log = logging.getLogger(__name__)
+from pybel.dsl import (
+    BaseEntity, NamedComplexAbundance, abundance, activity, bioprocess, complex_abundance,
+    composite_abundance, gene, protein, reaction, rna,
+)
+from .utils import get_valid_node_parameters, process_multiple_proteins
+from ..constants import ACTIVITY_ALLOWED_MODIFIERS, REACTOME_CITATION, UNKNOWN
+from ..utils import add_bel_metadata, parse_id_uri
 
 __all__ = [
     'convert_to_bel',
 ]
 
+logger = logging.getLogger(__name__)
 
-def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]], pathway_info: Dict,
-                   hgnc_manager: HgncManager, chebi_manager: ChebiManager) -> BELGraph:
+
+def convert_to_bel(
+    nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]], pathway_info: Dict,
+    hgnc_manager: HgncManager, chebi_manager: ChebiManager,
+) -> BELGraph:
     """Convert RDF graph dictionary into BEL graph."""
     uri_id = pathway_info['uri_reactome_id']
 
@@ -60,8 +63,12 @@ def convert_to_bel(nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Di
     return graph
 
 
-def nodes_to_bel(nodes: Dict[str, Dict], graph: BELGraph, hgnc_manager: HgncManager, chebi_manager: ChebiManager) -> \
-        Dict[str, BaseEntity]:
+def nodes_to_bel(
+    nodes: Dict[str, Dict],
+    graph: BELGraph,
+    hgnc_manager: HgncManager,
+    chebi_manager: ChebiManager,
+) -> Dict[str, BaseEntity]:
     """Convert dictionary values to BEL nodes."""
     return {
         node_id: node_to_bel(node_att, graph, hgnc_manager, chebi_manager)
@@ -108,13 +115,13 @@ def node_to_bel(node: Dict, graph, hgnc_manager: HgncManager, chebi_manager: Che
                 name=node.get('display_name'),
                 members=members,
                 identifier=identifier,
-                namespace=namespace.upper()
+                namespace=namespace.upper(),
             )
         else:
             return NamedComplexAbundance(
                 name=node.get('display_name'),
                 identifier=identifier,
-                namespace=namespace.upper()
+                namespace=namespace.upper(),
             )
 
     elif 'Pathway' in node_types:
@@ -122,7 +129,7 @@ def node_to_bel(node: Dict, graph, hgnc_manager: HgncManager, chebi_manager: Che
         graph.add_node_from_data(bioprocess_node)
         return bioprocess_node
     else:
-        log.warning('Entity type not recognized', node_types)
+        logger.warning('Entity type not recognized', node_types)
 
 
 def add_edges(graph: BELGraph, participants, nodes, att: Dict):
@@ -168,4 +175,4 @@ def add_simple_edge(graph: BELGraph, u, v, edge_types):
             annotations={},
         )
     else:
-        log.warning('edge type %s', edge_types)
+        logger.warning('edge type %s', edge_types)

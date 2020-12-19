@@ -7,17 +7,17 @@ import os
 import time
 
 import click
-from bio2bel_hgnc import Manager as HgncManager
-from pybel import from_pickle
 from tqdm import tqdm
 
-from pathme.constants import (
+from bio2bel_hgnc import Manager as HgncManager
+from pybel import from_pickle
+from .rdf_sparql import get_wp_statistics, wikipathways_to_pickles
+from .utils import get_file_name_from_url, iterate_wikipathways_paths, unzip_file
+from ..constants import (
     DATA_DIR, DEFAULT_CACHE_CONNECTION, RDF_WIKIPATHWAYS, WIKIPATHWAYS_BEL, WIKIPATHWAYS_DIR, WIKIPATHWAYS_FILES,
 )
-from pathme.export_utils import get_paths_in_folder
-from pathme.utils import CallCounted, make_downloader, statistics_to_df, summarize_helper
-from pathme.wikipathways.rdf_sparql import get_wp_statistics, wikipathways_to_pickles
-from pathme.wikipathways.utils import get_file_name_from_url, iterate_wikipathways_paths, unzip_file
+from ..export_utils import get_paths_in_folder
+from ..utils import CallCounted, make_downloader, statistics_to_df, summarize_helper
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ def download():
 
 
 @main.command()
-@click.option('-c', '--connection', help="Defaults to {}".format(DEFAULT_CACHE_CONNECTION))
+@click.option('-c', '--connection', default=DEFAULT_CACHE_CONNECTION, show_default=True)
 @click.option('-r', '--resource-folder')
 @click.option('-d', '--export-folder', default=WIKIPATHWAYS_BEL)
 @click.option('-v', '--debug', is_flag=True, default=False, help='Debug mode')
@@ -77,7 +77,7 @@ def bel(connection: str, resource_folder: str, export_folder: str, debug: bool, 
     logger.info(
         'WikiPathways exported in %.2f seconds. A total of %d warnings regarding entities that could not be converted '
         'to standard identifiers were found.',
-        time.time() - t, logging.debug.counter
+        time.time() - t, logging.debug.counter,
     )
 
 
@@ -98,7 +98,7 @@ def summarize(export_folder):
 
 
 @main.command()
-@click.option('-c', '--connection', help="Defaults to {}".format(DEFAULT_CACHE_CONNECTION))
+@click.option('-c', '--connection', default=DEFAULT_CACHE_CONNECTION, show_default=True)
 @click.option('-v', '--verbose', is_flag=True)
 @click.option('-x', '--only-canonical', default=True, help='Parse only canonical pathways')
 @click.option('-e', '--export', default=False, help='Export to datasheet csv and xls')

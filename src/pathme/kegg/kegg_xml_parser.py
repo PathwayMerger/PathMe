@@ -11,14 +11,12 @@ from xml.etree.ElementTree import parse
 
 import requests
 from bio2bel_kegg.constants import API_KEGG_GET
-from bio2bel_kegg.parsers.description import parse_description
+from bio2bel_kegg.parsers import parse_description
 
-from pathme.constants import CHEBI, CHEBI_NAME, HGNC, HGNC_SYMBOL, KEGG_CACHE, PUBCHEM, UNIPROT
-from pathme.wikipathways.utils import merge_two_dicts
+from ..constants import CHEBI, CHEBI_NAME, HGNC, HGNC_SYMBOL, KEGG_CACHE, KEGG_ID, KEGG_TYPE, PUBCHEM, UNIPROT
+from ..wikipathways.utils import merge_two_dicts
 
-log = logging.getLogger(__name__)
-
-"""Import XML"""
+logger = logging.getLogger(__name__)
 
 
 def import_xml_etree(filename):
@@ -31,7 +29,7 @@ def import_xml_etree(filename):
     try:
         tree = parse(filename)
     except IOError as ioerr:
-        print('File error: ' + str(ioerr))
+        logger.warning('File error: %s', ioerr)
         return None
 
     return tree
@@ -102,17 +100,17 @@ def _post_process_api_query(node_meta_data, hgnc_manager, chebi_manager):
     return node_dict
 
 
-def _process_kegg_api_get_entity(entity, type, hgnc_manager, chebi_manager):
+def _process_kegg_api_get_entity(entity, entity_type, hgnc_manager, chebi_manager):
     """Send a given entity to the KEGG API and process the results.
 
     :param str entity: A KEGG identifier
-    :param str type: Entity type
+    :param str entity_type: Entity type
     :param bio2bel_hgnc.Manager hgnc_manager: HGNC Manager
     :param bio2bel_chebi.Manager chebi_manager: ChEBI Manager
     :return: JSON retrieved from the API
     :rtype: dict[str,str]
     """
-    _entity_filepath = os.path.join(KEGG_CACHE, '{}.json'.format(entity))
+    _entity_filepath = os.path.join(KEGG_CACHE, f'{entity}.json')
 
     if os.path.exists(_entity_filepath):
         with open(_entity_filepath) as f:
@@ -124,8 +122,8 @@ def _process_kegg_api_get_entity(entity, type, hgnc_manager, chebi_manager):
 
     node_dict = _post_process_api_query(node_meta_data, hgnc_manager, chebi_manager)
 
-    node_dict['kegg_id'] = entity
-    node_dict['kegg_type'] = type
+    node_dict[KEGG_ID] = entity
+    node_dict[KEGG_TYPE] = entity_type
 
     with open(_entity_filepath, 'w') as f:
         json.dump(node_dict, f)
@@ -172,7 +170,7 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
 
         elif kegg_type.startswith('map'):
 
-            map_info = {'kegg_id': kegg_ids}
+            map_info = {KEGG_ID: kegg_ids}
 
             for graphics in entry.iter('graphics'):
                 map_name = graphics.get('name')
@@ -184,8 +182,8 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
 
             for ortholog_id in kegg_ids.split(' '):
                 ortholog_info = {
-                    'kegg_id': ortholog_id,
-                    'kegg_type': kegg_type
+                    KEGG_ID: ortholog_id,
+                    KEGG_TYPE: kegg_type,
                 }
 
                 ortholog_dict[entry_id].append(ortholog_info)
@@ -266,13 +264,11 @@ def get_xml_types(tree):
 
         if entry_type.startswith('gene'):
             gene_ids = entry.get('name')
-            for gene_id in gene_ids.split(' '):
-                entity_types_dict['gene'] += 1
+            entity_types_dict['gene'] += len(gene_ids.split(' '))
 
         elif entry_type.startswith('ortholog'):
             ortholog_ids = entry.get('name')
-            for ortholog_id in ortholog_ids.split(' '):
-                entity_types_dict['ortholog'] += 1
+            entity_types_dict['ortholog'] += len(ortholog_ids.split(' '))
 
         elif entry_type.startswith('compound'):
             entity_types_dict['compound entity'] += 1
@@ -323,7 +319,7 @@ def get_all_relationships(tree):
 
             # TODO: assume association ??
             if not relation_subtype:
-                log.warning("No relation type declared")
+                logger.warning("No relation type declared")
 
             # Add protein-protein, protein-compound and transcription factor-target gene product interactions
             if relation_type in {'PPrel', 'PCrel', 'GErel'}:
@@ -364,20 +360,16 @@ def get_all_reactions(tree, compounds_dict):
     products_dict = defaultdict(list)
 
     for reaction in tree.findall("reaction"):
-
         reaction_id = reaction.get("id")
 
-        for k, v in compounds_dict.items():
-
+        for k in compounds_dict:
             for substrate in reaction.iter('substrate'):
                 substrate_id = substrate.get("id")
-
                 if substrate_id == k:
                     substrates_dict[reaction_id].append(substrate_id)
 
             for product in reaction.iter('product'):
                 product_id = product.get("id")
-
                 if product_id == k:
                     products_dict[reaction_id].append(product_id)
 
