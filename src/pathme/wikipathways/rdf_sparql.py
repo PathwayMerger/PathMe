@@ -7,15 +7,15 @@ import os
 from collections import defaultdict
 from typing import Dict, Iterable, Tuple
 
-import bio2bel_hgnc
 import rdflib
 import tqdm
-from pybel import BELGraph, to_pickle
 from rdflib.namespace import DC, DCTERMS, Namespace, RDF, RDFS
 
-from pathme.utils import get_pathway_statitics, parse_rdf, query_result_to_dict
-from pathme.wikipathways.convert_to_bel import convert_to_bel
-from pathme.wikipathways.utils import debug_pathway_info
+import bio2bel_hgnc
+from pybel import BELGraph, to_pickle
+from .convert_to_bel import convert_to_bel
+from .utils import debug_pathway_info
+from ..utils import get_pathway_statitics, parse_rdf, query_result_to_dict
 
 logger = logging.getLogger(__name__)
 
@@ -159,7 +159,7 @@ def _get_pathway_metadata(rdf_graph: rdflib.Graph) -> Dict[str, Dict[str, Dict[s
     return query_result_to_dict(
         rdf_graph.query(GET_PATHWAY_INFO_SPARQL, initNs=PREFIXES),
         attr_empty=['title', 'identifier', 'description', 'pathway_id'],
-        id_dict=False
+        id_dict=False,
     )
 
 
@@ -171,7 +171,7 @@ def _get_nodes(rdf_graph: rdflib.Graph) -> Dict[str, Dict[str, Dict[str, str]]]:
     """
     return query_result_to_dict(
         rdf_graph.query(GET_ALL_DATA_NODES_SPARQL, initNs=PREFIXES),
-        ids_argument=True
+        ids_argument=True,
     )
 
 
@@ -182,7 +182,7 @@ def _get_complexes(rdf_graph: rdflib.Graph) -> Dict[str, Dict[str, Dict[str, str
     :returns: Nodes dict with nodes ids as keys and their metadata as values
     """
     return query_result_to_dict(
-        rdf_graph.query(GET_ALL_COMPLEXES_SPARQL, initNs=PREFIXES)
+        rdf_graph.query(GET_ALL_COMPLEXES_SPARQL, initNs=PREFIXES),
     )
 
 
@@ -190,16 +190,19 @@ def _get_interactions(rdf_graph: rdflib.Graph) -> Dict[str, Dict]:
     """Get all interactions from a RDF pathway network.
 
     :param rdf_graph: RDF graph object
-    :returns: Interactions as a list of dictionaries, where the participants are in an entry and the interaction metadata in other
+    :returns: Interactions as a list of dictionaries, participants are in an entry and the interaction metadata in other
     """
     return query_result_to_dict(
         rdf_graph.query(GET_ALL_DIRECTED_INTERACTIONS_SPARQL, initNs=PREFIXES),
-        directed_interaction=('source', 'target')
+        directed_interaction=('source', 'target'),
     )
 
 
 def _get_pathway_components(graph) -> Tuple[
-        Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]], Dict[str, Dict[str, Dict[str, str]]]]:
+    Dict[str, Dict[str, Dict[str, str]]],
+    Dict[str, Dict[str, Dict[str, str]]],
+    Dict[str, Dict[str, Dict[str, str]]],
+]:
     """Get all components in data structures from a RDF pathway network.
 
     :param graph: RDF graph object
@@ -212,7 +215,9 @@ def _get_pathway_components(graph) -> Tuple[
 
 
 def get_wp_statistics(resource_files, resource_folder, hgnc_manager) -> Tuple[
-        Dict[str, Dict[str, int]], Dict[str, Dict[str, Dict[str, int]]]]:
+    Dict[str, Dict[str, int]],
+    Dict[str, Dict[str, Dict[str, int]]],
+]:
     """Load WikiPathways RDF to BELGraph.
 
     :param iter[str] resource_files: RDF file path
@@ -224,7 +229,7 @@ def get_wp_statistics(resource_files, resource_folder, hgnc_manager) -> Tuple[
     for rdf_file in tqdm.tqdm(resource_files, desc='Parsing WikiPathways'):
         # Parse pathway rdf_file
         pathway_path = os.path.join(resource_folder, rdf_file)
-        rdf_graph = parse_rdf(pathway_path, format='turtle')
+        rdf_graph = parse_rdf(pathway_path, fmt='turtle')
 
         pathway_metadata = _get_pathway_metadata(rdf_graph)
 
@@ -244,7 +249,7 @@ def get_wp_statistics(resource_files, resource_folder, hgnc_manager) -> Tuple[
 
         global_statistics, all_pathways_statistics = get_pathway_statitics(
             nodes_types, edges_types, bel_graph, global_statistics=global_statistics,
-            all_pathways_statistics=all_pathways_statistics
+            all_pathways_statistics=all_pathways_statistics,
         )
 
     return global_statistics, all_pathways_statistics
@@ -271,15 +276,20 @@ def wikipathways_to_bel(file_path: str, hgnc_manager):
     :param bio2bel_hgnc.Manager: HGNC manager
     :rtype: pybel.BELGraph
     """
-    rdf_graph = parse_rdf(file_path, format='turtle')
+    rdf_graph = parse_rdf(file_path, fmt='turtle')
     return rdf_wikipathways_to_bel(rdf_graph, hgnc_manager)
 
 
+WIKIPATHWAYS_BLACKLIST = {
+    'WP1772.ttl',
+}
+
+
 def wikipathways_to_pickles(
-        resource_files: Iterable[str],
-        resource_folder: str,
-        hgnc_manager: bio2bel_hgnc.Manager,
-        export_folder: str,
+    resource_files: Iterable[str],
+    resource_folder: str,
+    hgnc_manager: bio2bel_hgnc.Manager,
+    export_folder: str,
 ) -> None:
     """Export WikiPathways to Pickles.
 
@@ -289,10 +299,16 @@ def wikipathways_to_pickles(
     :param export_folder: export folder
     """
     for rdf_file in tqdm.tqdm(resource_files, desc=f'Exporting WikiPathways to BEL in {export_folder}'):
-        pickle_path = os.path.join(export_folder, '{}.pickle'.format(rdf_file.strip('.ttl')))
+        if rdf_file.endswith('.ttl'):
+            pickle_name = rdf_file[:-len('.ttl')]
+        else:
+            pickle_name = rdf_file
+
+        pickle_path = os.path.join(export_folder, f'{pickle_name}.pickle')
 
         # Skip if BEL file already exists
-        if os.path.exists(pickle_path):
+        # TODO: Remove pathway from blacklist
+        if os.path.exists(pickle_path) or rdf_file in WIKIPATHWAYS_BLACKLIST:
             continue
 
         # Parse pathway rdf_file and logger stats

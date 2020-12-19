@@ -4,7 +4,11 @@
 
 import unittest
 
-from pathme.wikipathways.json_rdf_parser import *
+from pathme.wikipathways.json_rdf_parser import (
+    generate_empty_pathway_graph, get_entry_attribute_value, get_entry_type, match_attribute, match_attribute_label,
+    match_entry, match_entry_type, parse_attributes, parse_id_uri, parse_namespace_uri, set_entry_attribute,
+    set_interaction,
+)
 
 
 class TestWikiPathways(unittest.TestCase):
@@ -13,7 +17,7 @@ class TestWikiPathways(unittest.TestCase):
     def test_parse_id_uri(self):
         """Test parse identifier uri."""
         prefix, prefix_namespaces, namespace, identifier = parse_id_uri(
-            'http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/e3673'
+            'http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/e3673',
         )
 
         self.assertEqual(prefix, 'http://rdf.wikipathways.org')
@@ -24,7 +28,7 @@ class TestWikiPathways(unittest.TestCase):
     def test_parse_namespace_uri(self):
         """Test parse namespace uri."""
         prefix, namespace, _ = parse_namespace_uri(
-            'http://vocabularies.wikipathways.org/wp#participants'
+            'http://vocabularies.wikipathways.org/wp#participants',
         )
 
         self.assertEqual(prefix, 'http://vocabularies.wikipathways.org')
@@ -55,7 +59,7 @@ class TestWikiPathways(unittest.TestCase):
             '@id': 'http://identifiers.org/ncbigene/5295',
             '@type': [
                 'http://vocabularies.wikipathways.org/wp#Protein',
-                'http://vocabularies.wikipathways.org/wp#DataNode'
+                'http://vocabularies.wikipathways.org/wp#DataNode',
             ],
             'http://purl.org/dc/elements/1.1/identifier': [
                 {
@@ -94,25 +98,25 @@ class TestWikiPathways(unittest.TestCase):
             ],
             'http://vocabularies.wikipathways.org/wp#bdbUniprot': [
                 {
-                    '@id': 'http://identifiers.org/uniprot/E5RGI8'
+                    '@id': 'http://identifiers.org/uniprot/E5RGI8',
                 },
                 {
-                    '@id': 'http://identifiers.org/uniprot/H0YBC2'
+                    '@id': 'http://identifiers.org/uniprot/H0YBC2',
                 },
                 {
-                    '@id': 'http://identifiers.org/uniprot/E5RJY0'
+                    '@id': 'http://identifiers.org/uniprot/E5RJY0',
                 },
                 {
-                    '@id': 'http://identifiers.org/uniprot/E5RK66'
+                    '@id': 'http://identifiers.org/uniprot/E5RK66',
                 },
                 {
-                    '@id': 'http://identifiers.org/uniprot/H0YB27'
+                    '@id': 'http://identifiers.org/uniprot/H0YB27',
                 },
                 {
-                    '@id': 'http://identifiers.org/uniprot/E5RHI0'
+                    '@id': 'http://identifiers.org/uniprot/E5RHI0',
                 },
                 {
-                    '@id': 'http://identifiers.org/uniprot/P27986'
+                    '@id': 'http://identifiers.org/uniprot/P27986',
                 },
             ],
             'http://vocabularies.wikipathways.org/wp#isAbout': [
@@ -175,7 +179,7 @@ class TestWikiPathways(unittest.TestCase):
                 {
                     '@id': 'http://identifiers.org/ncbigene/2885',
                 },
-            ]
+            ],
         }
         entry_id, entry_type = match_entry(interaction_entry)
         self.assertEqual(entry_type, 'interactions')
@@ -206,7 +210,7 @@ class TestWikiPathways(unittest.TestCase):
         return graph, entry_id, entry_type
 
     def assert_get_value(self, entry_type, entry_id, graph, assert_values):  # noqa: D202
-        """Assert a dict of attributes values (labels as keys and values) with the retrieval of the function get_node_attribute_value."""
+        """Assert a dict of attributes values (labels as keys and values) using get_node_attribute_value."""
 
         def get_node_attribute_value(attribute_label):
             return get_entry_attribute_value(entry_type, entry_id, attribute_label, graph)
@@ -227,72 +231,72 @@ class TestWikiPathways(unittest.TestCase):
             ],
             'http://purl.org/dc/elements/1.1/identifier': [
                 {
-                    '@id': 'http://identifiers.org/ncbigene/5295'
+                    '@id': 'http://identifiers.org/ncbigene/5295',
                 },
             ],
             'http://purl.org/dc/elements/1.1/source': [
                 {
-                    '@value': 'Entrez Gene'
+                    '@value': 'Entrez Gene',
                 },
             ],
             'http://purl.org/dc/terms/identifier': [
                 {
-                    '@value': '5295'
+                    '@value': '5295',
                 },
             ],
             'http://purl.org/dc/terms/isPartOf': [
                 {
-                    '@id': 'http://identifiers.org/wikipathways/WP22_r97775'
+                    '@id': 'http://identifiers.org/wikipathways/WP22_r97775',
                 },
             ],
             'http://vocabularies.wikipathways.org/wp#bdbEnsembl': [
                 {
-                    '@id': 'http://identifiers.org/ensembl/ENSG00000145675'
+                    '@id': 'http://identifiers.org/ensembl/ENSG00000145675',
                 },
             ],
             'http://vocabularies.wikipathways.org/wp#bdbEntrezGene': [
                 {
-                    '@id': 'http://identifiers.org/ncbigene/5295'
+                    '@id': 'http://identifiers.org/ncbigene/5295',
                 },
             ],
             'http://vocabularies.wikipathways.org/wp#bdbHgncSymbol': [
                 {
-                    '@id': 'http://identifiers.org/hgnc.symbol/PIK3R1'
+                    '@id': 'http://identifiers.org/hgnc.symbol/PIK3R1',
                 },
             ],
             'http://vocabularies.wikipathways.org/wp#bdbUniprot': [
                 {
-                    '@id': 'http://identifiers.org/uniprot/E5RGI8'
+                    '@id': 'http://identifiers.org/uniprot/E5RGI8',
                 },
                 {
-                    '@id': 'http://identifiers.org/uniprot/H0YBC2'
+                    '@id': 'http://identifiers.org/uniprot/H0YBC2',
                 },
                 {
-                    '@id': 'http://identifiers.org/uniprot/E5RJY0'
+                    '@id': 'http://identifiers.org/uniprot/E5RJY0',
                 },
                 {
-                    '@id': 'http://identifiers.org/uniprot/E5RK66'
+                    '@id': 'http://identifiers.org/uniprot/E5RK66',
                 },
                 {
-                    '@id': 'http://identifiers.org/uniprot/H0YB27'
+                    '@id': 'http://identifiers.org/uniprot/H0YB27',
                 },
                 {
-                    '@id': 'http://identifiers.org/uniprot/E5RHI0'
+                    '@id': 'http://identifiers.org/uniprot/E5RHI0',
                 },
                 {
-                    '@id': 'http://identifiers.org/uniprot/P27986'
+                    '@id': 'http://identifiers.org/uniprot/P27986',
                 },
             ],
             'http://vocabularies.wikipathways.org/wp#isAbout': [
                 {
-                    '@id': 'http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/b5564'
+                    '@id': 'http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/b5564',
                 },
             ],
             'http://www.w3.org/2000/01/rdf-schema#label': [
                 {
-                    '@value': 'PIK3R1'
+                    '@value': 'PIK3R1',
                 },
-            ]
+            ],
         }
 
         graph, entry_id, entry_type = self.set_entry_graph(node_entry, graph, True)
@@ -312,7 +316,7 @@ class TestWikiPathways(unittest.TestCase):
             ],
             'http://purl.org/dc/elements/1.1/identifier': [
                 {
-                    '@id': 'http://identifiers.org/ncbigene/5295'
+                    '@id': 'http://identifiers.org/ncbigene/5295',
                 },
             ],
             'http://purl.org/dc/elements/1.1/source': [
@@ -369,11 +373,12 @@ class TestWikiPathways(unittest.TestCase):
                 },
             ],
             'http://vocabularies.wikipathways.org/wp#isAbout': [{
-                '@id': 'http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/b5564'
+                '@id': 'http://rdf.wikipathways.org/Pathway/WP22_r97775/DataNode/b5564',
             }],
-            'http://www.w3.org/2000/01/rdf-schema#label': [{
-                '@value': 'PIK3R1'
-            },
+            'http://www.w3.org/2000/01/rdf-schema#label': [
+                {
+                    '@value': 'PIK3R1',
+                },
             ],
         }
 
@@ -400,29 +405,29 @@ class TestWikiPathways(unittest.TestCase):
             'http://purl.org/dc/terms/isPartOf': [
                 {
                     '@id': 'http://identifiers.org/wikipathways/WP22_r97775',
-                }
+                },
             ],
             'http://vocabularies.wikipathways.org/wp#isAbout': [
                 {
-                    '@id': 'http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/e3673'
+                    '@id': 'http://rdf.wikipathways.org/Pathway/WP22_r97775/Interaction/e3673',
                 },
             ],
             'http://vocabularies.wikipathways.org/wp#participants': [
                 {
-                    '@id': 'http://identifiers.org/ncbigene/3716'
+                    '@id': 'http://identifiers.org/ncbigene/3716',
                 },
                 {
-                    '@id': 'http://identifiers.org/ncbigene/1025'
+                    '@id': 'http://identifiers.org/ncbigene/1025',
                 },
             ],
             'http://vocabularies.wikipathways.org/wp#source': [
                 {
-                    '@id': 'http://identifiers.org/ncbigene/3716'
+                    '@id': 'http://identifiers.org/ncbigene/3716',
                 },
             ],
             'http://vocabularies.wikipathways.org/wp#target': [
                 {
-                    '@id': 'http://identifiers.org/ncbigene/1025'
+                    '@id': 'http://identifiers.org/ncbigene/1025',
                 },
             ],
         }
@@ -469,7 +474,7 @@ class TestWikiPathways(unittest.TestCase):
                 {
                     '@id': 'http://identifiers.org/ncbigene/1025',
                 },
-            ]
+            ],
         }
         node_entry = {
             '@id': 'http://identifiers.org/ncbigene/5295',
@@ -544,7 +549,7 @@ class TestWikiPathways(unittest.TestCase):
                 {
                     '@value': 'PIK3R1',
                 },
-            ]
+            ],
         }
 
         interaction_types = interaction_entry['@type']

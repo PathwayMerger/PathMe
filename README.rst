@@ -1,14 +1,14 @@
 PathMe |build| |coverage| |docs| |zenodo|
 =========================================
 PathMe is a Python package aimed to convert KEGG [2]_ [3]_ [4]_, Reactome [5]_ [6]_, and WikiPathways [7]_ [8]_ [9]_ to
-Biological Expression Language (BEL).
+`Biological Expression Language (BEL) <https://biological-expression-language.github.io>`_.
 
 This project is the continuation of the ComPath web application aimed at exploring, analyzing,
 and curating pathway knowledge in a gene-centric view. This different approach involves converting
-all the pathways in these resources into BEL as a pivotal integration schema to harmonize entities and relationships in
-order across these multiple resources; thus, enabling a more comprehensive evaluation of pathway cross-talks, consensus,
-and boundaries. Additionally, PathMe is complemented with the
-`PathMe-Viewer <https://github.com/ComPath/PathMe-Viewer>`_, a web application that enables querying, browsing, and
+all the pathways in these resources into `Biological Expression Language (BEL) <https://biological-expression-language.github.io>`_
+as a pivotal integration schema to harmonize entities and relationships in order across these multiple resources; thus,
+enabling a more comprehensive evaluation of pathway cross-talks, consensus, and boundaries. Additionally, PathMe is complemented
+with the `PathMe-Viewer <https://github.com/ComPath/PathMe-Viewer>`_, a web application that enables querying, browsing, and
 navigating  pathway knowledge assisted by a user-friendly visualization.
 
 Database Versions
@@ -17,7 +17,7 @@ PathMe currently uses the following versions of the databases:
 
 - **KEGG**: Up-to-date (KEGG does not have tag its releases)
 - **Reactome**: 67 Release
-- **WikiPathways**: September 2019 Release
+- **WikiPathways**: March 2020 Release
 
 Citation
 --------
@@ -98,6 +98,20 @@ in the exporting command. Example:
 
     $ python3 -m pathme kegg bel --flatten
 
+Export PathMe
+-------------
+Run the following command to see the different formats that you can export PathMe to (e.g., CX, SPIA, etc.):
+
+.. code-block:: bash
+
+    $ python3 -m pathme export --help
+
+Disclaimer
+----------
+PathMe is a scientific software that has been developed in an academic capacity, and thus comes with no warranty
+or guarantee of maintenance, support, or back-up of data.
+
+
 References
 ----------
 KEGG
@@ -123,7 +137,7 @@ WikiPathways
        research. *Nucleic Acids Research*, doi.org/10.1093/nar/gkx1064
 .. [8] Kutmon, M., *et al.* (2016). WikiPathways: capturing the full diversity of pathway knowledge Nucl. Acids Res., 44,
        D488-D494.
-.. [9] Kelder, T., *et al.* (201). WikiPathways: building research communities on biological pathways. Nucleic Acids Res.
+.. [9] Kelder, T., *et al.* (2011). WikiPathways: building research communities on biological pathways. Nucleic Acids Res.
        Jan;40(Database issue):D1301-7
 
 .. |build| image:: https://travis-ci.com/PathwayMerger/PathMe.svg?branch=master

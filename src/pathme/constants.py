@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
-"""This module contains all the constants used in PathMe repo."""
+"""Constants for PathMe.
+
+This module contains all the string constants used in PathMe.
+"""
 
 import os
 
 from bio2bel.utils import get_connection
-from pybel.dsl.nodes import abundance, complex_abundance, protein, rna
+from pybel.dsl import abundance, complex_abundance, protein, rna
 
 MODULE_NAME = 'pathme'
 DEFAULT_PATHME_DIR = os.path.join(os.path.expanduser('~'), '.pathme')
@@ -22,17 +25,21 @@ def get_data_dir() -> str:
 DATA_DIR = get_data_dir()
 DEFAULT_CACHE_CONNECTION = get_connection()
 
+# Databases contained in PathMe
+#: KEGG
 KEGG = 'kegg'
 KEGG_DIR = os.path.join(DATA_DIR, KEGG)
 KEGG_BEL = os.path.join(KEGG_DIR, 'bel')
 KEGG_FILES = os.path.join(KEGG_DIR, 'xml')
 KEGG_CACHE = os.path.join(KEGG_DIR, 'cache')
 
+#: Reactome
 REACTOME = 'reactome'
 REACTOME_DIR = os.path.join(DATA_DIR, REACTOME)
 REACTOME_BEL = os.path.join(REACTOME_DIR, 'bel')
 REACTOME_FILES = os.path.join(REACTOME_DIR, 'rdf')
 
+#: WikiPathways
 WIKIPATHWAYS = 'wikipathways'
 WIKIPATHWAYS_DIR = os.path.join(DATA_DIR, WIKIPATHWAYS)
 WIKIPATHWAYS_BEL = os.path.join(WIKIPATHWAYS_DIR, 'bel')
@@ -69,26 +76,49 @@ ensure_pathme_folders()
 UNKNOWN = 'unknown'
 
 # Other namespaces
+
+#: InterPro
 INTERPRO = 'interpro'
+#: Pfam
 PFAM = 'pfam'
+#: BRENDA
 BRENDA = 'brenda'
+#: ChEMBL
 CHEMBL = 'chembl'
+#: miRBase
 MIRBASE = 'mirbase'
 
-KEGG_ID = 'kegg_id'
-KEGG_NAME = 'kegg_name'
-KEGG_TYPE = 'kegg_type'
+#: HGNC
 HGNC = 'HGNC'
+#: HGNC Symbol
 HGNC_SYMBOL = 'HGNC symbol'
+#: ENSEMBL
 ENSEMBL = 'ENSEMBL'
+#: EXPASY
 EXPASY = 'EXPASY'
+#: ENTREZ
 ENTREZ = 'ENTREZ'
+#: UniProt
 UNIPROT = 'UniProt'
+#: ChEBI
 CHEBI = 'ChEBI'
+#: ChEBI chemical name
 CHEBI_NAME = 'ChEBI name'
+#: PubChem
 PUBCHEM = 'PubChem'
+#: Wikipedia
 WIKIPEDIA = 'WIKIPEDIA'
 
+#: KEGG entity identifier
+KEGG_ID = 'kegg_id'
+
+#: KEGG entity name
+KEGG_NAME = 'kegg_name'
+
+#: KEGG entity type
+KEGG_TYPE = 'kegg_type'
+
+#: Protein modification types present in KEGG
 KEGG_MODIFICATIONS = {
     'phosphorylation': 'Ph',
     'glycosylation': 'Glyco',
@@ -100,21 +130,24 @@ ACTIVITY_ALLOWED_MODIFIERS = (
     abundance,
     protein,
     complex_abundance,
-    rna
+    rna,
 )
 
+#: Kanehisa, M., & Goto, S. (2000). KEGG: kyoto encyclopedia of genes and genomes. Nucleic acids research, 28(1), 27-30.
 KEGG_CITATION = '10592173'
+#: Fabregat, A., et al. (2018). The reactome pathway knowledgebase. Nucleic acids research, 46(D1), D649-D655.
 REACTOME_CITATION = '29145629'
 
-# FIXME why doesn't this just import the compath_resources package?
-KEGG_WIKIPATHWAYS_MAPPINGS = 'https://github.com/ComPath/curation/raw/master/mappings/kegg_wikipathways.xlsx'
-KEGG_REACTOME_MAPPINGS = 'https://github.com/ComPath/curation/raw/master/mappings/kegg_reactome.xlsx'
-WIKIPATHWAYS_REACTOME_MAPPINGS = 'https://github.com/ComPath/curation/raw/master/mappings/wikipathways_reactome.xlsx'
-
+#: REST API to KEGG
 KEGG_KGML_URL = 'http://rest.kegg.jp/get/{}/kgml'
-RDF_REACTOME = 'ftp://ftp.ebi.ac.uk/pub/databases/RDF/reactome/r67/reactome-biopax.tar.bz2'
-RDF_WIKIPATHWAYS = 'http://data.wikipathways.org/20190910/rdf/wikipathways-20190910-rdf-wp.zip'
 
+#: Reactome RDF
+RDF_REACTOME = 'ftp://ftp.ebi.ac.uk/pub/databases/RDF/reactome/r67/reactome-biopax.tar.bz2'
+
+#: WikiPathways RDF
+RDF_WIKIPATHWAYS = 'http://data.wikipathways.org/20200310/rdf/wikipathways-20200310-rdf-wp.zip'
+
+#: Mapping to compare conversion of entities from KEGG XML (i.e. KGML) to BEL
 KEGG_STATS_COLUMN_NAMES = {
     'nodes': 'BEL Nodes',
     'entities': 'XML Entities',
@@ -160,6 +193,7 @@ KEGG_STATS_COLUMN_NAMES = {
     'brite': 'XML Brite Hierarchy',
 }
 
+#: Mapping of BEL terms to their definitions
 BEL_STATS_COLUMN_NAMES = {
     'nodes': 'BEL Nodes',
     'edges': 'BEL Edges',
