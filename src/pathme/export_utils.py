@@ -29,8 +29,9 @@ from pybel.struct import add_annotation_value, count_functions, remove_isolated_
 from pybel.struct.mutation import collapse_all_variants, collapse_to_genes
 from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
 
-from .constants import KEGG, KEGG_BEL, KEGG_FILES, KEGG_KGML_URL, KEGG_PATHWAYS_URL, PATHME_DIR, REACTOME, REACTOME_BEL, \
-    REACTOME_FILES, UNIVERSE_DIR, WIKIPATHWAYS, WIKIPATHWAYS_BEL, WIKIPATHWAYS_FILES
+from .constants import KEGG, KEGG_BEL, KEGG_FILES, KEGG_KGML_URL, KEGG_PATHWAYS_URL, \
+    PATHME_DIR, REACTOME, REACTOME_BEL, REACTOME_FILES, UNIVERSE_DIR, WIKIPATHWAYS, \
+    WIKIPATHWAYS_BEL, WIKIPATHWAYS_FILES
 from .normalize_names import normalize_graph_names
 from .pybel_utils import flatten_complex_nodes
 
@@ -370,7 +371,6 @@ def get_kegg_pathway_ids(connection=None, populate=False, species='hsa'):
     :returns: list of all kegg_pathway_ids
     :rtype: list
     """
-
     return None
 
 
@@ -426,7 +426,8 @@ def get_pathways_kegg_id(specie_id):
 
 
 def get_common_or_name_specie_id(specie_id, common=True):
-    """Get common name or name (from its oposite combination) from KEGG mapping for A SINGLE specie. If common_name given, name returned, if name given common_name returned."""
+    """Get common name or name (from its oposite combination) from KEGG mapping for A SINGLE specie.
+       If common_name given, name returned, if name given common_name returned."""
     df_pathway_species = get_organisms_df()
 
     specie_id = specie_id.replace('_', ' ')

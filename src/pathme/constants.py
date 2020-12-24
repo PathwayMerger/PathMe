@@ -16,6 +16,7 @@ PATHME_DIR = os.environ.get('PATHME_DIRECTORY', DEFAULT_PATHME_DIR)
 
 KEGG_PATHWAYS_URL = 'http://rest.kegg.jp/link/pathway/'
 
+
 def get_data_dir() -> str:
     """Ensure the appropriate PathMe data directory exists for the given module, then returns the file path."""
     os.makedirs(PATHME_DIR, exist_ok=True)
