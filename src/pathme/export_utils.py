@@ -10,22 +10,24 @@ from urllib.parse import urljoin
 import click
 import networkx as nx
 import pandas as pd
-import pybel
 import requests
+from tqdm import tqdm
+
+from diffupath.utils import get_dir_list, get_or_create_dir
+
 from bio2bel import ensure_path
 from bio2bel_kegg.constants import KEGG_ORGANISM_URL, MODULE_NAME
 from bio2bel_reactome import Manager as ReactomeManager
 from bio2bel_reactome.models import Pathway
 
-from diffupath.utils import get_dir_list, get_or_create_dir
 from networkx.utils import open_file
 
+import pybel
 from pybel import BELGraph, from_pickle, to_pickle, union
 from pybel.constants import ANNOTATIONS, NAME, RELATION
 from pybel.struct import add_annotation_value, count_functions, remove_isolated_list_abundances
 from pybel.struct.mutation import collapse_all_variants, collapse_to_genes
 from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
-from tqdm import tqdm
 
 from .constants import KEGG, KEGG_BEL, KEGG_FILES, KEGG_KGML_URL, KEGG_PATHWAYS_URL, PATHME_DIR, REACTOME, REACTOME_BEL, \
     REACTOME_FILES, UNIVERSE_DIR, WIKIPATHWAYS, WIKIPATHWAYS_BEL, WIKIPATHWAYS_FILES
@@ -424,8 +426,7 @@ def get_pathways_kegg_id(specie_id):
 
 
 def get_common_or_name_specie_id(specie_id, common=True):
-    """Get common name or name (from its oposite combination) from KEGG mapping for A SINGLE specie.
-    If common_name given, name returned, if name given common_name returned."""
+    """Get common name or name (from its oposite combination) from KEGG mapping for A SINGLE specie. If common_name given, name returned, if name given common_name returned."""
     df_pathway_species = get_organisms_df()
 
     specie_id = specie_id.replace('_', ' ')
@@ -482,7 +483,6 @@ def generate_universe(kegg_path=KEGG_FILES,
                       no_normalize_names=False,
                       specie='Homo_sapiens'):
     """Export harmonized PathMe universe."""
-
     flatten = not no_flatten
     normalize_names = not no_normalize_names
 
@@ -506,7 +506,7 @@ def generate_universe(kegg_path=KEGG_FILES,
             'You are about to download KGML files from KEGG.\n'
             'Please make sure you have read KEGG license (see: https://www.kegg.jp/kegg/rest/).'
             ' These files cannot be distributed and their use must be exclusively with academic purposes.\n'
-            'We (PathMe developers) are not responsible for the end use of this data.\n'
+            'We (PathMe developers) are not responsible for the end use of this data.\n',
         )
         os.makedirs(kegg_path)
         download_kgml_files(kegg_ids, path=kegg_path)
