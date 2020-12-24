@@ -13,20 +13,22 @@ import pandas as pd
 import pybel
 import requests
 from bio2bel import ensure_path
-from bio2bel_kegg.constants import MODULE_NAME, KEGG_ORGANISM_URL
+from bio2bel_kegg.constants import KEGG_ORGANISM_URL, MODULE_NAME
 from bio2bel_reactome import Manager as ReactomeManager
 from bio2bel_reactome.models import Pathway
+
 from diffupath.utils import get_dir_list, get_or_create_dir
 from networkx.utils import open_file
-from pybel import BELGraph, from_pickle, union, to_pickle
+
+from pybel import BELGraph, from_pickle, to_pickle, union
 from pybel.constants import ANNOTATIONS, NAME, RELATION
-from pybel.struct import add_annotation_value, remove_isolated_list_abundances, count_functions
+from pybel.struct import add_annotation_value, count_functions, remove_isolated_list_abundances
 from pybel.struct.mutation import collapse_all_variants, collapse_to_genes
 from pybel_tools.analysis.spia import bel_to_spia_matrices, spia_matrices_to_excel
 from tqdm import tqdm
 
-from .constants import WIKIPATHWAYS_BEL, WIKIPATHWAYS, KEGG, KEGG_BEL, KEGG_FILES, REACTOME_FILES, WIKIPATHWAYS_FILES, \
-    PATHME_DIR, REACTOME, REACTOME_BEL, UNIVERSE_DIR, KEGG_KGML_URL, KEGG_PATHWAYS_URL
+from .constants import KEGG, KEGG_BEL, KEGG_FILES, KEGG_KGML_URL, KEGG_PATHWAYS_URL, PATHME_DIR, REACTOME, REACTOME_BEL, \
+    REACTOME_FILES, UNIVERSE_DIR, WIKIPATHWAYS, WIKIPATHWAYS_BEL, WIKIPATHWAYS_FILES
 from .normalize_names import normalize_graph_names
 from .pybel_utils import flatten_complex_nodes
 

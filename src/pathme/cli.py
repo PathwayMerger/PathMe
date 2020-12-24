@@ -8,9 +8,9 @@ import sys
 
 import click
 
-from .constants import CX_DIR, KEGG_BEL, PPI_DIR, REACTOME_BEL, SPIA_DIR, UNIVERSE_DIR, WIKIPATHWAYS_BEL, KEGG_FILES, \
-    REACTOME_FILES, WIKIPATHWAYS_FILES
-from .export_utils import export_helper, iterate_universe_graphs, generate_universe
+from .constants import CX_DIR, KEGG_BEL, KEGG_FILES, PPI_DIR, REACTOME_BEL, REACTOME_FILES, SPIA_DIR, UNIVERSE_DIR, \
+    WIKIPATHWAYS_BEL, WIKIPATHWAYS_FILES
+from .export_utils import export_helper, generate_universe, iterate_universe_graphs
 from .kegg.cli import main as kegg_cli
 from .reactome.cli import main as reactome_cli
 from .wikipathways.cli import main as wikipathways_cli
@@ -134,7 +134,7 @@ def universe(
     output=UNIVERSE_DIR,
     no_flatten=False,
     no_normalize_names=False,
-    specie='Homo_sapiens'
+    specie='Homo_sapiens',
 ):
     """Export harmonized PathMe universe."""
     generate_universe(kegg_path=kegg_path,
