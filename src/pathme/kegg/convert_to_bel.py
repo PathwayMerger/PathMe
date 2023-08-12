@@ -5,11 +5,12 @@
 import logging
 import os
 from collections import defaultdict
-from itertools import product
 
 import tqdm
+from itertools import product
 
-from pybel import BELGraph, to_pickle
+import pybel
+from pybel import BELGraph
 from pybel.dsl import abundance, bioprocess, complex_abundance, composite_abundance, pmod, protein, reaction
 from pybel.dsl.edges import activity
 from pybel.dsl.node_classes import CentralDogma
@@ -27,8 +28,8 @@ from ..export_utils import add_annotation_key
 from ..utils import add_bel_metadata
 
 __all__ = [
-    'kegg_to_bel',
-    'kegg_to_pickles',
+    'kgml_to_bel',
+    'kegg_to_bel_cache',
 ]
 
 logger = logging.getLogger(__name__)
@@ -36,14 +37,11 @@ logger = logging.getLogger(__name__)
 """Populate empty BEL graph with KEGG pathway entities and interactions"""
 
 
-def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False):
+def kgml_to_bel(*, path: str, flatten: bool = False) -> BELGraph:
     """Convert KGML file to a BELGraph.
 
-    :param str path: path to KGML file
-    :param bio2bel_hgnc.Manager hgnc_manager: HGNC manager
-    :param bio2bel_chebi.Manager chebi_manager: ChEBI manager
-    :param bool flatten: flat nodes
-    :rtype: BELGraph
+    :param path: path to KGML file
+    :param flatten: flat nodes
     """
     xml_tree = import_xml_etree(path)  # Load xml
     root = xml_tree.getroot()
@@ -61,7 +59,7 @@ def kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=False):
     graph.graph['pathway_id'] = root.attrib['name']
 
     # Parse file and get entities and interactions
-    genes_dict, compounds_dict, maps_dict, orthologs_dict = get_entity_nodes(xml_tree, hgnc_manager, chebi_manager)
+    genes_dict, compounds_dict, maps_dict, orthologs_dict = get_entity_nodes(xml_tree)
     relations_list = get_all_relationships(xml_tree)
 
     # Get compounds and reactions
@@ -651,36 +649,36 @@ def add_simple_edge(graph, u, v, relation_type):
     raise ValueError(f'Unexpected relation type {relation_type} between {u} and {v}')
 
 
-def get_bel_types(path, hgnc_manager, chebi_manager, flatten=None):
+def get_bel_types(*, path: str, flatten: bool = None):
     """Get all BEL node and edge type statistics.
 
-    :param str path: path to KGML file
-    :param bio2bel_hgnc.Manager hgnc_manager: HGNC manager
-    :param bio2bel_chebi.Manager chebi_manager: ChEBI manager
-    :param bool flatten: flat nodes
+    :param path: path to KGML file
+    :param flatten: flat nodes
     :return: count of all nodes and edges in BEL graph
     :rtype: dict
     """
-    bel_stats = {}
-
-    bel_graph = kegg_to_bel(path, hgnc_manager, chebi_manager, flatten=True if flatten else False)
-
-    bel_stats['nodes'] = bel_graph.number_of_nodes()
-    bel_stats['edges'] = bel_graph.number_of_edges()
-
+    bel_graph = kgml_to_bel(path=path, flatten=flatten)
     # Get count of all BEL function types
     bel_functions_dict = count_functions(bel_graph)
-    bel_stats.update(bel_functions_dict)
-
     # Get count of all BEL edge types
     bel_edges_dict = edge_summary.count_relations(bel_graph)
-    bel_stats.update(bel_edges_dict)
 
-    return bel_stats
+    return {
+        'nodes': bel_graph.number_of_nodes(),
+        'edges': bel_graph.number_of_edges(),
+        **bel_functions_dict,
+        **bel_edges_dict,
+    }
 
 
-def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager, flatten=None, export_folder=None):
-    """Export WikiPathways to Pickles.
+def kegg_to_bel_cache(
+    *,
+    resource_files,
+    resource_folder,
+    flatten=None,
+    export_folder=None,
+):
+    """Export KEGG to Nodelink JSON files.
 
     :param iter[str] resource_files: iterator with file names
     :param str resource_folder: path folder
@@ -690,24 +688,23 @@ def kegg_to_pickles(resource_files, resource_folder, hgnc_manager, chebi_manager
         export_folder = resource_folder
 
     for kgml_file in tqdm.tqdm(resource_files, desc=f'Exporting KEGG to BEL in {export_folder}'):
-        _name = kgml_file[:-len('.xml')]
-        _flatten = 'flatten' if flatten else 'unflatten'
-
-        # Name of file created will be: "hsaXXX_unflatten.pickle" or "hsaXXX_flatten.pickle"
-        pickle_path = os.path.join(
-            export_folder if export_folder else KEGG_BEL,
-            f'{_name}_{_flatten}.pickle',
-        )
-
-        # Skip not KGML files or file already exists
-        if not kgml_file.endswith('.xml') or os.path.exists(pickle_path):
+        if not kgml_file.endswith('.xml'):
             continue
 
-        bel_graph = kegg_to_bel(
+        _name = kgml_file[:-len('.xml')]
+        _flatten = 'flatten' if flatten else 'unflatten'
+        name = f'{_name}_{_flatten}.bel.nodelink.json'
+
+        # Name of file created will be: "hsaXXX_unflatten.pickle" or "hsaXXX_flatten.pickle"
+        output_path = os.path.join(export_folder if export_folder else KEGG_BEL, name)
+
+        # Skip not KGML files or file already exists
+        if os.path.exists(output_path):
+            continue
+
+        bel_graph = kgml_to_bel(
             path=os.path.join(resource_folder, kgml_file),
-            hgnc_manager=hgnc_manager,
-            chebi_manager=chebi_manager,
-            flatten=True if flatten else False,
+            flatten=flatten,
         )
 
-        to_pickle(bel_graph, pickle_path)
+        pybel.to_nodelink_file(bel_graph, output_path)

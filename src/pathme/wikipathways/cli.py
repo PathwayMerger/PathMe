@@ -4,12 +4,11 @@
 
 import logging
 import os
-import time
 
 import click
+import time
 from tqdm import tqdm
 
-from bio2bel_hgnc import Manager as HgncManager
 from pybel import from_pickle
 from .rdf_sparql import get_wp_statistics, wikipathways_to_pickles
 from .utils import get_file_name_from_url, iterate_wikipathways_paths, unzip_file
@@ -17,7 +16,7 @@ from ..constants import (
     DATA_DIR, DEFAULT_CACHE_CONNECTION, RDF_WIKIPATHWAYS, WIKIPATHWAYS_BEL, WIKIPATHWAYS_DIR, WIKIPATHWAYS_FILES,
 )
 from ..export_utils import get_paths_in_folder
-from ..utils import CallCounted, make_downloader, statistics_to_df, summarize_helper
+from ..utils import make_downloader, statistics_to_df, summarize_helper
 
 logger = logging.getLogger(__name__)
 
@@ -55,15 +54,6 @@ def bel(connection: str, resource_folder: str, export_folder: str, debug: bool, 
     if debug:
         logger.setLevel(logging.DEBUG)
 
-    logging.debug = CallCounted(logging.debug)
-
-    logger.info('Initiating HGNC Manager')
-    hgnc_manager = HgncManager()
-
-    if not hgnc_manager.is_populated():
-        click.echo('bio2bel_hgnc was not populated. Populating now.')
-        hgnc_manager.populate()
-
     t = time.time()
 
     if resource_folder is None:
@@ -72,13 +62,9 @@ def bel(connection: str, resource_folder: str, export_folder: str, debug: bool, 
     resource_files = iterate_wikipathways_paths(resource_folder, connection, only_canonical)
 
     os.makedirs(export_folder, exist_ok=True)
-    wikipathways_to_pickles(resource_files, resource_folder, hgnc_manager, export_folder)
+    wikipathways_to_pickles(resource_files, resource_folder, export_folder)
 
-    logger.info(
-        'WikiPathways exported in %.2f seconds. A total of %d warnings regarding entities that could not be converted '
-        'to standard identifiers were found.',
-        time.time() - t, logging.debug.counter,
-    )
+    logger.info('WikiPathways exported in %.2f seconds.', time.time() - t)
 
 
 @main.command()
@@ -108,15 +94,12 @@ def statistics(connection, verbose, only_canonical, export):
     if verbose:
         logger.setLevel(logging.DEBUG)
 
-    logger.info('Initiating HGNC Manager')
-    hgnc_manager = HgncManager()
-
     # TODO: Allow for an optional parameter giving the folder of the files
     resource_folder = os.path.join(WIKIPATHWAYS_DIR, 'wp', 'Human')
 
     resource_files = iterate_wikipathways_paths(resource_folder, connection, only_canonical)
 
-    global_statistics, all_pathways_statistics = get_wp_statistics(resource_files, resource_folder, hgnc_manager)
+    global_statistics, all_pathways_statistics = get_wp_statistics(resource_files, resource_folder)
 
     df = statistics_to_df(all_pathways_statistics)
 

@@ -6,9 +6,6 @@ import logging
 import tarfile
 from typing import List, Tuple
 
-from bio2bel_chebi import Manager as ChebiManager
-from bio2bel_hgnc import Manager as HgncManager
-from bio2bel_hgnc.models import HumanGene
 from pybel.dsl import protein
 from ..constants import ENSEMBL, HGNC, UNIPROT, UNKNOWN
 from ..utils import parse_id_uri
@@ -18,19 +15,12 @@ logger = logging.getLogger(__name__)
 """Download utilities"""
 
 
-def get_hgnc_node_info(gene: HumanGene) -> Tuple[str, str, str]:
-    """Return HGNC identifier, symbol and namespace from HGNC entry.
-
-    :param bio2bel_hgnc.manager.models.HGNC gene:
-    """
+def get_hgnc_node_info(gene) -> Tuple[str, str, str]:
+    """Return HGNC identifier, symbol and namespace from HGNC entry."""
     return str(gene.identifier), gene.symbol, HGNC
 
 
-def get_valid_node_parameters(
-    node,
-    hgnc_manager: HgncManager,
-    chebi_manager: ChebiManager,
-) -> Tuple[str, str, str]:
+def get_valid_node_parameters(*, node) -> Tuple[str, str, str]:
     """Get valid node parameters."""
     namespace = None
 

@@ -10,8 +10,7 @@ from typing import Dict, Iterable, List, Optional, Set, Tuple, Union
 
 import networkx as nx
 
-from bio2bel_hgnc import Manager as HgncManager
-from bio2bel_wikipathways import Manager as WikiPathwaysManager
+import pyobo
 from pybel import BELGraph
 from ..constants import (
     BRENDA, CHEMBL, DATA_DIR, ENSEMBL, ENTREZ, EXPASY, HGNC, INTERPRO, KEGG, MIRBASE, PFAM, REACTOME, UNIPROT,
@@ -33,13 +32,11 @@ def evaluate_wikipathways_metadata(metadata: Union[str, Set[str]]) -> str:
 
 
 def _get_update_alias_symbol(
-    hgnc_manager: HgncManager,
     original_identifier: str,
     original_namespace: str,
 ) -> Tuple[str, str, str]:
     """Try to get current alias symbol.
 
-    :param hgnc_manager: hgnc manager
     :param original_identifier:
     :param original_namespace:
     """
@@ -53,21 +50,19 @@ def _get_update_alias_symbol(
 
 
 def _validate_query(
-    hgnc_manager: HgncManager,
     query_result,
     original_identifier: str,
     original_namespace: str,
 ) -> Tuple[str, str, str]:
     """Process and validate HGNC query.
 
-    :param hgnc_manager: hgnc manager
     :param query_result:
     :param original_identifier:
     :param original_namespace:
     """
     # If invalid entry from HGNC, try to find updated symbol
     if not query_result and original_namespace == HGNC:
-        return _get_update_alias_symbol(hgnc_manager, original_identifier, HGNC)
+        return _get_update_alias_symbol(original_identifier, HGNC)
 
     # Invalid entry, proceed with invalid identifier
     if not query_result:
@@ -84,17 +79,17 @@ def _validate_query(
     return HGNC, query_result.symbol, query_result.identifier
 
 
-def get_valid_gene_identifier(node_ids_dict, hgnc_manager: HgncManager, pathway_id) -> Tuple[str, str, str]:
+def get_valid_gene_identifier(node_ids_dict, pathway_id) -> Tuple[str, str, str]:
     """Return protein/gene identifier for a given RDF node.
 
     :param dict node_ids_dict: node dictionary
-    :param hgnc_manager: hgnc manager
     :return: namespace, name, identifier
     """
     # Try to get hgnc symbol
     if 'bdb_hgncsymbol' in node_ids_dict or 'hgnc' in node_ids_dict['uri_id']:
 
         if 'hgnc' in node_ids_dict['uri_id']:
+
             hgnc_entry = hgnc_manager.get_gene_by_hgnc_id(node_ids_dict['identifier'])
             if not hgnc_entry:
                 hgnc_symbol = node_ids_dict['name']
@@ -139,7 +134,7 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager: HgncManager, pathway_
 
         hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(ensembl_id)
 
-        return _validate_query(hgnc_manager, hgnc_entry, ensembl_id, ENSEMBL)
+        return _validate_query(hgnc_entry, ensembl_id, ENSEMBL)
 
     elif 'ec-code' in node_ids_dict['uri_id']:
         ec_number = check_multiple(node_ids_dict['name'], 'ec-code', pathway_id)
@@ -213,7 +208,7 @@ def get_valid_gene_identifier(node_ids_dict, hgnc_manager: HgncManager, pathway_
     raise Exception('Unknown identifier for node %s', node_ids_dict)
 
 
-MULTIPLE_RE = re.compile('^[A-Z0-9]+$')
+MULTIPLE_RE = re.compile(r'^[A-Z0-9]+$')
 
 
 def check_multiple(element, element_name, pathway_id):
@@ -364,15 +359,7 @@ def iterate_wikipathways_paths(
 
     # Skip files not present in wikipathways bio2bel db -> stuffs from reactome and so on...
     if only_canonical:
-        wikipathways_manager = WikiPathwaysManager(connection)
-        if not wikipathways_manager.is_populated():
-            wikipathways_manager.populate()
-
-        wikipathways_identifiers = {
-            pathway.resource_id
-            for pathway in wikipathways_manager.get_all_pathways()
-        }
-
+        wikipathways_identifiers = set(pyobo.get_id_name_mapping('wikipathways'))
         paths = [
             path
             for path in paths
@@ -380,3 +367,6 @@ def iterate_wikipathways_paths(
         ]
 
     return paths
+
+
+QueryResult = Dict[str, Dict[str, Dict[str, str]]]

@@ -5,8 +5,6 @@
 import logging
 from typing import Dict, List, Tuple
 
-from bio2bel_chebi import Manager as ChebiManager
-from bio2bel_hgnc import Manager as HgncManager
 from pybel import BELGraph
 from pybel.dsl import (
     BaseEntity, NamedComplexAbundance, abundance, activity, bioprocess, complex_abundance,
@@ -24,8 +22,10 @@ logger = logging.getLogger(__name__)
 
 
 def convert_to_bel(
-    nodes: Dict[str, Dict], interactions: List[Tuple[str, str, Dict]], pathway_info: Dict,
-    hgnc_manager: HgncManager, chebi_manager: ChebiManager,
+    *,
+    nodes: Dict[str, Dict],
+    interactions: List[Tuple[str, str, Dict]],
+    pathway_info: Dict,
 ) -> BELGraph:
     """Convert RDF graph dictionary into BEL graph."""
     uri_id = pathway_info['uri_reactome_id']
@@ -52,7 +52,7 @@ def convert_to_bel(
 
     graph.graph['pathway_id'] = identifier
 
-    nodes = nodes_to_bel(nodes, graph, hgnc_manager, chebi_manager)
+    nodes = nodes_to_bel(nodes, graph)
 
     for interaction in interactions:
         participants = interaction['participants']
@@ -64,19 +64,18 @@ def convert_to_bel(
 
 
 def nodes_to_bel(
+    *,
     nodes: Dict[str, Dict],
     graph: BELGraph,
-    hgnc_manager: HgncManager,
-    chebi_manager: ChebiManager,
 ) -> Dict[str, BaseEntity]:
     """Convert dictionary values to BEL nodes."""
     return {
-        node_id: node_to_bel(node_att, graph, hgnc_manager, chebi_manager)
+        node_id: node_to_bel(node=node_att, graph=graph)
         for node_id, node_att in nodes.items()
     }
 
 
-def node_to_bel(node: Dict, graph, hgnc_manager: HgncManager, chebi_manager: ChebiManager) -> BaseEntity:
+def node_to_bel(*, node: Dict, graph) -> BaseEntity:
     """Convert node dictionary to BEL node object."""
     node_types = node['entity_type']
 

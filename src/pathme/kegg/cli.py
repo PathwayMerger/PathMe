@@ -4,16 +4,16 @@
 
 import logging
 import os
-import time
+from typing import Optional
 
 import click
+import time
 from tqdm import tqdm
 
-from bio2bel_chebi import Manager as ChebiManager
-from bio2bel_hgnc import Manager as HgncManager
-from pybel import from_pickle
-from .convert_to_bel import kegg_to_pickles
-from .utils import download_kgml_files, get_kegg_pathway_ids
+import pybel
+from pyobo.cli_utils import verbose_option
+from .convert_to_bel import kegg_to_bel_cache
+from .utils import ensure_kgml_files
 from ..constants import KEGG_BEL, KEGG_FILES
 from ..export_utils import get_paths_in_folder
 from ..utils import summarize_helper
@@ -30,50 +30,31 @@ def main():
     """Manage KEGG."""
 
 
+KEGG_PROMPT = (
+    'You are about to download KGML files from KEGG.\n'
+    'Please make sure you have read KEGG license (see: https://www.kegg.jp/kegg/rest/).'
+    ' These files cannot be distributed and their use must be exclusively with academic purposes.\n'
+    'We (PathMe developers) are not responsible for the end use of this data.\n'
+)
+
+
 @main.command(help='Downloads KEGG files')
-@click.option('-c', '--connection', help=f"Defaults to {KEGG_FILES}")
+@click.option('-c', '--connection', help='bio2bel manager connection')
+@click.confirmation_option(prompt=KEGG_PROMPT)
+@verbose_option
 def download(connection):
     """Download KEGG KGML."""
-    kegg_ids = get_kegg_pathway_ids(connection=connection)
-
-    if click.confirm(
-        'You are about to download KGML files from KEGG.\n'
-        'Please make sure you have read KEGG license (see: https://www.kegg.jp/kegg/rest/).'
-        ' These files cannot be distributed and their use must be exclusively with academic purposes.\n'
-        'We (PathMe developers) are not responsible for the end use of this data.\n',
-    ):
-        click.echo('You have read and accepted the conditions stated above.\n')
-        download_kgml_files(kegg_ids)
+    click.echo('You have read and accepted the conditions stated above.\n')
+    ensure_kgml_files(connection=connection)
 
 
 @main.command()
-@click.option('-f', '--flatten', is_flag=True, default=False)
+@click.option('-f', '--flatten', is_flag=True)
 @click.option('-e', '--export-folder', default=KEGG_BEL, show_default=True)
-@click.option('-v', '--debug', is_flag=True, default=False, help='Debug mode')
-def bel(flatten, export_folder, debug):
+@verbose_option
+def bel(flatten: bool, export_folder: str):
     """Convert KEGG to BEL."""
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
-    logger.setLevel(logging.INFO)
-
-    if debug:
-        click.echo("Debug mode on")
-        logger.setLevel(logging.DEBUG)
-
     t = time.time()
-
-    logger.info('Initiating HGNC Manager')
-    hgnc_manager = HgncManager()
-
-    if not hgnc_manager.is_populated():
-        click.echo('bio2bel_hgnc was not populated. Populating now.')
-        hgnc_manager.populate()
-
-    logger.info('Initiating ChEBI Manager')
-    chebi_manager = ChebiManager()
-
-    if not chebi_manager.is_populated():
-        click.echo('bio2bel_chebi was not populated. Populating now.')
-        chebi_manager.populate()
 
     if flatten:
         logger.info('Flattening mode activated')
@@ -83,11 +64,9 @@ def bel(flatten, export_folder, debug):
         for path in get_paths_in_folder(KEGG_FILES)
     ]
 
-    kegg_to_pickles(
+    kegg_to_bel_cache(
         resource_files=resource_paths,
         resource_folder=KEGG_FILES,
-        hgnc_manager=hgnc_manager,
-        chebi_manager=chebi_manager,
         flatten=flatten,
         export_folder=export_folder,
     )
@@ -97,11 +76,12 @@ def bel(flatten, export_folder, debug):
 
 @main.command()
 @click.option('-e', '--export-folder', default=KEGG_BEL, show_default=True)
+@verbose_option
 def summarize(export_folder):
     """Summarize the KEGG export."""
     click.echo('loading KEGG graphs')
     graphs = [
-        from_pickle(os.path.join(export_folder, fname))
+        pybel.load(os.path.join(export_folder, fname))
         for fname in tqdm(get_paths_in_folder(export_folder))
     ]
 

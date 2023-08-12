@@ -268,11 +268,10 @@ def _get_pathway_components(
     return nodes, list(interactions.values())
 
 
-def get_reactome_statistics(resource_file, hgnc_manager, chebi_manager):
+def get_reactome_statistics(*, resource_file: str):
     """Get types statistics for Reactome.
 
-    :param str resource_file: RDF file
-    :param bio2bel_hgnc.Manager hgnc_manager: Hgnc Manager
+    :param resource_file: RDF file path
     """
     logger.info('Parsing Reactome RDF file')
     rdf_graph = parse_rdf(resource_file, fmt='xml')
@@ -292,7 +291,7 @@ def get_reactome_statistics(resource_file, hgnc_manager, chebi_manager):
             edge['metadata']['interaction_type'] for edge in edges
         ]
 
-        bel_graph = convert_to_bel(nodes, edges, pathway_metadata, hgnc_manager, chebi_manager)
+        bel_graph = convert_to_bel(nodes, edges, pathway_metadata)
 
         global_statistics, pathway_statistics = get_pathway_statitics(
             nodes_types, edges_types, bel_graph, global_statistics=global_statistics,
@@ -301,24 +300,22 @@ def get_reactome_statistics(resource_file, hgnc_manager, chebi_manager):
     return global_statistics
 
 
-def reactome_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager, chebi_manager) -> BELGraph:
+def reactome_pathway_to_bel(*, pathway_uri, rdf_graph) -> BELGraph:
     """Convert a Reactome pathway to BEL.
 
     :param str filepath: path to the file
-    :param bio2bel_hgnc.Manager hgnc_manager: Bio2BEL HGNC Manager
     """
     pathway_metadata = _get_pathway_metadata(pathway_uri, rdf_graph)
 
     nodes, interactions = _get_pathway_components(pathway_uri, rdf_graph)
 
-    return convert_to_bel(nodes, interactions, pathway_metadata, hgnc_manager, chebi_manager)
+    return convert_to_bel(nodes, interactions, pathway_metadata)
 
 
-def reactome_to_bel(resource_file: str, hgnc_manager, chebi_manager, export_folder=REACTOME_BEL):
+def reactome_to_bel(*, resource_file: str, export_folder=REACTOME_BEL):
     """Create Reactome BEL graphs.
 
     :param resource_file: rdf reactome file (there is only one)
-    :param bio2bel_hgnc.Manager hgnc_manager: uniprot id to hgnc symbol dictionary
     :return:
     """
     logger.info('Parsing Reactome RDF file')
@@ -338,7 +335,7 @@ def reactome_to_bel(resource_file: str, hgnc_manager, chebi_manager, export_fold
         if os.path.exists(pickle_file):
             continue
 
-        bel_graph = reactome_pathway_to_bel(pathway_uri, rdf_graph, hgnc_manager, chebi_manager)
+        bel_graph = reactome_pathway_to_bel(pathway_uri, rdf_graph)
 
         # Export BELGraph to pickle
         to_pickle(bel_graph, pickle_file)

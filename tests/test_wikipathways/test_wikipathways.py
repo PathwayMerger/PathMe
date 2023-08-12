@@ -10,7 +10,7 @@ from bio2bel.testing import TemporaryConnectionMixin
 from bio2bel_hgnc import Manager as HgncManager
 from bio2bel_kegg.manager import Manager
 from pathme.utils import parse_rdf
-from pathme.wikipathways.rdf_sparql import _get_interactions, _get_nodes, wikipathways_to_bel
+from pathme.wikipathways.rdf_sparql import get_interactions_from_rdf, get_nodes_from_rdf, wikipathways_to_bel
 from pybel import BELGraph
 from pybel_tools.summary.edge_summary import count_relations
 from tests.constants import WP1871, WP22, WP2359, WP2799, WP706
@@ -51,10 +51,10 @@ class TestWikipathways(WikipathwaysTest):
         wp1871_rdf_graph = parse_rdf(WP1871)
         wp2799_rdf_graph = parse_rdf(WP2799)
 
-        nodes_wp22 = _get_nodes(wp22_rdf_graph)
-        nodes_wp706 = _get_nodes(wp706_rdf_graph)
-        nodes_wp1871 = _get_nodes(wp1871_rdf_graph)
-        nodes_wp2799 = _get_nodes(wp2799_rdf_graph)
+        nodes_wp22 = get_nodes_from_rdf(wp22_rdf_graph)
+        nodes_wp706 = get_nodes_from_rdf(wp706_rdf_graph)
+        nodes_wp1871 = get_nodes_from_rdf(wp1871_rdf_graph)
+        nodes_wp2799 = get_nodes_from_rdf(wp2799_rdf_graph)
 
         self.assertEqual(len(nodes_wp22), 17)
         self.assertEqual(len(nodes_wp706), 186)
@@ -68,10 +68,10 @@ class TestWikipathways(WikipathwaysTest):
         wp1871_rdf_graph = parse_rdf(WP1871)
         wp2799_rdf_graph = parse_rdf(WP2799)
 
-        nodes_wp22 = _get_interactions(wp22_rdf_graph)
-        nodes_wp706 = _get_interactions(wp706_rdf_graph)
-        nodes_wp1871 = _get_interactions(wp1871_rdf_graph)
-        nodes_wp2799 = _get_interactions(wp2799_rdf_graph)
+        nodes_wp22 = get_interactions_from_rdf(wp22_rdf_graph)
+        nodes_wp706 = get_interactions_from_rdf(wp706_rdf_graph)
+        nodes_wp1871 = get_interactions_from_rdf(wp1871_rdf_graph)
+        nodes_wp2799 = get_interactions_from_rdf(wp2799_rdf_graph)
 
         self.assertEqual(len(nodes_wp22), 10)
         self.assertEqual(len(nodes_wp706), 44)

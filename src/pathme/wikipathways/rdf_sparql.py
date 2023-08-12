@@ -11,10 +11,9 @@ import rdflib
 import tqdm
 from rdflib.namespace import DC, DCTERMS, Namespace, RDF, RDFS
 
-import bio2bel_hgnc
 from pybel import BELGraph, to_pickle
 from .convert_to_bel import convert_to_bel
-from .utils import debug_pathway_info
+from .utils import QueryResult, debug_pathway_info
 from ..utils import get_pathway_statitics, parse_rdf, query_result_to_dict
 
 logger = logging.getLogger(__name__)
@@ -32,7 +31,7 @@ PREFIXES = {
     'uniprot': Namespace('http://identifiers.org/uniprot/'),
     'chebi': Namespace('http://identifiers.org/chebi/'),
     'chemspider': Namespace('http://identifiers.org/chemspider/'),
-    'pubchem': Namespace('http://rdf.ncbi.nlm.nih.gov/pubchem/compound/'),
+    'pubchem': Namespace('http://identifiers.org/pubchem.compound/'),
     'wikidata': Namespace('http://www.wikidata.org/entity/'),
     'hmdb': Namespace('http://identifiers.org/hmdb/'),
 }
@@ -150,7 +149,7 @@ WHERE {
 """Queries managers"""
 
 
-def _get_pathway_metadata(rdf_graph: rdflib.Graph) -> Dict[str, Dict[str, Dict[str, str]]]:
+def get_pathways_from_rdf(rdf_graph: rdflib.Graph) -> QueryResult:
     """Get information from a pathway network.
 
     :param rdf_graph: RDF graph object
@@ -163,7 +162,7 @@ def _get_pathway_metadata(rdf_graph: rdflib.Graph) -> Dict[str, Dict[str, Dict[s
     )
 
 
-def _get_nodes(rdf_graph: rdflib.Graph) -> Dict[str, Dict[str, Dict[str, str]]]:
+def get_nodes_from_rdf(rdf_graph: rdflib.Graph) -> QueryResult:
     """Get all nodes from a RDF pathway network.
 
     :param rdf_graph: RDF graph object
@@ -175,7 +174,7 @@ def _get_nodes(rdf_graph: rdflib.Graph) -> Dict[str, Dict[str, Dict[str, str]]]:
     )
 
 
-def _get_complexes(rdf_graph: rdflib.Graph) -> Dict[str, Dict[str, Dict[str, str]]]:
+def get_complexes_from_rdf(rdf_graph: rdflib.Graph) -> QueryResult:
     """Get all complexes from a pathway RDF network.
 
     :param rdf_graph: RDF graph object
@@ -186,7 +185,7 @@ def _get_complexes(rdf_graph: rdflib.Graph) -> Dict[str, Dict[str, Dict[str, str
     )
 
 
-def _get_interactions(rdf_graph: rdflib.Graph) -> Dict[str, Dict]:
+def get_interactions_from_rdf(rdf_graph: rdflib.Graph) -> QueryResult:
     """Get all interactions from a RDF pathway network.
 
     :param rdf_graph: RDF graph object
@@ -198,23 +197,10 @@ def _get_interactions(rdf_graph: rdflib.Graph) -> Dict[str, Dict]:
     )
 
 
-def _get_pathway_components(graph) -> Tuple[
-    Dict[str, Dict[str, Dict[str, str]]],
-    Dict[str, Dict[str, Dict[str, str]]],
-    Dict[str, Dict[str, Dict[str, str]]],
-]:
-    """Get all components in data structures from a RDF pathway network.
-
-    :param graph: RDF graph object
-    :returns: Returns at once the retrievals of each component type (nodes, complexes, interactions) functions.
-    """
-    return _get_nodes(graph), _get_complexes(graph), _get_interactions(graph)
-
-
 """Statistics functions"""
 
 
-def get_wp_statistics(resource_files, resource_folder, hgnc_manager) -> Tuple[
+def get_wp_statistics(resource_files, resource_folder) -> Tuple[
     Dict[str, Dict[str, int]],
     Dict[str, Dict[str, Dict[str, int]]],
 ]:
@@ -231,10 +217,11 @@ def get_wp_statistics(resource_files, resource_folder, hgnc_manager) -> Tuple[
         pathway_path = os.path.join(resource_folder, rdf_file)
         rdf_graph = parse_rdf(pathway_path, fmt='turtle')
 
-        pathway_metadata = _get_pathway_metadata(rdf_graph)
-
-        nodes, complexes, interactions = _get_pathway_components(rdf_graph)
-        bel_graph = convert_to_bel(nodes, complexes, interactions, pathway_metadata, hgnc_manager)
+        nodes = get_nodes_from_rdf(rdf_graph)
+        complexes = get_complexes_from_rdf(rdf_graph)
+        interactions = get_interactions_from_rdf(rdf_graph)
+        pathways = get_pathways_from_rdf(rdf_graph)
+        bel_graph = convert_to_bel(nodes, complexes, interactions, pathways)
 
         nodes.update(complexes)
 
@@ -258,26 +245,18 @@ def get_wp_statistics(resource_files, resource_folder, hgnc_manager) -> Tuple[
 """Conversion functions"""
 
 
-def rdf_wikipathways_to_bel(rdf_graph: rdflib.Graph, hgnc_manager) -> BELGraph:
-    """Convert RDF graph to BELGraph.
-
-    :param rdf_graph: RDF graph
-    :param bio2bel_hgnc.Manager: HGNC manager
-    """
-    nodes, complexes, interactions = _get_pathway_components(rdf_graph)
-    metadata = _get_pathway_metadata(rdf_graph)
-    return convert_to_bel(nodes, complexes, interactions, metadata, hgnc_manager)
+def rdf_wikipathways_to_bel(rdf_graph: rdflib.Graph) -> BELGraph:
+    """Convert RDF graph to BELGraph."""
+    nodes, complexes, interactions = get_nodes_from_rdf(rdf_graph), get_complexes_from_rdf(
+        rdf_graph), get_interactions_from_rdf(rdf_graph)
+    pathway_metadata = get_pathways_from_rdf(rdf_graph)
+    return convert_to_bel(nodes, complexes, interactions, pathway_metadata)
 
 
-def wikipathways_to_bel(file_path: str, hgnc_manager):
-    """Convert WikiPathways RDF file to BEL.
-
-    :param str file_path: path to the file
-    :param bio2bel_hgnc.Manager: HGNC manager
-    :rtype: pybel.BELGraph
-    """
-    rdf_graph = parse_rdf(file_path, fmt='turtle')
-    return rdf_wikipathways_to_bel(rdf_graph, hgnc_manager)
+def wikipathways_to_bel(path: str) -> BELGraph:
+    """Convert WikiPathways RDF file to BEL."""
+    rdf_graph = parse_rdf(path, fmt='turtle')
+    return rdf_wikipathways_to_bel(rdf_graph)
 
 
 WIKIPATHWAYS_BLACKLIST = {
@@ -288,7 +267,6 @@ WIKIPATHWAYS_BLACKLIST = {
 def wikipathways_to_pickles(
     resource_files: Iterable[str],
     resource_folder: str,
-    hgnc_manager: bio2bel_hgnc.Manager,
     export_folder: str,
 ) -> None:
     """Export WikiPathways to Pickles.
@@ -314,7 +292,7 @@ def wikipathways_to_pickles(
         # Parse pathway rdf_file and logger stats
         pathway_path = os.path.join(resource_folder, rdf_file)
 
-        bel_graph = wikipathways_to_bel(pathway_path, hgnc_manager)
+        bel_graph = wikipathways_to_bel(pathway_path)
 
         debug_pathway_info(bel_graph, pathway_path)
 

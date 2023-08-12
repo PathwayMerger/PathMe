@@ -29,19 +29,6 @@ from .export_utils import get_paths_in_folder
 logger = logging.getLogger(__name__)
 
 
-class CallCounted:
-    """Decorator to determine number of calls for a method."""
-
-    def __init__(self, method):
-        """Init method."""
-        self.method = method
-        self.counter = 0
-
-    def __call__(self, *args, **kwargs):
-        """Counter method."""
-        self.counter += 1
-        return self.method(*args, **kwargs)
-
 
 def parse_id_uri(uri: str) -> Tuple[str, str, str, str]:
     """Get the components of a given uri (with identifier at the last position).

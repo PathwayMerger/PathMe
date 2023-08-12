@@ -10,7 +10,7 @@ from bio2bel.testing import TemporaryConnectionMixin
 from bio2bel_chebi import Manager as ChebiManager
 from bio2bel_hgnc import Manager as HgncManager
 from bio2bel_kegg.manager import Manager
-from pathme.kegg.convert_to_bel import kegg_to_bel
+from pathme.kegg.convert_to_bel import kgml_to_bel
 from pathme.kegg.kegg_xml_parser import import_xml_etree
 from pybel import BELGraph
 
@@ -77,22 +77,22 @@ class KeggTest(TemporaryConnectionMixin):
         cls.ppar_tree = import_xml_etree(PPAR_XML)
 
         logger.info('Loading notch unflatten')
-        cls.notch_bel_unflatten = kegg_to_bel(NOTCH_XML, cls.hgnc_manager, cls.chebi_manager)
+        cls.notch_bel_unflatten = kgml_to_bel(NOTCH_XML, cls.hgnc_manager, cls.chebi_manager)
 
         logger.info('Loading notch flatten')
-        cls.notch_bel_flatten = kegg_to_bel(NOTCH_XML, cls.hgnc_manager, cls.chebi_manager, flatten=True)
+        cls.notch_bel_flatten = kgml_to_bel(NOTCH_XML, cls.hgnc_manager, cls.chebi_manager, flatten=True)
 
         logger.info('Loading glycolysis unflatten')
-        cls.glycolysis_bel_unflatten = kegg_to_bel(GLYCOLYSIS_XML, cls.hgnc_manager, cls.chebi_manager)
+        cls.glycolysis_bel_unflatten = kgml_to_bel(GLYCOLYSIS_XML, cls.hgnc_manager, cls.chebi_manager)
 
         logger.info('Loading glycolysis flatten')
-        cls.glycolysis_bel_flatten = kegg_to_bel(GLYCOLYSIS_XML, cls.hgnc_manager, cls.chebi_manager, flatten=True)
+        cls.glycolysis_bel_flatten = kgml_to_bel(GLYCOLYSIS_XML, cls.hgnc_manager, cls.chebi_manager, flatten=True)
 
         logger.info('Loading PPAR unflatten')
-        cls.ppar_bel_unflatten = kegg_to_bel(PPAR_XML, cls.hgnc_manager, cls.chebi_manager)
+        cls.ppar_bel_unflatten = kgml_to_bel(PPAR_XML, cls.hgnc_manager, cls.chebi_manager)
 
         logger.info('Loading PPAR flatten')
-        cls.ppar_bel_flatten = kegg_to_bel(PPAR_XML, cls.hgnc_manager, cls.chebi_manager, flatten=True)
+        cls.ppar_bel_flatten = kgml_to_bel(PPAR_XML, cls.hgnc_manager, cls.chebi_manager, flatten=True)
 
         cls.glycolysis_empty_graph = BELGraph(
             name='Glycolysis',

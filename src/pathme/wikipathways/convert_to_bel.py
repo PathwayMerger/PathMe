@@ -6,10 +6,9 @@ import logging
 from typing import Any, Dict, Iterable, Mapping, Optional, Tuple
 
 import pybel
-from bio2bel_hgnc import Manager
 from pybel import BELGraph
 from pybel.dsl import BaseEntity, abundance, activity, bioprocess, complex_abundance, gene, protein, rna
-from .utils import check_multiple, evaluate_wikipathways_metadata, get_valid_gene_identifier
+from .utils import check_multiple, evaluate_wikipathways_metadata, get_valid_gene_identifier, QueryResult
 from ..constants import ACTIVITY_ALLOWED_MODIFIERS, HGNC
 from ..utils import add_bel_metadata, parse_id_uri
 
@@ -33,26 +32,26 @@ def _check_empty_complex(complex_dict: Dict[str, Dict], nodes: Dict[str, BaseEnt
 
 
 def convert_to_bel(
-    nodes: Dict[str, Dict],
-    complexes: Dict[str, Dict],
-    interactions: Dict[str, Dict],
-    pathway_info, hgnc_manager: Manager,
+    nodes: QueryResult,
+    complexes: QueryResult,
+    interactions: QueryResult,
+    pathways: QueryResult,
 ) -> BELGraph:
     """Convert  RDF graph info to BEL."""
     graph = BELGraph(
-        name=pathway_info['title'],
+        name=pathways['title'],
         version='1.0.0',
-        description=evaluate_wikipathways_metadata(pathway_info['description']),
+        description=evaluate_wikipathways_metadata(pathways['description']),
         authors="Sarah Mubeen, Daniel Domingo-Fernández & Josep Marín-Llaó",
         contact='daniel.domingo.fernandez@scai.fraunhofer.de',
     )
 
     add_bel_metadata(graph)
 
-    pathway_id = graph.graph['pathway_id'] = pathway_info['pathway_id']
+    pathway_id = graph.graph['pathway_id'] = pathways['pathway_id']
 
     nodes = {
-        node_id: node_to_bel(node, hgnc_manager, pathway_id)
+        node_id: node_to_bel(node, pathway_id)
         for node_id, node in nodes.items()
     }
     nodes.update(complexes_to_bel(complexes, nodes, graph))
@@ -64,7 +63,7 @@ def convert_to_bel(
     return graph
 
 
-def node_to_bel(node: Dict, hgnc_manager: Manager, pathway_id) -> BaseEntity:
+def node_to_bel(node: Dict, pathway_id) -> BaseEntity:
     """Create a BEL node."""
     node_types = node['node_types']
     uri_id = node['uri_id']
@@ -89,28 +88,28 @@ def node_to_bel(node: Dict, hgnc_manager: Manager, pathway_id) -> BaseEntity:
         node_ids_dict = node
 
     if any(node_type in node_types for node_type in ('Protein', 'Rna', 'GeneProduct')):
-        namespace, name, identifier = get_valid_gene_identifier(node_ids_dict, hgnc_manager, pathway_id)
+        namespace, name, identifier = get_valid_gene_identifier(node_ids_dict, pathway_id)
         if 'Protein' in node_types:
-            return protein(namespace=namespace.upper(), name=name, identifier=identifier)
+            return protein(namespace=namespace.lower(), name=name, identifier=identifier)
         elif 'Rna' in node_types:
-            return rna(namespace=namespace.upper(), name=name, identifier=identifier)
+            return rna(namespace=namespace.lower(), name=name, identifier=identifier)
         else:  # 'GeneProduct' in node_types
             return gene(namespace=HGNC, name=name, identifier=identifier)
 
     elif 'Metabolite' in node_types:
         # Parse URI to get namespace
         _, _, namespace, _ = parse_id_uri(uri_id)
-        return abundance(namespace=namespace.upper(), name=name, identifier=identifier)
+        return abundance(namespace=namespace.lower(), name=name, identifier=identifier)
 
     elif '/wikipathways/WP' in str(uri_id) and {'DataNode'} == node_types:
         # Check the uri_id if is a Pathway
         _, _, namespace, _ = parse_id_uri(uri_id)
-        return bioprocess(namespace=namespace.upper(), name=name, identifier=identifier)
+        return bioprocess(namespace=namespace.lower(), name=name, identifier=identifier)
 
     elif 'DataNode' in node_types:
         # Parse URI to get namespace
         _, _, namespace, _ = parse_id_uri(uri_id)
-        return abundance(namespace=namespace.upper(), name=name, identifier=identifier)
+        return abundance(namespace=namespace.lower(), name=name, identifier=identifier)
 
     else:
         logger.debug('Unknown %s [pathway=%s]', node_types, pathway_id)
@@ -251,10 +250,10 @@ def add_simple_edge(graph: BELGraph, u: BaseEntity, v: BaseEntity, edge_types, u
         )
 
     elif 'Interaction' in edge_types:
-        logger.debug('No interaction subtype for %s', str(uri_id))
+        logger.debug('No interaction subtype for %s', uri_id)
 
     elif 'TranscriptionTranslation' in edge_types:
         graph.add_translation(u, v)
 
     else:
-        logger.debug('No handled edge type %s', str(uri_id))
+        logger.debug('No handled edge type %s', uri_id)

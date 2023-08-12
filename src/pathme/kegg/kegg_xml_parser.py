@@ -2,21 +2,25 @@
 
 """This module contains functions to parse KGML files."""
 
-import itertools as itt
 import json
 import logging
 import os
-from collections import defaultdict
+import xml
+from collections import Mapping, defaultdict
+from typing import Tuple
 from xml.etree.ElementTree import parse
 
-import requests
+import itertools as itt
+from bio2bel_kegg.client import ensure_kegg_entity, parse_protein_lines
+from protmapper.uniprot_client import get_hgnc_id
 
-from bio2bel_kegg.constants import API_KEGG_GET
-from bio2bel_kegg.parsers.description import parse_description
 from ..constants import CHEBI, CHEBI_NAME, HGNC, HGNC_SYMBOL, KEGG_CACHE, KEGG_ID, KEGG_TYPE, PUBCHEM, UNIPROT
+from ..obo import chebi_id_to_symbol, hgnc_id_to_symbol
 from ..wikipathways.utils import merge_two_dicts
 
 logger = logging.getLogger(__name__)
+
+API_KEGG_GET = 'http://rest.kegg.jp/get/{}'
 
 
 def import_xml_etree(filename):
@@ -38,75 +42,67 @@ def import_xml_etree(filename):
 """KEGG Handling functions"""
 
 
-def _post_process_api_query(node_meta_data, hgnc_manager, chebi_manager):
+def _post_process_api_query(node_meta_data):
     """Process API query.
 
     :param dict[str,str] node_meta_data: JSON retrieved from the API
-    :param bio2bel_hgnc.Manager hgnc_manager: HGNC Manager
-    :param bio2bel_chebi.Manager chebi_manager: ChEBI Manager
     :return: Standard identifiers for the protein/chemical
     :rtype: dict[str,str]
     """
+    if 'DBLINKS' not in node_meta_data:
+        logger.warning('no DBLINKS entry in metadata')
+        return {}
+
     node_dict = {}
+    for resource, identifier in node_meta_data['DBLINKS']:
+        if resource not in {HGNC, UNIPROT, CHEBI, PUBCHEM}:
+            logger.warning('unhandled kegg resource: %s', resource)
+            continue
 
-    if 'DBLINKS' in node_meta_data:
-
-        for resource, identifier in node_meta_data['DBLINKS']:
-
-            if resource not in {HGNC, UNIPROT, CHEBI, PUBCHEM}:
+        # Get protein identifiers
+        if resource == HGNC:
+            hgnc_symbol = hgnc_id_to_symbol.get(identifier)
+            if not hgnc_symbol:
                 continue
 
-            # Get protein identifiers
-            if resource == HGNC:
-                hgnc_entry = hgnc_manager.get_gene_by_hgnc_id(identifier)
+            node_dict[HGNC] = identifier
+            node_dict[HGNC_SYMBOL] = hgnc_symbol
 
-                if not hgnc_entry:
-                    continue
+        elif resource == UNIPROT:
+            node_dict[UNIPROT] = identifier
 
-                node_dict[HGNC] = identifier
-                node_dict[HGNC_SYMBOL] = hgnc_entry.symbol
+            hgnc_id = get_hgnc_id(identifier)
+            if hgnc_id:
+                hgnc_symbol = hgnc_id_to_symbol.get(hgnc_id)
+                if hgnc_symbol:
+                    node_dict[HGNC] = hgnc_id
+                    node_dict[HGNC_SYMBOL] = hgnc_symbol
 
-            elif resource == UNIPROT:
-                hgnc_entry = hgnc_manager.get_gene_by_uniprot_id(identifier)
+        # Get chemical identifiers
+        else:
+            node_dict[resource] = identifier
+            if resource == CHEBI:
+                # Split multiple identifiers and get their names
+                for chebi_id in identifier.split(' '):
+                    if chebi_id.startswith('CHEBI:'):
+                        chebi_id = chebi_id[len('CHEBI:'):]
+                    chebi_name = chebi_id_to_symbol.get(chebi_id)
 
-                if not hgnc_entry:
-                    continue
-
-                hgnc_entry = hgnc_entry[0]  # Use the first element queried
-                hgnc_id = str(hgnc_entry.identifier)
-                node_dict[HGNC] = hgnc_id
-
-                if hgnc_entry.symbol:
-                    node_dict[HGNC_SYMBOL] = hgnc_entry.symbol
-
-                else:
-                    node_dict[UNIPROT] = identifier
-
-            # Get chemical identifiers
-            else:
-                node_dict[resource] = identifier
-                if resource == CHEBI:
-                    # Split multiple identifiers and get their names
-                    for chebi_id in identifier.split(' '):
-                        chebi_entry = chebi_manager.get_chemical_by_chebi_id(chebi_id)
-
-                        # If the id is found in the database stick the name
-                        if chebi_entry:
-                            node_dict[CHEBI_NAME] = chebi_entry.name
-                        # Else use the default name by KEGG to ensure the name makes it into the graph
-                        elif "ENTRY_NAME" in node_meta_data:
-                            node_dict[CHEBI_NAME] = node_meta_data["ENTRY_NAME"]
+                    # If the id is found in the database stick the name
+                    if chebi_name:
+                        node_dict[CHEBI_NAME] = chebi_name
+                    # Else use the default name by KEGG to ensure the name makes it into the graph
+                    elif "ENTRY_NAME" in node_meta_data:
+                        node_dict[CHEBI_NAME] = node_meta_data["ENTRY_NAME"]
 
     return node_dict
 
 
-def _process_kegg_api_get_entity(entity, entity_type, hgnc_manager, chebi_manager):
+def _process_kegg_api_get_entity(entity, entity_type):
     """Send a given entity to the KEGG API and process the results.
 
     :param str entity: A KEGG identifier
     :param str entity_type: Entity type
-    :param bio2bel_hgnc.Manager hgnc_manager: HGNC Manager
-    :param bio2bel_chebi.Manager chebi_manager: ChEBI Manager
     :return: JSON retrieved from the API
     :rtype: dict[str,str]
     """
@@ -116,11 +112,15 @@ def _process_kegg_api_get_entity(entity, entity_type, hgnc_manager, chebi_manage
         with open(_entity_filepath) as f:
             return json.load(f)
 
-    kegg_url = API_KEGG_GET.format(entity)
+    _, lines = ensure_kegg_entity(entity)
+    if entity_type == 'genes':
+        node_meta_data = parse_protein_lines(lines)
+    elif entity_type == 'compound':
+        pass # TODO get logic back from master
+    else:
+        raise ValueError(f'Unhandled tyoe: {entity_type}')
 
-    node_meta_data = parse_description(requests.get(kegg_url))
-
-    node_dict = _post_process_api_query(node_meta_data, hgnc_manager, chebi_manager)
+    node_dict = _post_process_api_query(node_meta_data)
 
     node_dict[KEGG_ID] = entity
     node_dict[KEGG_TYPE] = entity_type
@@ -131,17 +131,14 @@ def _process_kegg_api_get_entity(entity, entity_type, hgnc_manager, chebi_manage
     return node_dict
 
 
-def get_entity_nodes(tree, hgnc_manager, chebi_manager):
+def get_entity_nodes(tree) -> Tuple[Mapping, Mapping, Mapping, Mapping]:
     """Find entry elements (KEGG pathway nodes) in XML.
 
     :param xml.etree.ElementTree.ElementTree tree: XML tree
-    :param bio2bel_hgnc.Manager hgnc_manager: HGNC Manager
-    :param bio2bel_chebi.Manager chebi_manager: ChEBI Manager
     :return: genes with corresponding metadata (entry_id: [kegg_id, HGNC, UniProt])
     :return: compounds with corresponding metadata (entry_id: [compound_name, ChEBI])
     :return: biological processes with corresponding metadata  (entry_id: [kegg_id, map_name])
     :return: orthologs with corresponding metadata (entry_id: [kegg_id, kegg_type])
-    :rtype: dict[str,str]
     """
     entry_dict = defaultdict(list)
     compound_dict = defaultdict(list)
@@ -149,7 +146,6 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
     ortholog_dict = defaultdict(list)
 
     for entry in tree.findall("entry"):
-
         entry_id = entry.get("id")
         kegg_ids = entry.get("name")
         kegg_type = entry.get("type")
@@ -157,40 +153,31 @@ def get_entity_nodes(tree, hgnc_manager, chebi_manager):
         if kegg_type.startswith('gene'):
             for kegg_id in kegg_ids.split(' '):
                 # Query the API/Cache to fetch information about protein
-                node_info = _process_kegg_api_get_entity(kegg_id, kegg_type, hgnc_manager, chebi_manager)
-                entry_dict[entry_id].append(node_info)
+                gene_info = _process_kegg_api_get_entity(kegg_id, kegg_type)
+                entry_dict[entry_id].append(gene_info)
 
         elif kegg_type.startswith('compound'):
             for compound_id in kegg_ids.split(' '):
-
-                compound_info = _process_kegg_api_get_entity(compound_id, kegg_type, hgnc_manager, chebi_manager)
-
+                compound_info = _process_kegg_api_get_entity(compound_id, kegg_type)
                 if compound_info:
                     compound_dict[entry_id].append(compound_info)
 
         elif kegg_type.startswith('map'):
-
             map_info = {KEGG_ID: kegg_ids}
-
             for graphics in entry.iter('graphics'):
-                map_name = graphics.get('name')
-                map_info['map_name'] = map_name
-
+                map_info['map_name'] = graphics.get('name')
+                break  # does this happen multiple times?
             map_dict[entry_id].append(map_info)
 
         elif kegg_type.startswith('ortholog'):
-
             for ortholog_id in kegg_ids.split(' '):
-                ortholog_info = {
+                ortholog_dict[entry_id].append({
                     KEGG_ID: ortholog_id,
                     KEGG_TYPE: kegg_type,
-                }
+                })
 
-                ortholog_dict[entry_id].append(ortholog_info)
-
-        # TODO: other, enzyme
-        elif kegg_type.startswith('brite'):
-            pass
+        else:
+            logger.warning('unhandled node %s because of type %s', entry_id, kegg_type)
 
     return entry_dict, compound_dict, map_dict, ortholog_dict
 
@@ -347,11 +334,11 @@ def get_all_relationships(tree):
     return relations_list
 
 
-def get_all_reactions(tree, compounds_dict):
+def get_all_reactions(tree: xml.etree.ElementTree.ElementTree, compounds_dict: Mapping):
     """Get substrates and products with ChEBI or PubChem IDs participating in reactions.
 
-    :param xml.etree.ElementTree.ElementTree tree: XML tree
-    :param dict compounds_dict: dictionary of KEGG compound information
+    :param tree: XML tree
+    :param compounds_dict: dictionary of KEGG compound information
     :return: dictionary with substrate ids (reaction_id: [substrate_ids])
     :return: dictionary with product ids (reaction_id: [product_ids])
     :rtype: dict[str,list]
